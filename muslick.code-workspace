@@ -1,0 +1,29 @@
+{
+    "folders": [
+        {
+            "path": "./toolkit",
+        },
+        {
+            "path": "./management"
+        },
+        {
+            "path": "./starter"
+        },
+        {
+            "path": "./streaming"
+        }
+    ],
+    "settings": {
+        "python.analysis.extraPaths": [
+            "/Users/slick/projects/no_name_yet/MuSlick/management",
+            "/Users/slick/projects/no_name_yet/MuSlick/starter",
+            "/Users/slick/projects/no_name_yet/MuSlick/streaming",
+
+            "/Users/slick/projects/no_name_yet/MuSlick/management/src",
+            "/Users/slick/projects/no_name_yet/MuSlick/starter/src",
+            "/Users/slick/projects/no_name_yet/MuSlick/streaming/src",
+        ],
+        "cSpell.words": [
+        ],
+    }
+}
