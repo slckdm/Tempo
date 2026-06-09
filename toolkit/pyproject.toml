@@ -1,0 +1,19 @@
+[project]
+name = "toolkit"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Dmitry",email = "zubashenkod@gmail.com"}
+]
+requires-python = ">=3.14"
+packages = [{include = "toolkit"}]
+dependencies = [
+    "pydantic (>=2.13.4,<3.0.0)",
+    "boto3 (>=1.43.25,<2.0.0)",
+    "boto3-stubs[essential] (>=1.43.25,<2.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
