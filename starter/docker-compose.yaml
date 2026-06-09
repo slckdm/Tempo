@@ -1,0 +1,75 @@
+services:
+  s3:
+    image: minio/minio:latest
+    container_name: local_s3_minio
+    ports:
+      - 9000:9000 # S3 API Port
+      - 9001:9001 # Web Console UI Port
+    environment:
+      MINIO_ROOT_USER: root
+      MINIO_ROOT_PASSWORD: rootpass
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    networks:
+      - local-network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: local_postgres
+    ports:
+      - 5432:5432
+    environment:
+      # Superuser + bootstrap database (used only to run the init script).
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rootpass}
+      POSTGRES_DB: ${POSTGRES_DB:-postgres}
+      # One database (and dedicated owner role) per comma-separated entry.
+      # Format: dbname:user:password
+      POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_MULTIPLE_DATABASES}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Scripts here run once, only when the data volume is first created.
+      - ./postgres/init-multiple-dbs.sh:/docker-entrypoint-initdb.d/init-multiple-dbs.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-root} -d ${POSTGRES_DB:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - local-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.1
+    container_name: local_keycloak
+    # start-dev = development mode (HTTP, no clustering). Use `start` for prod.
+    command: start-dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Bootstrap admin account for the master realm.
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      # Persist Keycloak data in the shared Postgres (its own database).
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${KEYCLOAK_DB_NAME:-keycloak}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloakpass}
+      # Dev-friendly hostname/HTTP settings.
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_HEALTH_ENABLED: "true"
+    ports:
+      - 8080:8080 # Web console + OIDC endpoints
+    networks:
+      - local-network
+
+volumes:
+  minio_data:
+  postgres_data:
+
+networks:
+    local-network:
+        name: local.network
+        external: true
