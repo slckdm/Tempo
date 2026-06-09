@@ -15,6 +15,7 @@
     ],
     "settings": {
         "python.analysis.extraPaths": [
+            "/Users/slick/projects/no_name_yet/MuSlick/toolkit",
             "/Users/slick/projects/no_name_yet/MuSlick/management",
             "/Users/slick/projects/no_name_yet/MuSlick/starter",
             "/Users/slick/projects/no_name_yet/MuSlick/streaming",
