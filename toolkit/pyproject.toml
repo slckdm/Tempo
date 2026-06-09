@@ -10,7 +10,10 @@ packages = [{include = "toolkit"}]
 dependencies = [
     "pydantic (>=2.13.4,<3.0.0)",
     "boto3 (>=1.43.25,<2.0.0)",
-    "boto3-stubs[essential] (>=1.43.25,<2.0.0)"
+    "boto3-stubs[essential] (>=1.43.25,<2.0.0)",
+    "pyjwt[crypto] (>=2.13.0,<3.0.0)",
+    "requests (>=2.34.2,<3.0.0)",
+    "aiohttp (>=3.14.1,<4.0.0)"
 ]
 
 
