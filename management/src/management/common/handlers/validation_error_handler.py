@@ -1,18 +1,20 @@
 """Module: request validation exception handler."""
 
+from http import HTTPStatus
+
 from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
-from toolkit.response import JSendFailResponse
+from toolkit.service.response import ValidationErrorResponse
 
 
 async def validation_error_handler(request: Request, exc: RequestValidationError) -> JSONResponse:
+    """Handle validation error."""
     return JSONResponse(
-        status_code=422,
-        content=JSendFailResponse(
-            code="JSEND-0002",
-            message="Validation errors",
+        status_code=HTTPStatus.UNPROCESSABLE_CONTENT,
+        content=ValidationErrorResponse(
+            message=exc,
             data={"errors": exc.errors()},
         ).model_dump(),
     )
