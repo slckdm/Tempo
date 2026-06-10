@@ -1,4 +1,4 @@
-# Project name in progress
+# Tempo
 
 ## Description
 
@@ -8,7 +8,7 @@ goals:
 
 * implement backend using:
   * microservice architecture
+  * fastapi/sanic - python frameworks
   * grpc
   * websockets
-  * sanic - python framework
 * vibecode frontend

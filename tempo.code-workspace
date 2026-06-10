@@ -1,0 +1,30 @@
+{
+    "folders": [
+        {
+            "path": "./toolkit",
+        },
+        {
+            "path": "./management"
+        },
+        {
+            "path": "./starter"
+        },
+        {
+            "path": "./streaming"
+        }
+    ],
+    "settings": {
+        "python.analysis.extraPaths": [
+            "/Users/slick/projects/github/Tempo/toolkit",
+            "/Users/slick/projects/github/Tempo/management",
+            "/Users/slick/projects/github/Tempo/starter",
+            "/Users/slick/projects/github/Tempo/streaming",
+
+            "/Users/slick/projects/github/Tempo/management/src",
+            "/Users/slick/projects/github/Tempo/starter/src",
+            "/Users/slick/projects/github/Tempo/streaming/src",
+        ],
+        "cSpell.words": [
+        ],
+    }
+}
