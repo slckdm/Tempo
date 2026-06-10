@@ -1,14 +1,14 @@
-# Project name in progress
+# Tempo
 
 ## Description
 
 This is my first try to implement some kinda online music player
 
-goals:
+### Goals:
 
 * implement backend using:
-  * microservice architecture
-  * grpc
-  * websockets
-  * sanic - python framework
+  * Microservice architecture
+  * gRPC
+  * Websockets
+  * FastAPI, Sanic - python frameworks
 * vibecode frontend
