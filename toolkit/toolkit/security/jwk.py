@@ -27,7 +27,6 @@ class KeycloakClient(APIClient):
             return ""
         return f"-----BEGIN PUBLIC KEY-----\n {public_key} \n-----END PUBLIC KEY-----"
 
-
     async def decode_token(self, token: str) -> User | ServiceAccount:
         validation_options = {
             "options": {
