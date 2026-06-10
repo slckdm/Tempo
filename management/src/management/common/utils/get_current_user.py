@@ -1,9 +1,12 @@
 """Module: Get Current User Data Utility."""
 
+from http import HTTPStatus
 from typing import Annotated
 
 from fastapi import Depends
 from fastapi.exceptions import HTTPException
+
+from jwt.exceptions import ExpiredSignatureError
 
 from toolkit.security import KeycloakClient
 from toolkit.security.models import ServiceAccount, User
@@ -21,7 +24,10 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> Use
     Returns:
         User: User data object.
     """
-    user = await KeycloakClient(keycloak_config).decode_token(token)
+    try:
+        user = await KeycloakClient(keycloak_config).decode_token(token)
+    except ExpiredSignatureError as expired_exception:
+        raise HTTPException(HTTPStatus.FORBIDDEN) from expired_exception
     if isinstance(user, ServiceAccount):
-        raise HTTPException(409, "Forbidden")
+        raise HTTPException(HTTPStatus.FORBIDDEN)
     return user
