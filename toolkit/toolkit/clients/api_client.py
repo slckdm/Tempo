@@ -1,16 +1,33 @@
-from typing import Optional, TypeVar, Type
-import aiohttp
-from http import HTTPMethod
-from pydantic import BaseModel
-from .auth_strategies import AbstractAuthorizationStrategy
+"""Module: API client."""
 
+from http import HTTPMethod
+from typing import Optional, Type, TypeVar
+
+import aiohttp
+from pydantic import BaseModel
+
+from .auth_strategies import AbstractAuthorizationStrategy
 
 DTO = TypeVar("DTO", bound=BaseModel)
 
 
 class APIClient:
+    """API Client.
 
-    def __init__(self, base_url: str, authorization_strategy: Optional[AbstractAuthorizationStrategy] = None) -> None:
+    # TODO: exceptions handling
+    # TODO: exceptions logging
+    """
+
+    def __init__(
+        self, base_url: str, authorization_strategy: Optional[AbstractAuthorizationStrategy] = None
+    ) -> None:
+        """Initialize client.
+
+        Args:
+            base_url (str): Callable service base url.
+            authorization_strategy (Optional[AbstractAuthorizationStrategy], optional):
+                authorization method to apply. Defaults to None.
+        """
         self.base_url = base_url
         self.authorization_strategy = authorization_strategy
 
@@ -31,7 +48,6 @@ class APIClient:
             async with _session.request(method, endpoint, params=query, json=payload) as response:
                 return await response.json()
 
-
     async def request(
         self,
         method: HTTPMethod,
@@ -40,6 +56,18 @@ class APIClient:
         payload: Optional[dict] = None,
         query: Optional[dict] = None,
     ) -> dict:
+        """Make request to the endpoint.
+
+        Args:
+            method (HTTPMethod): HTTP method to execute.
+            endpoint (str): Endpoint which should be called.
+            headers (Optional[dict], optional): Request headers. Defaults to None.
+            payload (Optional[dict], optional): Request payload. Defaults to None.
+            query (Optional[dict], optional): Request query parameters. Defaults to None.
+
+        Returns:
+            dict: Response payload data.
+        """
         return await self.__request(method, endpoint, headers, payload, query)
 
     async def mapped_request(
@@ -51,12 +79,27 @@ class APIClient:
         payload: Optional[BaseModel] = None,
         query: Optional[BaseModel] = None,
     ) -> DTO:
+        """Make request to the endpoint.
+
+        Similar to `.request()` method, but provides request/response validation.
+
+        Args:
+            method (HTTPMethod):  HTTP method to execute.
+            endpoint (str):  Endpoint which should be called.
+            response_model (Type[DTO]): Model by which response should be validated.
+            headers (Optional[dict]):  Request headers. Defaults to None.
+            payload (Optional[BaseModel]):  Request payload. Defaults to None.
+            query (Optional[BaseModel]):  Request query parameters. Defaults to None.
+
+        Returns:
+            DTO: Validate response model.
+        """
         data = await self.request(
             method,
             endpoint,
             headers,
             payload.model_dump(by_alias=True) if payload else None,
-            query.model_dump(by_alias=True) if query else None
+            query.model_dump(by_alias=True) if query else None,
         )
         response_dto = response_model.model_validate(data)
 
