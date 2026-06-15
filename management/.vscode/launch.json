@@ -10,8 +10,9 @@
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "start:service",
+                "app.main.start:service",
             ],
+            "justMyCode": false,
             "jinja": false
         },
 
