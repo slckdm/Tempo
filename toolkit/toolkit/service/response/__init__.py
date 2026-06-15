@@ -10,6 +10,7 @@ from .response import (
     JSendStatus,
     JSendSuccessfulResponse,
 )
+from .unauthorized_response import UnauthorizedResponse
 from .unsupported_media_response import UnsupportedMediaTypeResponse
 from .validation_error_response import ValidationErrorResponse
 
@@ -25,4 +26,5 @@ __all__ = [
     "JSendErrorResponse",
     "UnsupportedMediaTypeResponse",
     "ValidationErrorResponse",
+    "UnauthorizedResponse",
 ]
