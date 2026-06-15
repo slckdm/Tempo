@@ -1,12 +1,14 @@
-"""Module: User Data DTO."""
+"""Module: User Data DAO."""
 
 from pydantic import BaseModel
+
+from toolkit.types_ import UserID
 
 
 class User(BaseModel):
     """User Data."""
 
-    id: str
+    id: UserID
     username: str
     email: str | None = None
     first_name: str

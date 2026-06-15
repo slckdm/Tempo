@@ -1,4 +1,4 @@
-"""Module: Service Account DTO."""
+"""Module: Service Account DAO."""
 
 from pydantic import BaseModel
 
