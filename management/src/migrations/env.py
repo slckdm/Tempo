@@ -6,11 +6,9 @@ from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
-from dotenv import load_dotenv
+from app.main.config.loader import load_postgres_settings
 
-load_dotenv("../.dev/.env")
-
-from management.core.configs import DBConfig
+postgres_config = load_postgres_settings()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -23,7 +21,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from management.models import Base
+from app.core.models import Base
 
 target_metadata = Base.metadata
 
@@ -44,7 +42,7 @@ def run_migrations_offline() -> None:
     Calls to context.execute() here emit the given string to the
     script output.
     """
-    url = DBConfig.url
+    url = postgres_config.dsn
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -67,12 +65,11 @@ async def run_async_migrations() -> None:
     """In this scenario we need to create an Engine
     and associate a connection with the context.
     """
-    print(DBConfig.url)
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
-        url=DBConfig.url
+        url=postgres_config.dsn
     )
 
     async with connectable.connect() as connection:
