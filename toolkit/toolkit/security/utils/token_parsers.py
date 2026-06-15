@@ -1,6 +1,6 @@
 """Module: Token Data Parser Utilities."""
 
-from ..models import ServiceAccount, User
+from toolkit.entities import ServiceAccount, User
 
 
 def get_user_data_from_token(payload: dict) -> User:

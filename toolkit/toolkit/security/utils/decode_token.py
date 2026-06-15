@@ -2,7 +2,8 @@
 
 from jwt import decode
 
-from ..models import ServiceAccount, User
+from toolkit.entities import ServiceAccount, User
+
 from .token_parsers import get_service_account_data_from_token, get_user_data_from_token
 
 
