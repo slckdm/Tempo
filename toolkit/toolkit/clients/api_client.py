@@ -37,6 +37,7 @@ class APIClient:
         endpoint: str,
         headers: Optional[dict] = None,
         payload: Optional[dict] = None,
+        data: Optional[dict] = None,
         query: Optional[dict] = None,
     ) -> dict:
         session_headers = {}
@@ -45,7 +46,9 @@ class APIClient:
         if headers:
             session_headers.update(**headers)
         async with aiohttp.ClientSession(self.base_url, headers=session_headers) as _session:
-            async with _session.request(method, endpoint, params=query, json=payload) as response:
+            async with _session.request(
+                method, endpoint, params=query, json=payload, data=data
+            ) as response:
                 return await response.json()
 
     async def request(
@@ -54,6 +57,7 @@ class APIClient:
         endpoint: str,
         headers: Optional[dict] = None,
         payload: Optional[dict] = None,
+        data: Optional[dict] = None,
         query: Optional[dict] = None,
     ) -> dict:
         """Make request to the endpoint.
@@ -63,12 +67,13 @@ class APIClient:
             endpoint (str): Endpoint which should be called.
             headers (Optional[dict], optional): Request headers. Defaults to None.
             payload (Optional[dict], optional): Request payload. Defaults to None.
+            data (Optional[dict], optional): Request payload. Defaults to None.
             query (Optional[dict], optional): Request query parameters. Defaults to None.
 
         Returns:
             dict: Response payload data.
         """
-        return await self.__request(method, endpoint, headers, payload, query)
+        return await self.__request(method, endpoint, headers, payload, data, query)
 
     async def mapped_request(
         self,
