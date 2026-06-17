@@ -11,9 +11,9 @@ from app.core.common.services.outbox_service import OutboxService
 from app.core.common.services.upload_service import UploadService
 from app.core.ports.flusher import Flusher
 from app.core.ports.outbox_storage import OutboxStorage
-from app.core.ports.system_utc_timer import UTCTimer
 from app.core.ports.transaction import Transaction
 from app.core.ports.upload_storage import UploadStorage
+from app.core.ports.utc_timer import UTCTimer
 from app.outbound.adapters.sqla_flusher import SQLAFlusher
 from app.outbound.adapters.sqla_outbox_storage import SQLAOutboxStorage
 from app.outbound.adapters.sqla_transaction import SQLATransaction
