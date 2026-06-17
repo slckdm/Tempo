@@ -2,7 +2,7 @@
 
 from pydantic import BaseModel
 
-from app.schemas.types_ import UploadURNType
+from app.core.common.types_ import UploadURNType
 
 
 class UploadDTO(BaseModel):

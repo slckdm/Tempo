@@ -1,7 +1,7 @@
 import pytest
 from faker import Faker
 from .factories import create_upload_service, create_upload, create_user
-from app.services.upload_service import UploadService
+from app.core.common.services.upload_service import UploadService
 from app.core.models import Upload
 from app.core.common.enums import UploadStatus
 
@@ -18,6 +18,7 @@ async def test_create_upload(faker: Faker) -> None:
     assert str(upload.created_by) == str(upload_data["user"].id)
 
 
+@pytest.mark.asyncio
 async def test_complete_upload() -> None:
     upload_service = create_upload_service()
     upload = create_upload(status=UploadStatus.PENDING)

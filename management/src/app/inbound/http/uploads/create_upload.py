@@ -5,8 +5,8 @@ from dishka.integrations.fastapi import FromDishka, inject
 from toolkit.service.response import JSendSuccessfulResponse
 
 from app.core.commands.create_upload import CreateUpload
-from app.schemas.request import CreateUploadRequestBody
-from app.schemas.response import CreateUploadResponseBody
+from app.core.schemas.request import CreateUploadRequestBody
+from app.core.schemas.response import CreateUploadResponseBody
 
 
 @inject
