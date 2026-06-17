@@ -6,7 +6,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
-from toolkit.service.response import InternalServerErrorResponse
+from toolkit.service.response import EmptyData, InternalServerErrorResponse
 
 
 async def internal_server_error_handler(
@@ -15,5 +15,5 @@ async def internal_server_error_handler(
     """Handle internal server error."""
     return JSONResponse(
         status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-        content=InternalServerErrorResponse(data={}).model_dump(),
+        content=InternalServerErrorResponse(data=EmptyData()).model_dump(),
     )

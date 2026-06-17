@@ -4,15 +4,12 @@ from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
-from toolkit.service.response import EmptyData, ForbiddenResponse
+from toolkit.service.response import EmptyData, NotFoundResponse
 
 
-async def forbidden_error_handler(request: Request, exc: HTTPException) -> JSONResponse:
+async def not_found_error_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """Handle forbidden error."""
     return JSONResponse(
         status_code=exc.status_code,
-        content=ForbiddenResponse(
-            message=exc.detail,
-            data=EmptyData(),
-        ).model_dump(),
+        content=NotFoundResponse(message=exc.detail, data=EmptyData()).model_dump(),
     )

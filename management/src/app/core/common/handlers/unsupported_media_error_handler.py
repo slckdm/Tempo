@@ -4,15 +4,12 @@ from fastapi.exceptions import HTTPException
 from fastapi.requests import Request
 from fastapi.responses import JSONResponse
 
-from toolkit.service.response import UnsupportedMediaTypeResponse
+from toolkit.service.response import EmptyData, UnsupportedMediaTypeResponse
 
 
 async def unsupported_media_error_handler(request: Request, exc: HTTPException) -> JSONResponse:
     """Handle unsupported media error."""
     return JSONResponse(
         status_code=exc.status_code,
-        content=UnsupportedMediaTypeResponse(
-            message=exc.detail,
-            data={},
-        ).model_dump(),
+        content=UnsupportedMediaTypeResponse(message=exc.detail, data=EmptyData()).model_dump()
     )
