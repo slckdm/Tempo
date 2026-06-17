@@ -25,16 +25,19 @@ class S3Client:
             config=Config(signature_version="s3v4"),
         )
 
-    def get_object(self, bucket_name: str, key: str) -> GetObjectOutputTypeDef | None:
+    def get_object(self, bucket_name: str, key: str, **kwargs) -> GetObjectOutputTypeDef | None:
         """Get existing object."""
         try:
             return self.__client.get_object(
                 Bucket=bucket_name,
                 Key=key,
+                **kwargs
             )
         except Exception as exc:
             if "NoSuchKey" in str(exc):
                 raise NoSuchKeyException from exc
+            else:
+                raise exc
 
     def generate_presigned_url(
         self,
