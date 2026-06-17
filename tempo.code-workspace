@@ -1,6 +1,9 @@
 {
     "folders": [
         {
+            "path": "./frontend",
+        },
+        {
             "path": "./toolkit",
         },
         {
@@ -19,10 +22,6 @@
             "/Users/slick/projects/github/Tempo/management",
             "/Users/slick/projects/github/Tempo/starter",
             "/Users/slick/projects/github/Tempo/streaming",
-
-            "/Users/slick/projects/github/Tempo/management/src",
-            "/Users/slick/projects/github/Tempo/starter/src",
-            "/Users/slick/projects/github/Tempo/streaming/src",
         ],
         "cSpell.words": [
         ],
