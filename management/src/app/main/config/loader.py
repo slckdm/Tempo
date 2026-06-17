@@ -12,9 +12,9 @@ from .settings import (
     SQLAlchemySettings,
 )
 
-BASE_DIR: Final[Path] = Path(__file__).resolve().parents[3]
+BASE_DIR: Final[Path] = Path(__file__).resolve().parents[4]
 _ENV_FILE: Final[Path] = BASE_DIR.joinpath(".env")
-
+print(_ENV_FILE)
 
 _DEFAULT_CONFIG_DICT: Final[SettingsConfigDict] = SettingsConfigDict(
     env_file=_ENV_FILE, extra="ignore"
