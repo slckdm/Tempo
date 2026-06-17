@@ -6,14 +6,12 @@
     "configurations": [
         {
             "name": "Management: FastAPI",
+            "consoleName": "Management: FastAPI",
             "type": "debugpy",
             "request": "launch",
-            "module": "uvicorn",
-            "args": [
-                "app.main.start:service",
-            ],
-            "justMyCode": false,
-            "jinja": false
+            "cwd": "${workspaceFolder}/src",
+            "module": "app.main.start",
+            "console": "integratedTerminal",
         },
 
     ]
