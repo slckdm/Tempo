@@ -1,5 +1,6 @@
 """Module: upload ORM model."""
 
+import uuid
 from datetime import datetime
 
 from sqlalchemy import types
@@ -8,7 +9,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from toolkit.types_ import UserID
 
 from app.core.common.enums import UploadStatus
-from app.schemas.types_ import UploadURNType
+from app.core.common.types_ import UploadURNType
 
 from .base import Base
 
@@ -18,7 +19,9 @@ class Upload(Base):
 
     __tablename__ = "uploads"
 
-    id: Mapped[int] = mapped_column(types.Integer, primary_key=True, autoincrement=True)
+    id: Mapped[uuid.UUID] = mapped_column(
+        types.UUID(as_uuid=True), default=uuid.uuid4, primary_key=True
+    )
     filename: Mapped[str] = mapped_column(types.String, nullable=False)
     content_type: Mapped[str] = mapped_column(types.String, nullable=False)
     size: Mapped[int] = mapped_column(types.Integer, nullable=False)
@@ -31,7 +34,7 @@ class Upload(Base):
 
     def __repr__(self) -> str:
         """Object representation."""
-        return f"{self.__class__.__name__}(id={self.id}, status={self.status})"
+        return f"{self.__class__.__name__}(uuid={self.id}, status={self.status})"
 
     @property
     def urn(self) -> UploadURNType:
