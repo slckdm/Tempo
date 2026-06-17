@@ -2,11 +2,7 @@ from dishka import Provider, Scope, provide
 
 from app.core.commands.complete_upload import CompleteUpload
 from app.core.commands.create_upload import CreateUpload
-from app.core.common.services.current_user_service import (
-    AuthorizedUserFinder,
-    CurrentUserService,
-    IdentityProvider,
-)
+from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.outbox_service import OutboxService
 from app.core.common.services.upload_service import UploadService
 from app.core.ports.flusher import Flusher
@@ -21,6 +17,8 @@ from app.outbound.adapters.sqla_upload_storage import SQLAUploadStorage
 from app.outbound.adapters.system_utc_timer import SystemUTCTimer
 from app.outbound.keycloak_auth_user_finder import KeycloakAuthorizedUserFinder
 from app.outbound.keycloak_identity_provider import KeycloakIdentityProvider
+from app.outbound.ports.auth_user_finder import AuthorizedUserFinder
+from app.outbound.ports.identity_provider import IdentityProvider
 
 
 class CoreProvider(Provider):

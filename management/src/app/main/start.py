@@ -8,9 +8,9 @@ from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
 from toolkit.s3.s3_client import NoSuchKeyException
+from toolkit.service.exceptions import ForbiddenException, UnauthorizedException
 
 from app.core.common import handlers
-from app.core.exceptions import ForbiddenException, UnauthorizedException
 from app.inbound.http.uploads.router import make_uploads_router
 from app.main.config.loader import (
     load_app_settings,
