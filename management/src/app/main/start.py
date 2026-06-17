@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
+from toolkit.s3.s3_client import NoSuchKeyException
+
 from app.core.common import handlers
 from app.core.exceptions import ForbiddenException, UnauthorizedException
 from app.inbound.http.uploads.router import make_uploads_router
@@ -46,9 +48,11 @@ def create_service() -> FastAPI:
             HTTPStatus.FORBIDDEN: handlers.forbidden_error_handler,
             HTTPStatus.UNSUPPORTED_MEDIA_TYPE: handlers.unsupported_media_error_handler,
             HTTPStatus.UNPROCESSABLE_CONTENT: handlers.validation_error_handler,
+            HTTPStatus.NOT_FOUND: handlers.not_found_error_handler,
             HTTPStatus.INTERNAL_SERVER_ERROR: handlers.internal_server_error_handler,
             UnauthorizedException: handlers.unauthorized_error_handler,
             ForbiddenException: handlers.forbidden_error_handler,
+            NoSuchKeyException: handlers.no_such_key_error_handler,
         },
         routes=[*make_uploads_router().routes],
     )
