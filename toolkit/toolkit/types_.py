@@ -1,4 +1,4 @@
-from typing import Any, NewType
+from typing import Any, NewType, Self
 from uuid import UUID
 
 from pydantic_core import core_schema
@@ -24,7 +24,7 @@ class URNType[T]:
         return str(self)
 
     def __str__(self) -> str:
-        return self.delimiter.join(("urn", self.namespace, str(self.id)))
+        return self.delimiter.join((self.prefix, self.namespace, str(self.id)))
 
     @classmethod
     def __validate(cls, value: Any) -> str:
@@ -40,15 +40,15 @@ class URNType[T]:
         return id
 
     @classmethod
-    def from_string(cls, value: str) -> URNType:
-        return URNType(id=cls.__validate(value))
+    def from_string(cls, value: str) -> Self:
+        return cls(id=cls.__validate(value))
 
     @classmethod
     def __get_pydantic_core_schema__(
         cls, *args, **kwargs
     ) -> core_schema.AfterValidatorFunctionSchema:
         return core_schema.no_info_after_validator_function(
-            lambda value: value if isinstance(value, cls) else URNType(id=cls.__validate(value)),
+            lambda value: value if isinstance(value, cls) else cls(id=cls.__validate(value)),
             schema=core_schema.any_schema(),
             serialization=core_schema.plain_serializer_function_ser_schema(
                 lambda value: str(value)
