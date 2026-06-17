@@ -1,8 +1,13 @@
 """Module: JSend response."""
 
 from enum import StrEnum
+from typing import Annotated
 
 from pydantic import BaseModel, Field
+
+
+class EmptyData(BaseModel):
+    """Empty data model."""
 
 
 class JSendStatus(StrEnum):
@@ -16,7 +21,10 @@ class JSendStatus(StrEnum):
 class JSendResponse[DTO: BaseModel](BaseModel):
     """JSend response base class."""
 
-    data: DTO | dict = Field(description="The data payload of the response.")
+    data: Annotated[
+        DTO,
+        Field(default=EmptyData(), description="The data payload of the response.")
+    ]
 
 
 class JSendSuccessfulResponse[DTO: BaseModel](JSendResponse[DTO]):
