@@ -3,6 +3,7 @@
 from .bad_request_response import BadRequestResponse
 from .forbidden_response import ForbiddenResponse
 from .internal_server_error_response import InternalServerErrorResponse
+from .not_found_response import NotFoundResponse
 from .response import (
     EmptyData,
     JSendErrorResponse,
@@ -26,6 +27,7 @@ __all__ = [
     "JSendErrorResponse",
     "UnsupportedMediaTypeResponse",
     "ValidationErrorResponse",
+    "NotFoundResponse",
     "UnauthorizedResponse",
     "EmptyData"
 ]
