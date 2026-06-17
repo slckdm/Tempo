@@ -9,18 +9,20 @@ from dishka import Provider
 from toolkit.entities import User
 
 from app.core.common.enums.upload_status import UploadStatus
+from app.core.common.exceptions import BaseError
 from app.core.models.upload import Upload
+
+
+class UploadAlreadyFinished(BaseError):
+    default_message = "Upload already has been completed"
+
 
 
 class UploadService(Provider):
 
-    def __init__(self) -> None:
-        ...
+    def __init__(self): ...
 
-    async def create_upload(
-        self, filename: str, content_type: str, size: int, user: User
-    ) -> Upload:
-
+    async def create_upload(self, filename: str, size: int, user: User) -> Upload:
         mimetype, _ = guess_type(filename)
 
         if not mimetype or ("audio/" not in mimetype):
@@ -28,7 +30,7 @@ class UploadService(Provider):
 
         upload = Upload(
             filename=filename,
-            content_type=content_type,
+            content_type=mimetype,
             size=size,
             status=UploadStatus.PENDING,
             created_by=user.id,
@@ -36,5 +38,11 @@ class UploadService(Provider):
         )
 
         return upload
+
+    async def complete_upload(self, upload: Upload) -> None:
+        if upload.status == UploadStatus.PENDING:
+            upload.status = UploadStatus.COMPLETED
+        else:
+            raise UploadAlreadyFinished
 
     def list_uploads(self) -> ...: ...
