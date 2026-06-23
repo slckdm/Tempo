@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.ports.transaction import Transaction
+from app.core.commands.ports.transaction import Transaction
 
 
 class SQLATransaction(Transaction):

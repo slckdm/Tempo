@@ -3,10 +3,10 @@ from dishka import Provider, Scope, provide
 
 from app.core.commands.fail_upload import FailUpload
 from app.core.commands.finish_upload import FinishUpload
+from app.core.commands.ports.flusher import Flusher
+from app.core.commands.ports.transaction import Transaction
+from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.services.upload_service import UploadService
-from app.core.ports.flusher import Flusher
-from app.core.ports.transaction import Transaction
-from app.core.ports.upload_storage import UploadStorage
 from app.outbound.adapters.sqla_flusher import SQLAFlusher
 from app.outbound.adapters.sqla_transaction import SQLATransaction
 from app.outbound.adapters.sqla_upload_storage import SQLAUploadStorage

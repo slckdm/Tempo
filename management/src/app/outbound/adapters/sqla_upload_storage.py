@@ -2,8 +2,8 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.models import Upload
-from app.core.ports.upload_storage import UploadStorage
 
 
 class SQLAUploadStorage(UploadStorage):

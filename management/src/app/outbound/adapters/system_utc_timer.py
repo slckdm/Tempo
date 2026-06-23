@@ -1,6 +1,6 @@
 from datetime import UTC, datetime
 
-from app.core.ports.utc_timer import UTCTimer
+from app.core.commands.ports.utc_timer import UTCTimer
 
 
 class SystemUTCTimer(UTCTimer):

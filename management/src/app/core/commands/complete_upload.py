@@ -1,17 +1,17 @@
 from toolkit.messaging.contracts import UploadCompletedEvent
 from toolkit.messaging.routing import UPLOAD_COMPLETED_RK
-from toolkit.s3 import S3Client
 from toolkit.service.exceptions import NotFoundException
 from toolkit.types.enum import UploadStatus
 from toolkit.types.urn import UploadURNType
 
+from app.core.commands.ports.object_storage import ObjectStorage
+from app.core.commands.ports.outbox_storage import OutboxStorage
+from app.core.commands.ports.transaction import Transaction
+from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.enums.aggregate_type import AggregateType
 from app.core.common.services import CurrentUserService, OutboxService, UploadService
-from app.core.ports.outbox_storage import OutboxStorage
-from app.core.ports.transaction import Transaction
-from app.core.ports.upload_storage import UploadStorage
 from app.main.config.settings import S3Settings
-from app.core.ports.object_storage import ObjectStorage
+
 
 class CompleteUpload:
     def __init__(

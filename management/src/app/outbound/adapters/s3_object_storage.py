@@ -1,7 +1,7 @@
 from toolkit.entities.object import Object
 from toolkit.s3 import S3Client
 
-from app.core.ports.object_storage import ObjectStorage
+from app.core.commands.ports.object_storage import ObjectStorage
 from app.main.config.settings import S3Settings
 
 

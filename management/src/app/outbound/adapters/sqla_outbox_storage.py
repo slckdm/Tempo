@@ -4,8 +4,8 @@ from typing import Sequence
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.models import OutboxMessage
-from app.core.ports.outbox_storage import OutboxStorage
 
 
 class SQLAOutboxStorage(OutboxStorage):

@@ -2,15 +2,15 @@ from dishka import Provider, Scope, provide
 
 from app.core.commands.complete_upload import CompleteUpload
 from app.core.commands.create_upload import CreateUpload
+from app.core.commands.ports.flusher import Flusher
+from app.core.commands.ports.object_storage import ObjectStorage
+from app.core.commands.ports.outbox_storage import OutboxStorage
+from app.core.commands.ports.transaction import Transaction
+from app.core.commands.ports.upload_storage import UploadStorage
+from app.core.commands.ports.utc_timer import UTCTimer
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.outbox_service import OutboxService
 from app.core.common.services.upload_service import UploadService
-from app.core.ports.flusher import Flusher
-from app.core.ports.object_storage import ObjectStorage
-from app.core.ports.outbox_storage import OutboxStorage
-from app.core.ports.transaction import Transaction
-from app.core.ports.upload_storage import UploadStorage
-from app.core.ports.utc_timer import UTCTimer
 from app.outbound.adapters.s3_object_storage import S3ObjectStorage
 from app.outbound.adapters.sqla_flusher import SQLAFlusher
 from app.outbound.adapters.sqla_outbox_storage import SQLAOutboxStorage

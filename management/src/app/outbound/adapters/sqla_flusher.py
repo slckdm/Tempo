@@ -2,7 +2,7 @@ from typing import Any, Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.ports.flusher import Flusher
+from app.core.commands.ports.flusher import Flusher
 
 
 class SQLAFlusher(Flusher):

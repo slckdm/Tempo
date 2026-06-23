@@ -1,9 +1,9 @@
 from toolkit.messaging.contracts import MessageContract
 from toolkit.messaging.routing import RoutingKey
 
+from app.core.commands.ports.utc_timer import UTCTimer
 from app.core.common.enums import AggregateType
 from app.core.models import OutboxMessage
-from app.core.ports.utc_timer import UTCTimer
 
 
 class OutboxService:
