@@ -1,9 +1,12 @@
 import pytest
 from faker import Faker
-from .factories import create_upload_service, create_upload, create_user
-from app.core.common.services.upload_service import UploadService
+
+from toolkit.types.enum import UploadStatus
+
 from app.core.models import Upload
-from app.core.common.enums import UploadStatus
+
+from .factories import create_upload, create_upload_service, create_user
+
 
 @pytest.mark.asyncio
 async def test_create_upload(faker: Faker) -> None:

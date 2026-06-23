@@ -16,7 +16,9 @@ class OutboxMessage(Base):
     event_type: Mapped[str] = mapped_column(orm.String)
     payload: Mapped[dict] = mapped_column(orm.JSON, nullable=False)
     created_at: Mapped[datetime] = mapped_column(orm.DateTime(timezone=True))
-    published_at: Mapped[datetime | None] = mapped_column(nullable=True)
+    published_at: Mapped[datetime | None] = mapped_column(
+        orm.DateTime(timezone=True), nullable=True
+    )
 
     def __repr__(self) -> str:
         return (

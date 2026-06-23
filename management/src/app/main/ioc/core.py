@@ -6,10 +6,12 @@ from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.outbox_service import OutboxService
 from app.core.common.services.upload_service import UploadService
 from app.core.ports.flusher import Flusher
+from app.core.ports.object_storage import ObjectStorage
 from app.core.ports.outbox_storage import OutboxStorage
 from app.core.ports.transaction import Transaction
 from app.core.ports.upload_storage import UploadStorage
 from app.core.ports.utc_timer import UTCTimer
+from app.outbound.adapters.s3_object_storage import S3ObjectStorage
 from app.outbound.adapters.sqla_flusher import SQLAFlusher
 from app.outbound.adapters.sqla_outbox_storage import SQLAOutboxStorage
 from app.outbound.adapters.sqla_transaction import SQLATransaction
@@ -37,6 +39,7 @@ class CoreProvider(Provider):
     flusher = provide(SQLAFlusher, provides=Flusher)
     transaction = provide(SQLATransaction, provides=Transaction)
     upload_storage = provide(SQLAUploadStorage, provides=UploadStorage)
+    object_storage = provide(S3ObjectStorage, provides=ObjectStorage)
     outbox_storage = provide(SQLAOutboxStorage, provides=OutboxStorage)
     utc_timer = provide(SystemUTCTimer, provides=UTCTimer)
 

@@ -1,14 +1,12 @@
 
-from dishka import Provider
-
 from toolkit.entities import ServiceAccount, User
+from toolkit.service.exceptions import UnauthorizedException
 
-from app.core.common.exceptions import Unauthorized
 from app.outbound.keycloak_auth_user_finder import AuthorizedUserFinder
 from app.outbound.keycloak_identity_provider import IdentityProvider
 
 
-class CurrentUserService(Provider):
+class CurrentUserService:
     def __init__(
         self, identity_provider: IdentityProvider, authorized_user_finder: AuthorizedUserFinder
     ) -> None:
@@ -20,6 +18,6 @@ class CurrentUserService(Provider):
         user = await self._authorized_user_finder.get_by_id(current_user_id)
 
         if not user:
-            raise Unauthorized
+            raise UnauthorizedException
 
         return user

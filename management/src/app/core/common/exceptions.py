@@ -1,13 +1,6 @@
-class BaseError(Exception):
-    default_message: str | None = None
-
-    def __init__(self, message: str | None = None) -> None:
-        super().__init__(message or self.default_message)
+from toolkit.service.exceptions import TempoException
 
 
-class Unauthorized(BaseError):
-    ...
-
-
-class Forbidden(BaseError):
-    ...
+class StatusUpdateFlowError(TempoException):
+    status_code = 400
+    detail = "Cannot update update status."

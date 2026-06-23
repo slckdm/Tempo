@@ -5,9 +5,9 @@ from uuid import UUID, uuid4
 from faker import Faker
 
 from toolkit.entities import User
+from toolkit.types.enum import UploadStatus
 from toolkit.types_ import UserID
 
-from app.core.common.enums import UploadStatus
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.upload_service import UploadService
 from app.core.models.upload import Upload
@@ -80,7 +80,7 @@ def create_upload(
         filename=filename or faker.file_name(),
         content_type=content_type or faker.mime_type(),
         size=size or faker.random_int(),
-        status=status or random.choice(*UploadStatus),
+        status=status or random.choice(list(UploadStatus)),
         created_by=created_by or faker.uuid4(),
         created_at=created_at or faker.date_time(),
     )

@@ -21,7 +21,7 @@ class PostgresSettings(BaseModel):
             )
         )
 
-    
+
 class SQLAlchemySettings(BaseModel):
     ECHO: bool = False
     ECHO_POOL: bool = False
@@ -51,3 +51,5 @@ class S3Settings(BaseModel):
 class AppSettings(BaseModel):
     NAME: str
     PORT: int
+    DEBUG: bool = False
+    ALLOWED_ORIGINS: list[str]

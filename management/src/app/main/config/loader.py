@@ -1,8 +1,9 @@
 from pathlib import Path
-from typing import Final, ClassVar
+from typing import Final
 
-from pydantic import ConfigDict
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+from toolkit.messaging.settings import RabbitMQSettings
 
 from .settings import (
     AppSettings,
@@ -14,7 +15,6 @@ from .settings import (
 
 BASE_DIR: Final[Path] = Path(__file__).resolve().parents[4]
 _ENV_FILE: Final[Path] = BASE_DIR.joinpath(".env")
-print(_ENV_FILE)
 
 _DEFAULT_CONFIG_DICT: Final[SettingsConfigDict] = SettingsConfigDict(
     env_file=_ENV_FILE, extra="ignore"
@@ -45,6 +45,10 @@ class SQLAlchemyEnvConfig(BaseSettings, SQLAlchemySettings):
     model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="SQLA_")
 
 
+class RabbitMQEnvConfig(BaseSettings, RabbitMQSettings):
+    model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="RMQ_")
+
+
 def load_app_settings() -> AppSettings:
     return _load_settings(AppEnvConfig)
 
@@ -63,3 +67,7 @@ def load_s3_settings() -> S3Settings:
 
 def load_sqlalchemy_settings() -> SQLAlchemySettings:
     return _load_settings(SQLAlchemyEnvConfig)
+
+
+def load_rabbitmq_settings() -> RabbitMQSettings:
+    return _load_settings(RabbitMQEnvConfig)

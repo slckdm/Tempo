@@ -1,16 +1,24 @@
-from toolkit.s3 import S3Client
-from toolkit.service.response import JSendSuccessfulResponse
+from dataclasses import dataclass
 
-from app.core.common.enums import AggregateType, EventType
+from toolkit.messaging.contracts import UploadCreatedEvent
+from toolkit.messaging.routing import UPLOAD_CREATED_RK
+from toolkit.s3 import S3Client
+
+from app.core.common.enums import AggregateType
 from app.core.common.services import CurrentUserService, OutboxService, UploadService
+from app.core.models.upload import Upload
 from app.core.ports.flusher import Flusher
 from app.core.ports.outbox_storage import OutboxStorage
 from app.core.ports.transaction import Transaction
 from app.core.ports.upload_storage import UploadStorage
-from app.core.schemas.dto import UploadDTO
 from app.core.schemas.request import CreateUploadRequestBody
-from app.core.schemas.response import CreateUploadResponseBody
 from app.main.config.settings import S3Settings
+
+
+@dataclass(frozen=True)
+class UploadCreationData:
+    upload: Upload
+    presigned_url: str
 
 
 class CreateUpload:
@@ -36,10 +44,10 @@ class CreateUpload:
         self._flusher = flusher
         self._transaction = transaction
 
-    async def execute(
+    async def __call__(
         self,
         body: CreateUploadRequestBody,
-    ) -> JSendSuccessfulResponse[CreateUploadResponseBody]:
+    ) -> UploadCreationData:
         user = await self._current_user_service.get_current_user()
         upload = await self._upload_service.create_upload(body.filename, body.size, user)
         await self._upload_storage.add(upload)
@@ -50,16 +58,20 @@ class CreateUpload:
         message = await self._outbox_service.create_message(
             aggregate_type=AggregateType.UPLOAD,
             aggregate_id=str(upload.id),
-            event_type=EventType.UPLOAD_CREATED,
-            payload={},
+            event_type=UPLOAD_CREATED_RK,
+            payload=UploadCreatedEvent(
+                upload_id=upload.urn,
+                s3_key=str(upload.urn),
+                filename=upload.filename,
+                content_type=upload.content_type,
+                size=upload.size,
+                created_by=upload.created_by,
+                created_at=upload.created_at,
+                status=upload.status
+            ),
         )
         await self._outbox_storage.add(message)
 
         await self._transaction.commit()
 
-        return JSendSuccessfulResponse(
-            data=CreateUploadResponseBody(
-                upload=UploadDTO(urn=upload.urn),
-                presigned_url=presigned_url,
-            )
-        )
+        return UploadCreationData(upload=upload, presigned_url=presigned_url)

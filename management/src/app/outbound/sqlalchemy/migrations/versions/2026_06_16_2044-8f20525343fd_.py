@@ -1,4 +1,4 @@
-"""empty message
+"""Add outbox messages table.
 
 Revision ID: 8f20525343fd
 Revises: 3bd52355380d
@@ -15,7 +15,7 @@ import sqlalchemy as sa
 revision: str = '8f20525343fd'
 down_revision: Union[str, Sequence[str], None] = '3bd52355380d'
 branch_labels: Union[str, Sequence[str], None] = None
-depends_on: Union[str, Sequence[str], None] = None
+depends_on: Union[str, Sequence[str], None] = '3bd52355380d'
 
 
 def upgrade() -> None:

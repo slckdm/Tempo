@@ -4,21 +4,14 @@ from mimetypes import guess_type
 
 from fastapi import HTTPException
 
-from dishka import Provider
-
 from toolkit.entities import User
+from toolkit.types.enum import UploadStatus
 
-from app.core.common.enums.upload_status import UploadStatus
-from app.core.common.exceptions import BaseError
+from app.core.common.exceptions import StatusUpdateFlowError
 from app.core.models.upload import Upload
 
 
-class UploadAlreadyFinished(BaseError):
-    default_message = "Upload already has been completed"
-
-
-
-class UploadService(Provider):
+class UploadService:
 
     def __init__(self): ...
 
@@ -39,10 +32,16 @@ class UploadService(Provider):
 
         return upload
 
-    async def complete_upload(self, upload: Upload) -> None:
-        if upload.status == UploadStatus.PENDING:
-            upload.status = UploadStatus.COMPLETED
+    async def transit_status(self, upload: Upload, status: UploadStatus) -> None:
+        TRANSITIONS_MAP = {
+            UploadStatus.PROCESSING: (UploadStatus.PENDING,),
+            UploadStatus.COMPLETED: (UploadStatus.PROCESSING,),
+            UploadStatus.FAILED: (UploadStatus.PENDING, UploadStatus.PROCESSING),
+        }
+        allowed_transitions = TRANSITIONS_MAP[status]
+        if upload.status in allowed_transitions:
+            upload.status = status
         else:
-            raise UploadAlreadyFinished
+            raise StatusUpdateFlowError
 
     def list_uploads(self) -> ...: ...

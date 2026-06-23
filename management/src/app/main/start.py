@@ -3,6 +3,7 @@
 from http import HTTPStatus
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
@@ -26,7 +27,7 @@ from app.main.config.settings import (
     S3Settings,
     SQLAlchemySettings,
 )
-from app.main.ioc.provider_regisrty import get_providers
+from app.main.ioc.provider_registry import get_providers
 from app.outbound.keycloak_client_provider import KeycloakClientProvider
 from app.outbound.providers import get_outbound_providers
 
@@ -42,6 +43,7 @@ def create_service() -> FastAPI:
     sqlalchemy_settings = load_sqlalchemy_settings()
 
     app = FastAPI(
+        debug=app_settings.DEBUG,
         title=app_settings.NAME,
         exception_handlers={
             HTTPStatus.UNAUTHORIZED: handlers.unauthorized_error_handler,
@@ -55,6 +57,13 @@ def create_service() -> FastAPI:
             NoSuchKeyException: handlers.no_such_key_error_handler,
         },
         routes=[*make_uploads_router().routes],
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=app_settings.ALLOWED_ORIGINS,
+        allow_methods=["*"],
+        allow_headers=["*"],
+        allow_credentials=True,
     )
 
     container = make_async_container(
@@ -76,4 +85,9 @@ def create_service() -> FastAPI:
     return app
 
 
-service = create_service()
+if __name__ == "__main__":
+    import uvicorn
+
+    app_settings = load_app_settings()
+
+    uvicorn.run(app=create_service(), port=app_settings.PORT)
