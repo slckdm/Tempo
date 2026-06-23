@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Streaming: FastAPI",
+            "name": "FastAPI",
             "consoleName": "Streaming: FastAPI",
             "type": "debugpy",
             "request": "launch",

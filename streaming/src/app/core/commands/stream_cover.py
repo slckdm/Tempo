@@ -26,7 +26,7 @@ class Stream:
     chunks: Iterator[bytes]
 
 
-class StreamAudio:
+class StreamCover:
 
     def __init__(
         self,
@@ -39,7 +39,7 @@ class StreamAudio:
     async def __call__(self, id: UploadURNType, range_header: str | None) -> Stream:
         await self._identity.get_current_user_id()
 
-        object = await self._object_storage.get_object(str(id))
+        object = await self._object_storage.get_object("covers/" + str(id))
 
         return Stream(
             content_type=object.content_type,

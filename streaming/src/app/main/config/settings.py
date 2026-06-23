@@ -23,4 +23,5 @@ class S3Settings(BaseModel):
 class AppSettings(BaseModel):
     NAME: str
     PORT: int
-    DEBUG: bool
+    DEBUG: bool = False
+    ALLOWED_ORIGINS: list[str]
