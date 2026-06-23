@@ -4,22 +4,26 @@
             "path": "./frontend",
         },
         {
+            "path": "./starter"
+        },
+        {
             "path": "./toolkit",
         },
         {
             "path": "./management"
         },
         {
-            "path": "./starter"
+            "path": "./metadata"
         },
         {
             "path": "./streaming"
-        }
+        },
     ],
     "settings": {
         "python.analysis.extraPaths": [
             "/Users/slick/projects/github/Tempo/toolkit",
             "/Users/slick/projects/github/Tempo/management",
+            "/Users/slick/projects/github/Tempo/metadata",
             "/Users/slick/projects/github/Tempo/starter",
             "/Users/slick/projects/github/Tempo/streaming",
         ],
