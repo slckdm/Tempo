@@ -5,7 +5,7 @@ description = ""
 authors = [
     {name = "Dmitry",email = "zubashenkod@gmail.com"}
 ]
-requires-python = ">=3.14"
+requires-python = ">=3.14,<4"
 packages = [{include = "toolkit"}]
 dependencies = [
     "pydantic (>=2.13.4,<3.0.0)",
@@ -13,7 +13,8 @@ dependencies = [
     "boto3-stubs[essential] (>=1.43.25,<2.0.0)",
     "pyjwt[crypto] (>=2.13.0,<3.0.0)",
     "requests (>=2.34.2,<3.0.0)",
-    "aiohttp (>=3.14.1,<4.0.0)"
+    "aiohttp (>=3.14.1,<4.0.0)",
+    "faststream[rabbit] (>=0.7.1,<0.8.0)"
 ]
 
 
