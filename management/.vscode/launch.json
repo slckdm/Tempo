@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Management: FastAPI",
+            "name": "FastAPI",
             "consoleName": "Management: FastAPI",
             "type": "debugpy",
             "request": "launch",
@@ -13,6 +13,23 @@
             "module": "app.main.start",
             "console": "integratedTerminal",
         },
-
+        {
+            "name": "Consumer",
+            "consoleName": "Management: Consumer",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src",
+            "module": "app.main.consumer",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "Publisher",
+            "consoleName": "Management: Publisher",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src",
+            "module": "app.main.relay",
+            "console": "integratedTerminal",
+        },
     ]
 }

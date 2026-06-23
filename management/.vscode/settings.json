@@ -1,4 +1,11 @@
 {
+    "python.defaultInterpreterPath": "management/.venv",
+    "python.analysis.extraPaths": ["src"],
+    "pylint.args": [
+        "--init-hook", "import sys; sys.path.insert(0, 'src')",
+        "--disable=all",
+        "--enable=E,F"
+    ],
     "python.testing.pytestArgs": [
         "tests"
     ],
