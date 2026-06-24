@@ -19,11 +19,13 @@ from app.main.config.loader import (
     load_postgres_settings,
     load_s3_settings,
     load_sqlalchemy_settings,
+    load_redis_settings,
 )
 from app.main.config.settings import (
     AppSettings,
     KeycloakSettings,
     PostgresSettings,
+    RedisSettings,
     S3Settings,
     SQLAlchemySettings,
 )
@@ -41,6 +43,7 @@ def create_service() -> FastAPI:
     keycloak_settings = load_keycloak_settings()
     s3_settings = load_s3_settings()
     sqlalchemy_settings = load_sqlalchemy_settings()
+    redis_settings = load_redis_settings()
 
     app = FastAPI(
         debug=app_settings.DEBUG,
@@ -67,7 +70,6 @@ def create_service() -> FastAPI:
     )
 
     container = make_async_container(
-        KeycloakClientProvider(),
         FastapiProvider(),
         *get_providers(),
         *get_outbound_providers(),
@@ -77,6 +79,7 @@ def create_service() -> FastAPI:
             KeycloakSettings: keycloak_settings,
             S3Settings: s3_settings,
             AppSettings: app_settings,
+            RedisSettings: redis_settings,
         },
     )
 

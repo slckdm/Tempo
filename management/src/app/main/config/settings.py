@@ -53,3 +53,10 @@ class AppSettings(BaseModel):
     PORT: int
     DEBUG: bool = False
     ALLOWED_ORIGINS: list[str]
+
+
+class RedisSettings(BaseModel):
+    HOST: str
+    PORT: int
+    DB: str
+    PASSWORD: str

@@ -20,7 +20,9 @@ from app.outbound.adapters.system_utc_timer import SystemUTCTimer
 from app.outbound.keycloak_auth_user_finder import KeycloakAuthorizedUserFinder
 from app.outbound.keycloak_identity_provider import KeycloakIdentityProvider
 from app.outbound.ports.auth_user_finder import AuthorizedUserFinder
+from app.outbound.ports.cacher import Cacher
 from app.outbound.ports.identity_provider import IdentityProvider
+from app.outbound.redis_cacher import RedisCacher
 
 
 class CoreProvider(Provider):
@@ -29,6 +31,7 @@ class CoreProvider(Provider):
     # common ports
     identity_provider = provide(KeycloakIdentityProvider, provides=IdentityProvider)
     authorized_user_finder = provide(KeycloakAuthorizedUserFinder, provides=AuthorizedUserFinder)
+    cacher = provide(RedisCacher, provides=Cacher)
 
     # Services
     current_user_service = provide(CurrentUserService)
