@@ -2,7 +2,6 @@
 name = "streaming"
 version = "0.1.0"
 description = ""
-package-mode = false
 authors = [
     {name = "Dmitry",email = "zubashenkod@gmail.com"}
 ]
@@ -16,6 +15,8 @@ dependencies = [
     "pydantic-settings (>=2.14.1,<3.0.0)"
 ]
 
+[tool.poetry]
+package-mode = false
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
