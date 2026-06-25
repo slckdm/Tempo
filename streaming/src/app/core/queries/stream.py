@@ -4,7 +4,7 @@ from typing import Any, Generator, Iterator
 
 from toolkit.types.urn import UploadURNType
 
-from app.core.commands.ports.object_storage import ObjectStorage
+from app.core.queries.ports.object_storage import ObjectStorage
 from app.outbound.ports.identity_provider import IdentityProvider
 
 _DEFAULT_CHUNK_SIZE = 256 * 1024
@@ -19,14 +19,14 @@ def _iter_chunks(bytes: IOBase, chunk_size=_DEFAULT_CHUNK_SIZE) -> Generator[Any
 
 
 @dataclass(frozen=True)
-class Stream:
+class StreamData:
     content_type: str
     content_range: int | None
     content_length: int
     chunks: Iterator[bytes]
 
 
-class StreamCover:
+class Stream:
 
     def __init__(
         self,
@@ -36,12 +36,16 @@ class StreamCover:
         self._object_storage = object_storage
         self._identity = identity
 
-    async def __call__(self, id: UploadURNType, range_header: str | None) -> Stream:
+    async def __call__(
+        self, id: UploadURNType, range_header: str | None, cover: bool = False
+    ) -> StreamData:
         await self._identity.get_current_user_id()
 
-        object = await self._object_storage.get_object("covers/" + str(id))
+        params = {"Range": range_header} if range_header else {}
+        key = ("cover/" if cover else "") + str(id)
+        object = await self._object_storage.get_object(key, **params)
 
-        return Stream(
+        return StreamData(
             content_type=object.content_type,
             content_range=object.content_range,
             content_length=object.content_length,

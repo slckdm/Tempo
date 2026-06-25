@@ -5,8 +5,9 @@ from toolkit.entities.object import Object
 
 
 class ObjectStorage(Protocol):
+
     @abstractmethod
-    async def get_object(self, key: str) -> Object: ...
+    async def get_object(self, key: str, **kwargs) -> Object: ...
 
     @abstractmethod
     async def put_object(self, key: str, body: bytes, **kwargs) -> None: ...
