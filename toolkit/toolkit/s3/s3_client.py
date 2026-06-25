@@ -7,10 +7,6 @@ from botocore.exceptions import ClientError
 from toolkit.entities.object import Object
 
 
-class NoSuchKeyException(Exception):
-    """Exception indicating that no object found."""
-
-
 class S3Client:
     """S3 API client."""
 
@@ -31,17 +27,10 @@ class S3Client:
 
     async def get_object(self, bucket: str, key: str, **kwargs) -> Object:
         """Get existing object."""
-        try:
-            response_data = await asyncio.to_thread(
-                self._client.get_object, Bucket=bucket, Key=key, **kwargs
-            )
-            return Object.model_validate(response_data)
-
-        except Exception as exc:
-            if "NoSuchKey" in str(exc):
-                raise NoSuchKeyException from exc
-            else:
-                raise exc
+        response_data = await asyncio.to_thread(
+            self._client.get_object, Bucket=bucket, Key=key, **kwargs
+        )
+        return Object.model_validate(response_data)
 
     def generate_presigned_url(
         self,
