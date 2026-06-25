@@ -6,7 +6,7 @@ from toolkit.messaging.routing import METADATA_READY_RK
 from toolkit.s3.s3_client import S3Client
 
 from app.core.commands.ports.flusher import Flusher
-from app.core.commands.ports.metadata_reader import MetadataReader
+from app.core.commands.ports.metadata_parser import MetadataParser
 from app.core.commands.ports.metadata_storage import MetadataStorage
 from app.core.commands.ports.object_storage import ObjectStorage
 from app.core.commands.ports.outbox_storage import OutboxStorage
@@ -29,7 +29,7 @@ class ProcessTrackMetadata:
         self,
         metadata_service: MetadataService,
         metadata_storage: MetadataStorage,
-        metadata_reader: MetadataReader,
+        metadata_reader: MetadataParser,
         object_storage: ObjectStorage,
         outbox_storage: OutboxStorage,
         outbox_service: OutboxService,
