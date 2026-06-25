@@ -14,7 +14,6 @@ from app.main.config.loader import load_app_settings, load_keycloak_settings, lo
 from app.main.config.settings import AppSettings, KeycloakSettings, S3Settings
 from app.main.ioc.core import CoreProvider
 from app.main.ioc.outbound import get_outbound_providers
-from app.outbound.adapters.keycloak_client_provider import KeycloakClientProvider
 
 
 def create_service() -> FastAPI:
@@ -47,7 +46,6 @@ def create_service() -> FastAPI:
     )
 
     container = make_async_container(
-        KeycloakClientProvider(),
         CoreProvider(),
         FastapiProvider(),
         *get_outbound_providers(),
