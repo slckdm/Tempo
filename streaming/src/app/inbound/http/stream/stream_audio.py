@@ -7,12 +7,12 @@ from dishka.integrations.fastapi import FromDishka, inject
 
 from toolkit.types.urn import UploadURNType
 
-from app.core.commands.stream_audio import StreamAudio
+from app.core.queries.stream import Stream
 
 
 @inject
 async def stream_audio(
-    request: Request, id: UploadURNType, interactor: FromDishka[StreamAudio]
+    request: Request, id: UploadURNType, interactor: FromDishka[Stream]
 ) -> StreamingResponse:
     """Create file upload."""
     stream_data = await interactor(id, request.headers.get("range"))
