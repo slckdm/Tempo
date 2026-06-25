@@ -6,8 +6,6 @@ from fastapi import APIRouter
 
 from toolkit.service import response
 
-from app.core.schemas.response import CompleteUploadResponseBody, CreateUploadResponseBody
-
 from .complete_upload import complete_upload
 from .create_upload import create_upload
 
@@ -38,7 +36,6 @@ def make_uploads_router() -> APIRouter:
         "",
         create_upload,
         methods=["POST"],
-        response_model=response.JSendSuccessfulResponse[CreateUploadResponseBody],
         responses={
             **common_responses,
             HTTPStatus.UNSUPPORTED_MEDIA_TYPE: {
@@ -51,7 +48,6 @@ def make_uploads_router() -> APIRouter:
         "/{upload_id}/complete",
         complete_upload,
         methods=["POST"],
-        response_model=response.JSendSuccessfulResponse[CompleteUploadResponseBody],
         responses={**common_responses},
     )
 
