@@ -2,14 +2,15 @@ from datetime import datetime
 from typing import Sequence
 
 from sqlalchemy import select, update
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.models import OutboxMessage
+from app.outbound.exceptions import OutboxStorageError
 
 
 class SQLAOutboxStorage(OutboxStorage):
-
     def __init__(self, session: AsyncSession) -> None:
         self.__session = session
 
@@ -24,12 +25,17 @@ class SQLAOutboxStorage(OutboxStorage):
             .order_by(OutboxMessage.id)
             .with_for_update(skip_locked=True)
         )
-
-        return (await self.__session.scalars(query)).all()
+        try:
+            return (await self.__session.scalars(query)).all()
+        except SQLAlchemyError as sqlalchemy_err:
+            raise OutboxStorageError from sqlalchemy_err
 
     async def mark_as_published(self, ids: Sequence[int], published_at: datetime) -> None:
-        await self.__session.execute(
-            update(OutboxMessage)
-            .where(OutboxMessage.id.in_(ids))
-            .values(published_at=published_at)
-        )
+        try:
+            await self.__session.execute(
+                update(OutboxMessage)
+                .where(OutboxMessage.id.in_(ids))
+                .values(published_at=published_at)
+            )
+        except SQLAlchemyError as sqlalchemy_err:
+            raise OutboxStorageError from sqlalchemy_err
