@@ -8,11 +8,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
-from toolkit.s3.s3_client import NoSuchKeyException
 from toolkit.service.exceptions import ForbiddenException, NotFoundException, UnauthorizedException
 
-from app.core.common import handlers
-from app.inbound.http.router import make_tracks_metadata_router
+from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
+from app.inbound.http.metadata.router import make_tracks_metadata_router
 from app.main.config.loader import (
     load_app_settings,
     load_keycloak_settings,
@@ -27,9 +26,8 @@ from app.main.config.settings import (
     S3Settings,
     SQLAlchemySettings,
 )
-from app.main.ioc.provider_registry import get_providers
-from app.outbound.keycloak_client_provider import KeycloakClientProvider
-from app.outbound.providers import get_outbound_providers
+from app.main.ioc.core import CoreProvider
+from app.main.ioc.outbound import get_outbound_providers
 
 
 def create_service() -> FastAPI:
@@ -46,16 +44,17 @@ def create_service() -> FastAPI:
         debug=app_settings.DEBUG,
         title=app_settings.NAME,
         exception_handlers={
-            HTTPStatus.UNAUTHORIZED: handlers.unauthorized_error_handler,
-            HTTPStatus.FORBIDDEN: handlers.forbidden_error_handler,
-            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: handlers.unsupported_media_error_handler,
-            HTTPStatus.UNPROCESSABLE_CONTENT: handlers.validation_error_handler,
-            HTTPStatus.NOT_FOUND: handlers.not_found_error_handler,
-            HTTPStatus.INTERNAL_SERVER_ERROR: handlers.internal_server_error_handler,
-            UnauthorizedException: handlers.unauthorized_error_handler,
-            ForbiddenException: handlers.forbidden_error_handler,
-            NoSuchKeyException: handlers.no_such_key_error_handler,
-            NotFoundException: handlers.not_found_error_handler,
+            HTTPStatus.UNAUTHORIZED: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
+            HTTPStatus.FORBIDDEN: JsendErrorHandler(HTTPStatus.FORBIDDEN),
+            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: JsendErrorHandler(
+                HTTPStatus.UNSUPPORTED_MEDIA_TYPE
+            ),
+            HTTPStatus.UNPROCESSABLE_CONTENT: JsendErrorHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
+            HTTPStatus.NOT_FOUND: JsendErrorHandler(HTTPStatus.NOT_FOUND),
+            HTTPStatus.INTERNAL_SERVER_ERROR: JsendFailHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
+            UnauthorizedException: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
+            ForbiddenException: JsendErrorHandler(HTTPStatus.FORBIDDEN),
+            NotFoundException: JsendErrorHandler(HTTPStatus.NOT_FOUND),
         },
         routes=[*make_tracks_metadata_router().routes],
     )
@@ -69,9 +68,8 @@ def create_service() -> FastAPI:
     )
 
     container = make_async_container(
-        KeycloakClientProvider(),
         FastapiProvider(),
-        *get_providers(),
+        CoreProvider(),
         *get_outbound_providers(),
         context={
             PostgresSettings: postgres_settings,
