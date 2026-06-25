@@ -11,8 +11,8 @@ from toolkit.types_ import UserID
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.upload_service import UploadService
 from app.core.models.upload import Upload
-from app.outbound.ports.auth_user_finder import AuthorizedUserFinder
-from app.outbound.ports.identity_provider import IdentityProvider
+from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
+from app.core.common.ports.identity_provider import IdentityProvider
 
 
 def create_current_user_service(

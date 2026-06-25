@@ -15,7 +15,7 @@ from app.inbound.amqp.router import router
 from app.main.config.loader import load_postgres_settings, load_rabbitmq_settings, load_s3_settings
 from app.main.config.settings import PostgresSettings, S3Settings
 from app.main.ioc.consumer import ConsumerProvider
-from app.outbound.providers import get_outbound_providers
+from app.main.ioc.outbound import get_outbound_providers
 
 
 async def create_app() -> None:

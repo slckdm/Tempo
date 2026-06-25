@@ -1,6 +1,6 @@
-from toolkit.service.exceptions import TempoException
+from toolkit.service.exceptions import TempoBaseException
 
 
-class StatusUpdateFlowError(TempoException):
+class StatusUpdateFlowError(TempoBaseException):
     status_code = 400
     detail = "Cannot update update status."

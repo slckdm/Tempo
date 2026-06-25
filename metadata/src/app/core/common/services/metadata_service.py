@@ -3,8 +3,8 @@ from datetime import UTC
 from toolkit.messaging.contracts import UploadCompletedEvent
 from toolkit.types.enum import UploadStatus
 
-from app.core.commands.ports.utc_timer import UTCTimer
 from app.core.common.entities.metadata import Metadata
+from app.core.common.ports.utc_timer import UTCTimer
 from app.core.models import TrackMetadata
 
 

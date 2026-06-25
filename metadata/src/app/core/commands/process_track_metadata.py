@@ -11,14 +11,13 @@ from app.core.commands.ports.metadata_storage import MetadataStorage
 from app.core.commands.ports.object_storage import ObjectStorage
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
-from app.core.commands.ports.utc_timer import UTCTimer
 from app.core.common.enums import AggregateType
 from app.core.common.exceptions import MetadataAlreadyProcessed
+from app.core.common.ports.utc_timer import UTCTimer
 from app.core.common.services.metadata_service import MetadataService
 from app.core.common.services.outbox_service import OutboxService
 from app.core.models.outbox_message import OutboxMessage
 from app.core.models.track_metadata import TrackMetadata
-from app.main.config.settings import S3Settings
 
 DEFAULT_COVER_MIMETYPE = "image/png"
 COVER_KEY_FMT = "covers/{}"
@@ -36,7 +35,6 @@ class ProcessTrackMetadata:
         transaction: Transaction,
         flusher: Flusher,
         s3: S3Client,
-        s3_config: S3Settings,
         utc_timer: UTCTimer,
     ) -> None:
         self._metadata_service = metadata_service
@@ -46,7 +44,6 @@ class ProcessTrackMetadata:
         self._flusher = flusher
         self._utc_timer = utc_timer
         self._s3 = s3
-        self._s3_config = s3_config
         self._object_storage = object_storage
         self._outbox_storage = outbox_storage
         self._outbox_service = outbox_service
@@ -82,7 +79,5 @@ class ProcessTrackMetadata:
             aggregate_type=AggregateType.METADATA,
             aggregate_id=str(metadata.upload_id),
             event_type=METADATA_READY_RK,
-            payload=MetadataReadyEvent(
-                upload_id=payload.upload_id, cover_key=metadata.cover_key
-            ),
+            payload=MetadataReadyEvent(upload_id=payload.upload_id, cover_key=metadata.cover_key),
         )

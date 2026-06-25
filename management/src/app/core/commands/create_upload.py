@@ -1,8 +1,9 @@
-from dataclasses import dataclass
+from pydantic import BaseModel, Field
 
 from toolkit.messaging.contracts import UploadCreatedEvent
 from toolkit.messaging.routing import UPLOAD_CREATED_RK
 from toolkit.s3 import S3Client
+from toolkit.types.urn import UploadURNType
 
 from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.outbox_storage import OutboxStorage
@@ -10,15 +11,25 @@ from app.core.commands.ports.transaction import Transaction
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.enums import AggregateType
 from app.core.common.services import CurrentUserService, OutboxService, UploadService
-from app.core.models.upload import Upload
-from app.core.schemas.request import CreateUploadRequestBody
 from app.main.config.settings import S3Settings
 
 
-@dataclass(frozen=True)
-class UploadCreationData:
-    upload: Upload
-    presigned_url: str
+class CreateUploadResponse(BaseModel):
+    """Create upload response body DTO."""
+
+    upload: UploadURNType = Field(description="Upload identifier")
+    presigned_url: str = Field(
+        description="Presigned URL for uploading",
+        json_schema_extra={"example": "http://some.url/here/bla-bla-bla"},
+    )
+
+
+class CreateUploadRequestBody(BaseModel):
+    """Create upload request body schema."""
+
+    filename: str
+    content_type: str = Field(alias="contentType")
+    size: int
 
 
 class CreateUpload:
@@ -47,7 +58,7 @@ class CreateUpload:
     async def __call__(
         self,
         body: CreateUploadRequestBody,
-    ) -> UploadCreationData:
+    ) -> CreateUploadResponse:
         user = await self._current_user_service.get_current_user()
         upload = await self._upload_service.create_upload(body.filename, body.size, user)
         await self._upload_storage.add(upload)
@@ -67,11 +78,11 @@ class CreateUpload:
                 size=upload.size,
                 created_by=upload.created_by,
                 created_at=upload.created_at,
-                status=upload.status
+                status=upload.status,
             ),
         )
         await self._outbox_storage.add(message)
 
         await self._transaction.commit()
 
-        return UploadCreationData(upload=upload, presigned_url=presigned_url)
+        return CreateUploadResponse(upload=upload.urn, presigned_url=presigned_url)

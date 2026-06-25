@@ -2,7 +2,7 @@ from toolkit.clients import KeycloakClient
 from toolkit.entities import ServiceAccount, User
 from toolkit.types_ import UserID
 
-from app.outbound.ports.auth_user_finder import AuthorizedUserFinder
+from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
 
 
 class KeycloakAuthorizedUserFinder(AuthorizedUserFinder):

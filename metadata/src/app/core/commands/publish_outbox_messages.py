@@ -2,7 +2,7 @@ from app.core.commands.ports.outbox_message_publisher import OutboxMessagePublis
 from app.core.commands.ports.outbox_reader import OutboxReader
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
-from app.core.commands.ports.utc_timer import UTCTimer
+from app.core.common.ports.utc_timer import UTCTimer
 
 
 class PublishOutboxMessages:

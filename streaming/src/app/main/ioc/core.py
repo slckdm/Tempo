@@ -1,12 +1,12 @@
 from dishka import Provider, Scope, provide
 
+from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
+from app.core.common.ports.identity_provider import IdentityProvider
 from app.core.queries.ports.object_storage import ObjectStorage
 from app.core.queries.stream import Stream
+from app.outbound.adapters.keycloak_auth_user_finder import KeycloakAuthorizedUserFinder
+from app.outbound.adapters.keycloak_identity_provider import KeycloakIdentityProvider
 from app.outbound.adapters.s3_object_storage import S3ObjectStorage
-from app.outbound.keycloak_auth_user_finder import KeycloakAuthorizedUserFinder
-from app.outbound.keycloak_identity_provider import KeycloakIdentityProvider
-from app.outbound.ports.auth_user_finder import AuthorizedUserFinder
-from app.outbound.ports.identity_provider import IdentityProvider
 
 
 class CoreProvider(Provider):

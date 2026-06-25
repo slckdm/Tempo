@@ -4,8 +4,8 @@ from typing import Any, Generator, Iterator
 
 from toolkit.types.urn import UploadURNType
 
+from app.core.common.ports.identity_provider import IdentityProvider
 from app.core.queries.ports.object_storage import ObjectStorage
-from app.outbound.ports.identity_provider import IdentityProvider
 
 _DEFAULT_CHUNK_SIZE = 256 * 1024
 

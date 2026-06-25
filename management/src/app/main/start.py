@@ -8,7 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
-from toolkit.s3.s3_client import NoSuchKeyException
 from toolkit.service.exceptions import ForbiddenException, UnauthorizedException
 
 from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
@@ -29,14 +28,12 @@ from app.main.config.settings import (
     S3Settings,
     SQLAlchemySettings,
 )
-from app.main.ioc.provider_registry import get_providers
-from app.outbound.providers import get_outbound_providers
+from app.main.ioc.outbound import get_outbound_providers
 
 
 def create_service() -> FastAPI:
     """Create a service."""
     # initialize service
-
     app_settings = load_app_settings()
     postgres_settings = load_postgres_settings()
     keycloak_settings = load_keycloak_settings()
@@ -58,7 +55,6 @@ def create_service() -> FastAPI:
             HTTPStatus.INTERNAL_SERVER_ERROR: JsendFailHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
             UnauthorizedException: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
             ForbiddenException: JsendErrorHandler(HTTPStatus.FORBIDDEN),
-            NoSuchKeyException: JsendErrorHandler(HTTPStatus.NOT_FOUND),
         },
         routes=[*make_uploads_router().routes],
     )
@@ -72,7 +68,6 @@ def create_service() -> FastAPI:
 
     container = make_async_container(
         FastapiProvider(),
-        *get_providers(),
         *get_outbound_providers(),
         context={
             PostgresSettings: postgres_settings,

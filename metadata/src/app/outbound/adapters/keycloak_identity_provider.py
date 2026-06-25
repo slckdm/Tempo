@@ -8,7 +8,7 @@ from toolkit.security.utils import decode_token, normalize_public_key
 from toolkit.service.exceptions import ForbiddenException, UnauthorizedException
 from toolkit.types_ import UserID
 
-from app.core.commands.ports.identity_provider import IdentityProvider
+from app.core.common.ports.identity_provider import IdentityProvider
 from app.core.common.security.oauth2_scheme import oauth2_scheme
 
 

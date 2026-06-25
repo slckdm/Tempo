@@ -1,8 +1,8 @@
 
 import pytest
 
-from app.outbound.ports.auth_user_finder import AuthorizedUserFinder
-from app.outbound.ports.identity_provider import IdentityProvider
+from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
+from app.core.common.ports.identity_provider import IdentityProvider
 from tests.unit.services.factories import create_current_user_service
 
 

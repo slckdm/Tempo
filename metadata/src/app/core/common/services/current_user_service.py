@@ -2,8 +2,8 @@
 from toolkit.entities import ServiceAccount, User
 from toolkit.service.exceptions import UnauthorizedException
 
-from app.outbound.adapters.keycloak_auth_user_finder import AuthorizedUserFinder
-from app.outbound.adapters.keycloak_identity_provider import IdentityProvider
+from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
+from app.core.common.ports.identity_provider import IdentityProvider
 
 
 class CurrentUserService:

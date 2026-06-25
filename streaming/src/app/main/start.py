@@ -13,9 +13,8 @@ from app.inbound.http.stream.router import make_stream_router
 from app.main.config.loader import load_app_settings, load_keycloak_settings, load_s3_settings
 from app.main.config.settings import AppSettings, KeycloakSettings, S3Settings
 from app.main.ioc.core import CoreProvider
-from app.main.ioc.provider_registry import get_providers
-from app.outbound.keycloak_client_provider import KeycloakClientProvider
-from app.outbound.providers import get_outbound_providers
+from app.main.ioc.outbound import get_outbound_providers
+from app.outbound.adapters.keycloak_client_provider import KeycloakClientProvider
 
 
 def create_service() -> FastAPI:
@@ -51,7 +50,6 @@ def create_service() -> FastAPI:
         KeycloakClientProvider(),
         CoreProvider(),
         FastapiProvider(),
-        *get_providers(),
         *get_outbound_providers(),
         context={
             AppSettings: app_settings,

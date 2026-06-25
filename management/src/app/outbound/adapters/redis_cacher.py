@@ -2,7 +2,7 @@ from typing import Any
 
 from redis.asyncio.client import Redis
 
-from app.outbound.ports.cacher import Cacher
+from app.core.common.ports.cacher import Cacher
 
 DEFAULT_EXPIRATION = 3600
 
