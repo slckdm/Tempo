@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Protocol, Sequence
+from typing import Protocol
 from uuid import UUID
 
 from app.core.models import TrackMetadata
@@ -11,19 +11,5 @@ class MetadataStorage(Protocol):
     async def add(self, metadata: TrackMetadata) -> None:
         ...
 
-    @abstractmethod
-    async def get_by_id(self, id: UUID) -> TrackMetadata | None:
-        ...
-
-    @abstractmethod
-    async def list_by_filter(
-        self,
-        /,
-        offset: int,
-        limit: int,
-        title: str | None = None,
-        artist: str | None = None,
-        album: str | None = None,
-        genre: str | None = None,
-    ) -> tuple[int, Sequence[TrackMetadata]]:
+    async def get_by_id(self, id: UUID, for_update: bool = False) -> TrackMetadata | None:
         ...
