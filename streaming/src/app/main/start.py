@@ -6,10 +6,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
-from toolkit.s3.s3_client import NoSuchKeyException
 from toolkit.service.exceptions import ForbiddenException, NotFoundException, UnauthorizedException
 
-from app.core.common import handlers
+from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
 from app.inbound.http.stream.router import make_stream_router
 from app.main.config.loader import load_app_settings, load_keycloak_settings, load_s3_settings
 from app.main.config.settings import AppSettings, KeycloakSettings, S3Settings
@@ -28,16 +27,15 @@ def create_service() -> FastAPI:
         title=app_settings.NAME,
         routes=[*make_stream_router().routes],
         exception_handlers={
-            HTTPStatus.UNAUTHORIZED: handlers.unauthorized_error_handler,
-            HTTPStatus.FORBIDDEN: handlers.forbidden_error_handler,
-            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: handlers.unsupported_media_error_handler,
-            HTTPStatus.UNPROCESSABLE_CONTENT: handlers.validation_error_handler,
-            HTTPStatus.NOT_FOUND: handlers.not_found_error_handler,
-            HTTPStatus.INTERNAL_SERVER_ERROR: handlers.internal_server_error_handler,
-            UnauthorizedException: handlers.unauthorized_error_handler,
-            ForbiddenException: handlers.forbidden_error_handler,
-            NoSuchKeyException: handlers.no_such_key_error_handler,
-            NotFoundException: handlers.not_found_error_handler,
+            HTTPStatus.UNAUTHORIZED: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
+            HTTPStatus.FORBIDDEN: JsendFailHandler(HTTPStatus.FORBIDDEN),
+            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: JsendFailHandler(HTTPStatus.UNSUPPORTED_MEDIA_TYPE),
+            HTTPStatus.UNPROCESSABLE_CONTENT: JsendFailHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
+            HTTPStatus.NOT_FOUND: JsendFailHandler(HTTPStatus.NOT_FOUND),
+            HTTPStatus.INTERNAL_SERVER_ERROR: JsendErrorHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
+            UnauthorizedException: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
+            ForbiddenException: JsendFailHandler(HTTPStatus.FORBIDDEN),
+            NotFoundException: JsendFailHandler(HTTPStatus.NOT_FOUND),
         },
     )
 
