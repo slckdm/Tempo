@@ -3,12 +3,12 @@ from io import BytesIO
 
 from tinytag import TinyTag, TinyTagException
 
-from app.core.commands.ports.metadata_reader import MetadataReader
+from app.core.commands.ports.metadata_parser import MetadataParser
 from app.core.common.entities.metadata import Cover, Metadata
-from app.core.common.exceptions import TagParseError
+from app.outbound.exceptions import MetadataParserError
 
 
-class TinyTagMetadataReader(MetadataReader):
+class TinyTagMetadataParser(MetadataParser):
     async def read(self, bytes: BytesIO) -> Metadata:
         try:
             data = await asyncio.to_thread(
@@ -36,4 +36,4 @@ class TinyTagMetadataReader(MetadataReader):
             )
             return metadata
         except TinyTagException as tt_exc:
-            raise TagParseError from tt_exc
+            raise MetadataParserError from tt_exc
