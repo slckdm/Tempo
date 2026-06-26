@@ -1,7 +1,6 @@
 from pydantic import BaseModel, Field
 from toolkit.messaging.contracts import UploadCreatedEvent
 from toolkit.messaging.routing import UPLOAD_CREATED_RK
-from toolkit.s3 import S3Client
 from toolkit.types.urn import UploadURNType
 
 from app.core.commands.ports.flusher import Flusher
@@ -11,7 +10,6 @@ from app.core.commands.ports.transaction import Transaction
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.enums import AggregateType
 from app.core.common.services import CurrentUserService, OutboxService, UploadService
-from app.main.config.settings import S3Settings
 
 
 class CreateUploadResponse(BaseModel):

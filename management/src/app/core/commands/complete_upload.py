@@ -10,7 +10,6 @@ from app.core.commands.ports.transaction import Transaction
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.enums.aggregate_type import AggregateType
 from app.core.common.services import CurrentUserService, OutboxService, UploadService
-from app.main.config.settings import S3Settings
 
 
 class CompleteUpload:
