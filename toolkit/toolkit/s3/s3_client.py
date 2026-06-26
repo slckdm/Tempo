@@ -32,7 +32,7 @@ class S3Client:
         )
         return Object.model_validate(response_data)
 
-    def generate_presigned_url(
+    async def generate_presigned_url(
         self,
         bucket: str,
         key: str,
@@ -43,10 +43,12 @@ class S3Client:
         params = {"Bucket": bucket, "Key": key}
         if content_type is not None:
             params["ContentType"] = content_type
-        return self._client.generate_presigned_url(
-            "put_object",
-            Params=params,
-            ExpiresIn=expiration,
+        return await asyncio.to_thread(
+            self._client.generate_presigned_url(
+                "put_object",
+                Params=params,
+                ExpiresIn=expiration,
+            )
         )
 
     async def put_object(
