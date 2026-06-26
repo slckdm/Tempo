@@ -313,6 +313,21 @@ rabbit = ["aio-pika (>=9,<10)"]
 redis = ["redis (>=5.0.0,<8.0.0)"]
 
 [[package]]
+name = "freezegun"
+version = "1.5.5"
+description = "Let your Python tests travel through time"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "freezegun-1.5.5-py3-none-any.whl", hash = "sha256:cd557f4a75cf074e84bc374249b9dd491eaeacd61376b9eb3c423282211619d2"},
+    {file = "freezegun-1.5.5.tar.gz", hash = "sha256:ac7742a6cc6c25a2c35e9292dfd554b897b517d2dec26891a2e8debf205cb94a"},
+]
+
+[package.dependencies]
+python-dateutil = ">=2.7"
+
+[[package]]
 name = "greenlet"
 version = "3.5.1"
 description = "Lightweight in-process concurrent programming"
@@ -1130,6 +1145,21 @@ docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1)", "sphinx-tabs (>=3.5)"]
 testing = ["coverage (>=6.2)", "hypothesis (>=5.7.1)"]
 
 [[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+description = "Extensions to the standard Python datetime module"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+groups = ["main"]
+files = [
+    {file = "python-dateutil-2.9.0.post0.tar.gz", hash = "sha256:37dd54208da7e1cd875388217d5e00ebd4179249f90fb72437e91a35459a0ad3"},
+    {file = "python_dateutil-2.9.0.post0-py2.py3-none-any.whl", hash = "sha256:a8b2bc7bffae282281c8140a97d3aa9c14da0b136dfe83f850eea9a5f7470427"},
+]
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
 name = "python-dotenv"
 version = "1.2.2"
 description = "Read key-value pairs from a .env file and set them as environment variables"
@@ -1163,6 +1193,18 @@ jwt = ["pyjwt (>=2.13.0)"]
 ocsp = ["cryptography (>=36.0.1)", "pyopenssl (>=20.0.1)", "requests (>=2.31.0)"]
 otel = ["opentelemetry-api (>=1.39.1)", "opentelemetry-exporter-otlp-proto-http (>=1.39.1)", "opentelemetry-sdk (>=1.39.1)"]
 xxhash = ["xxhash (>=3.6.0,<3.7.0)"]
+
+[[package]]
+name = "six"
+version = "1.17.0"
+description = "Python 2 and 3 compatibility utilities"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+groups = ["main"]
+files = [
+    {file = "six-1.17.0-py2.py3-none-any.whl", hash = "sha256:4721f391ed90541fddacab5acf947aa0d3dc7d27b2e1e8eda2be8970586c3274"},
+    {file = "six-1.17.0.tar.gz", hash = "sha256:ff70335d468e7eb6ec65b95b99d3a2836546063f63acc5171de367e834932a81"},
+]
 
 [[package]]
 name = "sqlalchemy"
@@ -1460,4 +1502,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<4"
-content-hash = "84dfb542da2659cbb4dd011b029aec7ad198166a518c6ecac89ee938fc9b06d2"
+content-hash = "1a210a243818d8a6f90199d734599a2ac668180c2356ecd151273c03712e3c69"
