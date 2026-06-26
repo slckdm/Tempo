@@ -28,9 +28,6 @@ multiline-quotes = "double"
 docstring-quotes = "double"
 
 
-[lint.isort.sections]
-frameworks = ["fastapi"]
-libs = ["toolkit"]
 [lint.isort]
 section-order = [
     "standard-library",
