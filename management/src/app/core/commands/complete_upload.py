@@ -4,6 +4,7 @@ from toolkit.service.exceptions import NotFoundException
 from toolkit.types.enum import UploadStatus
 from toolkit.types.urn import UploadURNType
 
+from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.object_storage import ObjectStorage
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
@@ -22,14 +23,16 @@ class CompleteUpload:
         outbox_storage: OutboxStorage,
         object_storage: ObjectStorage,
         transaction: Transaction,
+        flusher: Flusher,
     ) -> None:
         self._current_user_service = current_user_service
         self._upload_service = upload_service
         self._upload_storage = upload_storage
         self._outbox_service = outbox_service
         self._outbox_storage = outbox_storage
-        self._transaction = transaction
         self._object_storage = object_storage
+        self._transaction = transaction
+        self._flusher = flusher
 
     async def __call__(
         self, upload_id: UploadURNType
@@ -58,4 +61,6 @@ class CompleteUpload:
             ),
         )
         await self._outbox_storage.add(message)
+
+        await self._flusher.flush()
         await self._transaction.commit()
