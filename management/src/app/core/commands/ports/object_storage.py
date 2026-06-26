@@ -11,3 +11,6 @@ class ObjectStorage(Protocol):
 
     @abstractmethod
     async def put_object(self, key: str, body: bytes, **kwargs) -> None: ...
+
+    @abstractmethod
+    async def make_object_upload_url(self, key: str, content_type: str) -> str: ...

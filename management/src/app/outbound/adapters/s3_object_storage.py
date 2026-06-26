@@ -18,3 +18,8 @@ class S3ObjectStorage(ObjectStorage):
         await self._s3.put_object(
             bucket=self._s3_settings.BUCKET, key=key, body=body, **kwargs
         )
+
+    async def make_object_upload_url(self, key: str, content_type: str) -> str:
+        return await self._s3.generate_presigned_url(
+            bucket=self._s3_settings.BUCKET, key=key, content_type=content_type
+        )
