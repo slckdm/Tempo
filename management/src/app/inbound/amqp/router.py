@@ -3,7 +3,6 @@ import logging
 from dishka import FromDishka
 from dishka_faststream import inject
 from faststream.rabbit import RabbitMessage, RabbitRouter
-
 from toolkit.messaging.broker import (
     MANAGEMENT_DLE,
     MANAGEMENT_DLQ,

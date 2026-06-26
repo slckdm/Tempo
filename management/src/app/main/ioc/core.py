@@ -2,15 +2,15 @@ from dishka import Provider, Scope, provide
 
 from app.core.commands.complete_upload import CompleteUpload
 from app.core.commands.create_upload import CreateUpload
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
 from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.object_storage import ObjectStorage
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
 from app.core.commands.ports.upload_storage import UploadStorage
-from app.core.common.ports.utc_timer import UTCTimer
+from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
 from app.core.common.ports.cacher import Cacher
 from app.core.common.ports.identity_provider import IdentityProvider
+from app.core.common.ports.utc_timer import UTCTimer
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.outbox_service import OutboxService
 from app.core.common.services.upload_service import UploadService

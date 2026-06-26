@@ -2,7 +2,6 @@ import asyncio
 
 from dishka import make_async_container
 from faststream.rabbit import RabbitBroker
-
 from toolkit.messaging.broker import (
     MANAGEMENT_DLE,
     MANAGEMENT_DLQ,

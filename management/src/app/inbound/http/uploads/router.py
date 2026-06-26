@@ -3,7 +3,6 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter
-
 from toolkit.service import response
 
 from .complete_upload import complete_upload

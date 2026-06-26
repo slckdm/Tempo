@@ -1,10 +1,10 @@
 from dishka import Provider, Scope, provide
 
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
 from app.core.commands.ports.flusher import Flusher
-from app.core.common.ports.identity_provider import IdentityProvider
 from app.core.commands.ports.metadata_storage import MetadataStorage
 from app.core.commands.ports.transaction import Transaction
+from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
+from app.core.common.ports.identity_provider import IdentityProvider
 from app.core.common.ports.utc_timer import UTCTimer
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.metadata_service import MetadataService

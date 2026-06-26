@@ -4,8 +4,8 @@ from dishka import Provider, Scope, provide
 from app.core.commands.ports.outbox_message_publisher import OutboxMessagePublisher
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
-from app.core.common.ports.utc_timer import UTCTimer
 from app.core.commands.publish_outbox_messages import PublishOutboxMessages
+from app.core.common.ports.utc_timer import UTCTimer
 from app.outbound.adapters.rabbitmq_outbox_message_publisher import (
     FastStreamOutboxMessagePublisher,
 )

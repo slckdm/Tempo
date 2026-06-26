@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
-from toolkit.service.exceptions import ForbiddenException, NotFoundException, UnauthorizedException
+from toolkit.service.exceptions import Forbidden, NotFoundException, Unauthorized
 
 from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
 from app.inbound.http.metadata.router import make_tracks_metadata_router
@@ -52,8 +52,8 @@ def create_service() -> FastAPI:
             HTTPStatus.UNPROCESSABLE_CONTENT: JsendErrorHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
             HTTPStatus.NOT_FOUND: JsendErrorHandler(HTTPStatus.NOT_FOUND),
             HTTPStatus.INTERNAL_SERVER_ERROR: JsendFailHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
-            UnauthorizedException: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
-            ForbiddenException: JsendErrorHandler(HTTPStatus.FORBIDDEN),
+            Unauthorized: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
+            Forbidden: JsendErrorHandler(HTTPStatus.FORBIDDEN),
             NotFoundException: JsendErrorHandler(HTTPStatus.NOT_FOUND),
         },
         routes=[*make_tracks_metadata_router().routes],

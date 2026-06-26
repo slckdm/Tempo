@@ -1,6 +1,6 @@
 
 from toolkit.entities import ServiceAccount, User
-from toolkit.service.exceptions import UnauthorizedException
+from toolkit.service.exceptions import Unauthorized
 
 from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
 from app.core.common.ports.identity_provider import IdentityProvider
@@ -18,6 +18,6 @@ class CurrentUserService:
         user = await self._authorized_user_finder.get_by_id(current_user_id)
 
         if not user:
-            raise UnauthorizedException
+            raise Unauthorized
 
         return user

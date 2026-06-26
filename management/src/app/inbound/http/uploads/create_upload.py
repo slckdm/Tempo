@@ -1,7 +1,6 @@
 """Module: create upload endpoint."""
 
 from dishka.integrations.fastapi import FromDishka, inject
-
 from toolkit.service.response import JSendSuccessfulResponse
 
 from app.core.commands.create_upload import (

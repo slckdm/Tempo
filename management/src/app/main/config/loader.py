@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Final
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 from toolkit.messaging.settings import RabbitMQSettings
 
 from .settings import (

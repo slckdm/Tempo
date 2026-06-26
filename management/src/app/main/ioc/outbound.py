@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-
 from toolkit.clients import KeycloakClient, KeycloakConfig
 from toolkit.s3 import S3Client
 

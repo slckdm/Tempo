@@ -1,5 +1,4 @@
 from faststream.rabbit import RabbitBroker
-
 from toolkit.messaging.broker import MANAGEMENT_EXCHANGE
 
 from app.core.commands.ports.outbox_message_publisher import OutboxMessagePublisher

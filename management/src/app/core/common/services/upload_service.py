@@ -1,10 +1,8 @@
 from datetime import datetime, timezone
-from http import HTTPStatus
 from mimetypes import guess_type
 
-from fastapi import HTTPException
-
 from toolkit.entities import User
+from toolkit.service.exceptions import UnsupportedMediaType
 from toolkit.types.enum import UploadStatus
 
 from app.core.common.exceptions import StatusUpdateFlowError
@@ -19,7 +17,7 @@ class UploadService:
         mimetype, _ = guess_type(filename)
 
         if not mimetype or ("audio/" not in mimetype):
-            raise HTTPException(HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
+            raise UnsupportedMediaType
 
         upload = Upload(
             filename=filename,

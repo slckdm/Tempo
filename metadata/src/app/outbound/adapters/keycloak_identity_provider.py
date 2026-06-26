@@ -5,7 +5,7 @@ from jwt.exceptions import PyJWTError
 from toolkit.clients import KeycloakClient
 from toolkit.entities import ServiceAccount
 from toolkit.security.utils import decode_token, normalize_public_key
-from toolkit.service.exceptions import ForbiddenException, UnauthorizedException
+from toolkit.service.exceptions import Forbidden, Unauthorized
 from toolkit.types_ import UserID
 
 from app.core.common.ports.identity_provider import IdentityProvider
@@ -21,12 +21,12 @@ class KeycloakIdentityProvider(IdentityProvider):
         jwk = await self._client.get_jwk()
         token = await self._token
         if not token:
-            raise UnauthorizedException
+            raise Unauthorized
         try:
             user_data = decode_token(token, normalize_public_key(jwk))
         except PyJWTError as pyjwt_err:
-            raise UnauthorizedException from pyjwt_err
+            raise Unauthorized from pyjwt_err
         if isinstance(user_data, ServiceAccount):
-            raise ForbiddenException
+            raise Forbidden
 
         return UserID(user_data.id)

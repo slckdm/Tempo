@@ -5,7 +5,6 @@ from datetime import datetime
 
 from sqlalchemy import types
 from sqlalchemy.orm import Mapped, mapped_column
-
 from toolkit.types.enum import UploadStatus
 from toolkit.types.urn import UploadURNType
 from toolkit.types_ import UserID

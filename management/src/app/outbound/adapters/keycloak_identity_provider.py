@@ -1,11 +1,9 @@
 from fastapi import Request
-
 from jwt.exceptions import ExpiredSignatureError
-
 from toolkit.clients import KeycloakClient
 from toolkit.entities import ServiceAccount
 from toolkit.security.utils import decode_token, normalize_public_key
-from toolkit.service.exceptions import ForbiddenException, UnauthorizedException
+from toolkit.service.exceptions import Forbidden, Unauthorized
 from toolkit.types_ import UserID
 
 from app.core.common.ports.cacher import Cacher
@@ -28,13 +26,13 @@ class KeycloakIdentityProvider(IdentityProvider):
             await self._cacher.set("service_keycloak_jwk", jwk)
 
         if not token:
-            raise UnauthorizedException
+            raise Unauthorized
 
         try:
             user_data = decode_token(token, normalize_public_key(jwk))
         except ExpiredSignatureError as expired_token_exc:
-            raise UnauthorizedException from expired_token_exc
+            raise Unauthorized from expired_token_exc
         if isinstance(user_data, ServiceAccount):
-            raise ForbiddenException
+            raise Forbidden
 
         return UserID(user_data.id)

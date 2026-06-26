@@ -2,7 +2,6 @@ from http import HTTPStatus
 
 from fastapi import Request
 from fastapi.responses import JSONResponse
-
 from toolkit.service.response import EmptyData, JSendErrorResponse, JSendFailResponse
 
 

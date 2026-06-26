@@ -7,8 +7,8 @@ from app.core.commands.ports.metadata_storage import MetadataStorage
 from app.core.commands.ports.object_storage import ObjectStorage
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
-from app.core.common.ports.utc_timer import UTCTimer
 from app.core.commands.process_track_metadata import ProcessTrackMetadata
+from app.core.common.ports.utc_timer import UTCTimer
 from app.core.common.services.metadata_service import MetadataService
 from app.core.common.services.outbox_service import OutboxService
 from app.outbound.adapters.s3_object_storage import S3ObjectStorage

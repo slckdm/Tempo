@@ -3,7 +3,6 @@ import asyncio
 from dishka import make_async_container
 from dishka_faststream import FastStreamProvider, setup_dishka
 from faststream import FastStream
-
 from toolkit.messaging.broker import (
     MANAGEMENT_DLE,
     MANAGEMENT_DLQ,

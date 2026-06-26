@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
 
-class TempoBaseException(Exception):
+class TempoBaseError(Exception):
     message: str | None = None
     data: dict
 
@@ -11,20 +11,24 @@ class TempoBaseException(Exception):
         super().__init__(message) if message else super().__init__()
 
 
-class TempoHTTPException(TempoBaseException):
+class TempoHTTPError(TempoBaseError):
     status_code: HTTPStatus | int
 
     def __init__(self, message: str | None = None, data: dict | None = None) -> None:
         super().__init__(message=message, data=data)
 
 
-class UnauthorizedException(TempoBaseException):
+class Unauthorized(TempoBaseError):
     ...
 
 
-class ForbiddenException(TempoBaseException):
+class Forbidden(TempoBaseError):
     ...
 
 
-class NotFoundException(TempoBaseException):
+class NotFound(TempoBaseError):
+    ...
+
+
+class UnsupportedMediaType(TempoBaseError):
     ...
