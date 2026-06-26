@@ -1,11 +1,11 @@
 from pydantic import BaseModel, Field
-
 from toolkit.messaging.contracts import UploadCreatedEvent
 from toolkit.messaging.routing import UPLOAD_CREATED_RK
 from toolkit.s3 import S3Client
 from toolkit.types.urn import UploadURNType
 
 from app.core.commands.ports.flusher import Flusher
+from app.core.commands.ports.object_storage import ObjectStorage
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
 from app.core.commands.ports.upload_storage import UploadStorage
@@ -40,8 +40,7 @@ class CreateUpload:
         upload_storage: UploadStorage,
         outbox_service: OutboxService,
         outbox_storage: OutboxStorage,
-        s3: S3Client,
-        s3_config: S3Settings,
+        object_storage: ObjectStorage,
         flusher: Flusher,
         transaction: Transaction,
     ) -> None:
@@ -50,8 +49,7 @@ class CreateUpload:
         self._upload_storage = upload_storage
         self._outbox_service = outbox_service
         self._outbox_storage = outbox_storage
-        self._s3 = s3
-        self._s3_config = s3_config
+        self._object_storage = object_storage
         self._flusher = flusher
         self._transaction = transaction
 
@@ -63,8 +61,8 @@ class CreateUpload:
         upload = await self._upload_service.create_upload(body.filename, body.size, user)
         await self._upload_storage.add(upload)
         await self._flusher.flush([upload])
-        presigned_url = self._s3.generate_presigned_url(
-            self._s3_config.BUCKET, str(upload.urn), content_type=body.content_type
+        url = await self._object_storage.make_object_upload_url(
+            str(upload.urn), content_type=body.content_type
         )
         message = await self._outbox_service.create_message(
             aggregate_type=AggregateType.UPLOAD,
@@ -85,4 +83,4 @@ class CreateUpload:
 
         await self._transaction.commit()
 
-        return CreateUploadResponse(upload=upload.urn, presigned_url=presigned_url)
+        return CreateUploadResponse(upload=upload.urn, presigned_url=url)
