@@ -1,0 +1,37 @@
+services:
+  management-backend:
+    build:
+      context: .
+      target: backend
+      network: host
+    env_file:
+      - .dev/docker.env
+    networks:
+      - local-network
+    ports:
+      - 8081:8080
+
+  management-consumer:
+    build:
+      context: .
+      target: consumer
+      network: host
+    env_file:
+      - .dev/docker.env
+    networks:
+      - local-network
+
+  management-publisher:
+    build:
+      context: .
+      target: publisher
+      network: host
+    env_file:
+      - .dev/docker.env
+    networks:
+      - local-network
+
+networks:
+  local-network:
+    name: local.network
+    external: true

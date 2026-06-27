@@ -1,0 +1,37 @@
+services:
+  metadata-backend:
+    build:
+      context: .
+      target: backend
+      network: host
+    env_file:
+      - .dev/docker.env
+    networks:
+      - local-network
+    ports:
+      - 8083:8080
+
+  metadata-consumer:
+    build:
+      context: .
+      target: consumer
+      network: host
+    env_file:
+      - .dev/docker.env
+    networks:
+      - local-network
+
+  metadata-publisher:
+    build:
+      context: .
+      target: publisher
+      network: host
+    env_file:
+      - .dev/docker.env
+    networks:
+      - local-network
+
+networks:
+  local-network:
+    name: local.network
+    external: true

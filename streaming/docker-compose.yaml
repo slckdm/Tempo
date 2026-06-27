@@ -1,0 +1,17 @@
+services:
+  streaming-backend:
+    build:
+      context: .
+      target: backend
+      network: host
+    env_file:
+      - .dev/docker.env
+    networks:
+      - local-network
+    ports:
+      - 8082:8080
+
+networks:
+  local-network:
+    name: local.network
+    external: true
