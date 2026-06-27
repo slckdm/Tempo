@@ -1,12 +1,12 @@
 [project]
 name = "toolkit"
 version = "0.1.0"
-description = ""
+description = "Add your description here"
+readme = "README.md"
 authors = [
-    {name = "Dmitry",email = "zubashenkod@gmail.com"}
+    { name = "Dmitry", email = "zubashenkod@gmail.com" }
 ]
-requires-python = ">=3.14,<4"
-packages = [{include = "toolkit"}]
+requires-python = ">=3.14"
 dependencies = [
     "pydantic (>=2.13.4,<3.0.0)",
     "boto3 (>=1.43.25,<2.0.0)",
@@ -17,7 +17,6 @@ dependencies = [
     "faststream[rabbit] (>=0.7.1,<0.8.0)"
 ]
 
-
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.11.25,<0.12.0"]
+build-backend = "uv_build"

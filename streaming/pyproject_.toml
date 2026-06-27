@@ -1,7 +1,10 @@
 [project]
 name = "streaming"
 version = "0.1.0"
-description = "Add your description here"
+description = ""
+authors = [
+    {name = "Dmitry",email = "zubashenkod@gmail.com"}
+]
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
@@ -21,7 +24,6 @@ local = [
     "toolkit>=0.1.0",
 ]
 
-[tool.pytest.ini_options]
-pythonpath = ["src"]
-testpaths = ["tests"]
-asyncio_mode = "auto"
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
