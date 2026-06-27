@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from toolkit.service.exceptions import NotFoundException
+from toolkit.service.exceptions import NotFound
 
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.queries.models.metadata import MetadataQM
@@ -20,5 +20,5 @@ class GetTrackMetadata:
         await self._current_user_service.get_current_user()
         metadata = await self._metadata_reader.get_by_id(upload_id)
         if not metadata:
-            raise NotFoundException
+            raise NotFound
         return metadata
