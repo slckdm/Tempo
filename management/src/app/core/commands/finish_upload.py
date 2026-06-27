@@ -1,6 +1,6 @@
 
 from toolkit.messaging.contracts import MetadataReadyEvent
-from toolkit.service.exceptions import NotFoundException
+from toolkit.service.exceptions import NotFound
 from toolkit.types.enum import UploadStatus
 
 from app.core.commands.ports.flusher import Flusher
@@ -27,7 +27,7 @@ class FinishUpload:
         upload = await self._upload_storage.get_by_id(payload.upload_id.id)
 
         if not upload:
-            raise NotFoundException(data={"upload": str(payload.upload_id)})
+            raise NotFound(data={"upload": str(payload.upload_id)})
 
         await self._upload_service.transit_status(upload, UploadStatus.COMPLETED)
         await self._flusher.flush()
