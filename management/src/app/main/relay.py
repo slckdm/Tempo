@@ -10,15 +10,18 @@ from toolkit.messaging.broker import (
 )
 
 from app.core.commands.publish_outbox_messages import PublishOutboxMessages
-from app.main.config.loader import load_postgres_settings, load_rabbitmq_settings
-from app.main.config.settings import PostgresSettings
+from app.main.config.loader import (
+    load_postgres_settings,
+    load_rabbitmq_settings,
+    load_redis_settings,
+)
+from app.main.config.settings import PostgresSettings, RedisSettings
 from app.main.ioc.outbound import PostgresProvider
 from app.main.ioc.relay import RelayProvider
 
 
 async def start_relay() -> None:
     rmq_settings = load_rabbitmq_settings()
-    postgres_settings = load_postgres_settings()
 
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
@@ -30,8 +33,9 @@ async def start_relay() -> None:
         RelayProvider(),
         PostgresProvider(),
         context={
-            PostgresSettings: postgres_settings,
-            RabbitBroker: broker
+            PostgresSettings: load_postgres_settings(),
+            RabbitBroker: broker,
+            RedisSettings: load_redis_settings(),
         },
     )
 
