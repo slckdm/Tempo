@@ -11,15 +11,19 @@ from toolkit.messaging.broker import (
 )
 
 from app.core.commands.publish_outbox_messages import PublishOutboxMessages
-from app.main.config.loader import load_postgres_settings, load_rabbitmq_settings
-from app.main.config.settings import PostgresSettings
+from app.main.config.loader import (
+    load_keycloak_settings,
+    load_postgres_settings,
+    load_rabbitmq_settings,
+    load_s3_settings,
+)
+from app.main.config.settings import KeycloakSettings, PostgresSettings, S3Settings
 from app.main.ioc.outbound import get_outbound_providers
 from app.main.ioc.relay import RelayProvider
 
 
 async def start_relay() -> None:
     rmq_settings = load_rabbitmq_settings()
-    postgres_settings = load_postgres_settings()
 
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
@@ -30,7 +34,12 @@ async def start_relay() -> None:
     container = make_async_container(
         RelayProvider(),
         *get_outbound_providers(),
-        context={PostgresSettings: postgres_settings, RabbitBroker: broker},
+        context={
+            PostgresSettings: load_postgres_settings(),
+            RabbitBroker: broker,
+            KeycloakSettings: load_keycloak_settings(),
+            S3Settings: load_s3_settings(),
+        },
     )
 
     try:
