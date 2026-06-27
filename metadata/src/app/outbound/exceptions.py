@@ -1,29 +1,29 @@
-from toolkit.service.exceptions import TempoBaseException
+from toolkit.service.exceptions import TempoBaseError
 
 
-class ObjectStorageError(TempoBaseException):
+class ObjectStorageError(TempoBaseError):
     ...
 
 
-class MetadataReaderError(TempoBaseException):
+class MetadataReaderError(TempoBaseError):
     ...
 
 
-class MetadataStorageError(TempoBaseException):
+class MetadataStorageError(TempoBaseError):
     ...
 
 
-class MetadataParserError(TempoBaseException):
+class MetadataParserError(TempoBaseError):
     ...
 
 
-class OutboxStorageError(TempoBaseException):
+class OutboxStorageError(TempoBaseError):
     ...
 
 
-class TransactionError(TempoBaseException):
+class TransactionError(TempoBaseError):
     ...
 
 
-class FlusherError(TempoBaseException):
+class FlusherError(TempoBaseError):
     ...
