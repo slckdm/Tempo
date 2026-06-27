@@ -1,5 +1,4 @@
 from app.core.commands.ports.outbox_message_publisher import OutboxMessagePublisher
-from app.core.commands.ports.outbox_reader import OutboxReader
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
 from app.core.common.ports.utc_timer import UTCTimer
@@ -10,19 +9,17 @@ class PublishOutboxMessages:
     def __init__(
         self,
         transaction: Transaction,
-        outbox_reader: OutboxReader,
         outbox_storage: OutboxStorage,
         publisher: OutboxMessagePublisher,
         timer: UTCTimer,
     ) -> None:
         self._transaction = transaction
-        self._outbox_reader = outbox_reader
         self._outbox_storage = outbox_storage
         self._timer = timer
         self._publisher = publisher
 
     async def __call__(self) -> None:
-        messages = await self._outbox_reader.get_unpublished(50)
+        messages = await self._outbox_storage.get_unpublished(50)
 
         if not messages:
             return

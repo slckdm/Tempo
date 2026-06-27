@@ -13,3 +13,6 @@ class OutboxStorage(Protocol):
 
     @abstractmethod
     async def mark_as_published(self, ids: Sequence[int], published_at: datetime) -> None: ...
+
+    @abstractmethod
+    async def get_unpublished(self, limit: int) -> Sequence[OutboxMessage]: ...
