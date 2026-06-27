@@ -1,9 +1,9 @@
-from toolkit.service.exceptions import TempoBaseException
+from toolkit.service.exceptions import TempoBaseError
 
 
-class MetadataAlreadyProcessed(TempoBaseException):
+class MetadataAlreadyProcessed(TempoBaseError):
     detail = "Metadata has been already processed."
 
 
-class TagParseError(TempoBaseException):
+class TagParseError(TempoBaseError):
     detail = "Cannot parse tags."
