@@ -102,13 +102,32 @@ services:
       - redis_data:/data
     restart: unless-stopped
 
+  pypiroska:
+    container_name: pypiroska
+    image: pypiserver/pypiserver:v2.4
+    ports:
+      - 1010:8080
+    volumes:
+      - pypiroska_data:/data/packages
+      - ./auth/.htpasswd:/data/.htpasswd:ro
+    command: run -P /data/.htpasswd -a update -p 8080
+    networks:
+      - local-network
+      - pypiroska-network
+
+
 volumes:
   minio_data:
   postgres_data:
   rabbitmq_data:
   redis_data:
+  pypiroska_data:
 
 networks:
+    pypiroska-network:
+      driver: bridge
+      name: pypiroska.network
+
     local-network:
         name: local.network
         external: true
