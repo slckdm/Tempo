@@ -1,6 +1,6 @@
 from toolkit.messaging.contracts import UploadCompletedEvent
 from toolkit.messaging.routing import UPLOAD_COMPLETED_RK
-from toolkit.service.exceptions import NotFoundException
+from toolkit.service.exceptions import NotFound
 from toolkit.types.enum import UploadStatus
 from toolkit.types.urn import UploadURNType
 
@@ -41,7 +41,7 @@ class CompleteUpload:
         upload = await self._upload_storage.get_by_id(upload_id.id, for_update=True)
 
         if not upload:
-            raise NotFoundException(data={"upload": upload_id})
+            raise NotFound(data={"upload": upload_id})
 
         await self._object_storage.get_object(str(upload.urn))
         await self._upload_service.transit_status(upload, UploadStatus.PROCESSING)
