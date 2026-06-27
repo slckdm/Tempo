@@ -1,5 +1,5 @@
-from toolkit.service.exceptions import TempoBaseException
+from toolkit.service.exceptions import TempoBaseError
 
 
-class StorageError(TempoBaseException):
+class StorageError(TempoBaseError):
     ...

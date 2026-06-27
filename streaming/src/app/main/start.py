@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
-from toolkit.service.exceptions import Forbidden, NotFoundException, Unauthorized
+from toolkit.service.exceptions import Forbidden, NotFound, Unauthorized
 
 from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
 from app.inbound.http.stream.router import make_stream_router
@@ -33,7 +33,7 @@ def create_service() -> FastAPI:
             HTTPStatus.INTERNAL_SERVER_ERROR: JsendErrorHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
             Unauthorized: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
             Forbidden: JsendFailHandler(HTTPStatus.FORBIDDEN),
-            NotFoundException: JsendFailHandler(HTTPStatus.NOT_FOUND),
+            NotFound: JsendFailHandler(HTTPStatus.NOT_FOUND),
         },
     )
 
