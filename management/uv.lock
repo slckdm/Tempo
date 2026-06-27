@@ -2,6 +2,12 @@ version = 1
 revision = 3
 requires-python = ">=3.14"
 
+[manifest]
+members = [
+    "management",
+    "toolkit",
+]
+
 [[package]]
 name = "aio-pika"
 version = "9.6.2"

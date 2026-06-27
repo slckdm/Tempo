@@ -14,11 +14,14 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-toolkit = { path = "../toolkit", editable = true }
+toolkit = { workspace = true }
+
+[tool.uv.workspace]
+members = ["../toolkit"]
 
 [dependency-groups]
 local = [
-    "toolkit>=0.1.0",
+    "toolkit",
 ]
 
 [tool.pytest.ini_options]
