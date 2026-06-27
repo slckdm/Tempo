@@ -6,7 +6,8 @@ services:
       target: backend
       network: host
     env_file:
-      - .dev/docker.env
+      - .dev/.env.docker.local
+
     networks:
       - local-network
     ports:
@@ -19,7 +20,8 @@ services:
       target: consumer
       network: host
     env_file:
-      - .dev/docker.env
+      - .dev/.env.docker.local
+
     networks:
       - local-network
 
@@ -30,7 +32,8 @@ services:
       target: publisher
       network: host
     env_file:
-      - .dev/docker.env
+      - .dev/.env.docker.local
+
     networks:
       - local-network
 

@@ -6,7 +6,7 @@ services:
       target: backend
       network: host
     env_file:
-      - .dev/docker.env
+      - .dev/.env.docker.local
     networks:
       - local-network
     ports:
