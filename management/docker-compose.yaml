@@ -1,5 +1,6 @@
 services:
   management-backend:
+    container_name: tempo.management.backend
     build:
       context: .
       target: backend
@@ -12,6 +13,7 @@ services:
       - 8081:8080
 
   management-consumer:
+    container_name: tempo.management.consumer
     build:
       context: .
       target: consumer
@@ -22,6 +24,7 @@ services:
       - local-network
 
   management-publisher:
+    container_name: tempo.management.publisher
     build:
       context: .
       target: publisher

@@ -1,5 +1,6 @@
 services:
   streaming-backend:
+    container_name: tempo.streaming.backend
     build:
       context: .
       target: backend

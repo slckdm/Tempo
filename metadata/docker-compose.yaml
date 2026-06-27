@@ -1,5 +1,6 @@
 services:
   metadata-backend:
+    container_name: tempo.metadata.backend
     build:
       context: .
       target: backend
@@ -12,6 +13,7 @@ services:
       - 8083:8080
 
   metadata-consumer:
+    container_name: tempo.metadata.consumer
     build:
       context: .
       target: consumer
@@ -22,6 +24,7 @@ services:
       - local-network
 
   metadata-publisher:
+    container_name: tempo.metadata.publisher
     build:
       context: .
       target: publisher
