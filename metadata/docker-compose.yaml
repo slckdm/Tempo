@@ -11,7 +11,7 @@ services:
     networks:
       - local-network
     ports:
-      - 8083:8080
+      - 8003:8080
 
   metadata-consumer:
     container_name: tempo.metadata.consumer

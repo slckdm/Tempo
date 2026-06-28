@@ -11,7 +11,7 @@ services:
     networks:
       - local-network
     ports:
-      - 8081:8080
+      - 8001:8080
 
   management-consumer:
     container_name: tempo.management.consumer

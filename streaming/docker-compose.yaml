@@ -10,7 +10,7 @@ services:
     networks:
       - local-network
     ports:
-      - 8082:8080
+      - 8002:8080
 
 networks:
   local-network:
