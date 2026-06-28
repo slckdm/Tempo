@@ -14,6 +14,7 @@ from app.main.config.loader import load_app_settings, load_keycloak_settings, lo
 from app.main.config.settings import AppSettings, KeycloakSettings, S3Settings
 from app.main.ioc.core import CoreProvider
 from app.main.ioc.outbound import get_outbound_providers
+from app.outbound.exceptions import ObjectNotFound
 
 
 def create_service() -> FastAPI:
@@ -34,6 +35,7 @@ def create_service() -> FastAPI:
             Unauthorized: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
             Forbidden: JsendFailHandler(HTTPStatus.FORBIDDEN),
             NotFound: JsendFailHandler(HTTPStatus.NOT_FOUND),
+            ObjectNotFound: JsendFailHandler(HTTPStatus.NOT_FOUND),
         },
     )
 
