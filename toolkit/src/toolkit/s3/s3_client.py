@@ -45,9 +45,9 @@ class S3Client:
             params["ContentType"] = content_type
         return await asyncio.to_thread(
             self._client.generate_presigned_url,
-                "put_object",
-                Params=params,
-                ExpiresIn=expiration,
+            "put_object",
+            Params=params,
+            ExpiresIn=expiration,
         )
 
     async def put_object(
