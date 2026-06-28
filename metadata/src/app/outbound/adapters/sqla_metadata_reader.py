@@ -34,6 +34,7 @@ class SQLAMetadataReader(MetadataReader):
 
         query = (
             select(
+                table.upload_id,
                 table.title,
                 table.artist,
                 table.album,
@@ -43,6 +44,9 @@ class SQLAMetadataReader(MetadataReader):
                 table.cover_key,
                 table.size,
                 table.created_at,
+                table.processing_status,
+                table.filename,
+                table.content_type,
                 func.count().over().label("total"),
             )
             .where(*where_clause)
@@ -67,6 +71,7 @@ class SQLAMetadataReader(MetadataReader):
         return ListMetadataQM(
             metadata=[
                 MetadataQM(
+                    id=row.upload_id,
                     title=row.title,
                     artist=row.artist,
                     album=row.album,
@@ -76,6 +81,9 @@ class SQLAMetadataReader(MetadataReader):
                     cover_key=row.cover_key,
                     size=row.size,
                     created_at=row.created_at,
+                    processing_status=row.processing_status,
+                    filename=row.filename,
+                    content_type=row.content_type,
                 )
                 for row in rows
             ],
@@ -86,6 +94,7 @@ class SQLAMetadataReader(MetadataReader):
 
     async def get_by_id(self, id: UUID) -> MetadataQM | None:
         statement = select(
+            table.upload_id,
             table.title,
             table.artist,
             table.album,
@@ -95,6 +104,9 @@ class SQLAMetadataReader(MetadataReader):
             table.cover_key,
             table.size,
             table.created_at,
+            table.processing_status,
+            table.filename,
+            table.content_type,
         ).where(table.upload_id == id)
         try:
             row = (await self._session.execute(statement)).one_or_none()
@@ -102,6 +114,7 @@ class SQLAMetadataReader(MetadataReader):
             raise MetadataReaderError from sqlalchemy_err
 
         return MetadataQM(
+            id=row.upload_id,
             title=row.title,
             artist=row.artist,
             album=row.album,
@@ -111,4 +124,7 @@ class SQLAMetadataReader(MetadataReader):
             cover_key=row.cover_key,
             size=row.size,
             created_at=row.created_at,
+            processing_status=row.processing_status,
+            filename=row.filename,
+            content_type=row.content_type,
         ) if row else None
