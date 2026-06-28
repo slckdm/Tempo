@@ -42,7 +42,7 @@ class Stream:
         await self._identity.get_current_user_id()
 
         params = {"Range": range_header} if range_header else {}
-        key = ("cover/" if cover else "") + str(id)
+        key = ("covers/" if cover else "") + str(id)
         object = await self._object_storage.get_object(key, **params)
 
         return StreamData(
