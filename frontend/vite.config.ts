@@ -11,9 +11,13 @@ export default defineConfig(({ mode }) => {
   const streamingTarget = env.STREAMING_URL ?? "http://127.0.0.1:8002";
   const metadataTarget = env.METADATA_URL ?? "http://127.0.0.1:8003";
   const keycloakTarget = env.KEYCLOAK_URL ?? "http://127.0.0.1:8080";
-  // Must match the host management signs presigned URLs against, so the SigV4
-  // Host header still validates after proxying (changeOrigin rewrites it).
-  const s3Target = env.S3_URL ?? "http://127.0.0.1:9000";
+  // MinIO is reachable from the host at 127.0.0.1:9000, but management (running
+  // in a container) signs presigned URLs against its internal endpoint hostname
+  // `local-s3-minio:9000`. SigV4 covers the Host header, so MinIO must receive
+  // exactly the host that was signed — otherwise it returns 403 SignatureDoesNotMatch.
+  // We therefore forward to the reachable address but override Host to the signed one.
+  const s3Target = env.S3_PROXY_TARGET ?? "http://127.0.0.1:9000";
+  const s3SignedHost = env.S3_SIGNED_HOST ?? "local-s3-minio:9000";
 
   return {
     plugins: [react()],
@@ -45,7 +49,10 @@ export default defineConfig(({ mode }) => {
         },
         "/api/s3": {
           target: s3Target,
-          changeOrigin: true,
+          // Keep the incoming origin off the request and force the Host header to
+          // the value management signed against, so the SigV4 signature validates.
+          changeOrigin: false,
+          headers: { host: s3SignedHost },
           rewrite: (path) => path.replace(/^\/api\/s3/, ""),
         },
       },
