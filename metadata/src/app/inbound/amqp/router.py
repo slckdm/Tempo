@@ -13,6 +13,7 @@ from toolkit.service.exceptions import NotFound
 from app.core.commands.fail_metadata import FailMetadata
 from app.core.commands.process_track_metadata import ProcessTrackMetadata
 from app.core.common.exceptions import MetadataAlreadyProcessed, TagParseError
+from app.outbound.exceptions import MetadataParserError
 
 router = RabbitRouter()
 
@@ -30,7 +31,7 @@ async def process_track_metadata(
         await interactor(payload)
     except MetadataAlreadyProcessed:
         return
-    except (NotFound, TagParseError) as perm_exc:
+    except (NotFound, TagParseError, MetadataParserError) as perm_exc:
         await fail_handler(payload, perm_exc)
 
 
