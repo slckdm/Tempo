@@ -26,6 +26,7 @@ from app.main.config.settings import (
     S3Settings,
     SQLAlchemySettings,
 )
+from app.main.ioc.core import CoreProvider
 from app.main.ioc.outbound import get_outbound_providers
 
 
@@ -53,7 +54,7 @@ def create_service() -> FastAPI:
             HTTPStatus.INTERNAL_SERVER_ERROR: JsendFailHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
             Unauthorized: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
             Forbidden: JsendErrorHandler(HTTPStatus.FORBIDDEN),
-            UnsupportedMediaType: JsendErrorHandler(HTTPStatus.UNSUPPORTED_MEDIA_TYPE)
+            UnsupportedMediaType: JsendErrorHandler(HTTPStatus.UNSUPPORTED_MEDIA_TYPE),
         },
         routes=[*make_uploads_router().routes],
     )
@@ -67,6 +68,7 @@ def create_service() -> FastAPI:
 
     container = make_async_container(
         FastapiProvider(),
+        CoreProvider(),
         *get_outbound_providers(),
         context={
             PostgresSettings: postgres_settings,
