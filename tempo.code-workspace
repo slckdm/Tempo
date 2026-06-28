@@ -21,7 +21,7 @@
     ],
     "settings": {
         "python.analysis.extraPaths": [
-            "/Users/slick/projects/github/Tempo/toolkit",
+            "/Users/slick/projects/github/Tempo/toolkit/src",
             "/Users/slick/projects/github/Tempo/management",
             "/Users/slick/projects/github/Tempo/metadata",
             "/Users/slick/projects/github/Tempo/starter",
