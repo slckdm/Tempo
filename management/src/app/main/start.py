@@ -88,4 +88,4 @@ if __name__ == "__main__":
 
     app_settings = load_app_settings()
 
-    uvicorn.run(app=create_service(), port=app_settings.PORT)
+    uvicorn.run(app=create_service(), host=app_settings.HOST, port=app_settings.PORT)
