@@ -19,10 +19,10 @@ const SORTERS: Record<SortKey, (a: Track, b: Track) => number> = {
 
 /** A short, uppercase format tag from a content type or filename. */
 function formatTag(track: Track): string {
-  const fromType = track.contentType.split("/")[1]?.toUpperCase();
+  const fromType = track.contentType?.split("/")[1]?.toUpperCase();
   const map: Record<string, string> = { MPEG: "MP3", "X-WAV": "WAV", "MP4": "M4A" };
   if (fromType) return map[fromType] ?? fromType;
-  const ext = track.filename.split(".").pop()?.toUpperCase();
+  const ext = track.filename?.split(".").pop()?.toUpperCase();
   return ext ?? "AUDIO";
 }
 
@@ -47,7 +47,7 @@ export function LibraryView() {
           : t.title.toLowerCase().includes(q) ||
             t.artist.toLowerCase().includes(q) ||
             (t.album?.toLowerCase().includes(q) ?? false) ||
-            t.filename.toLowerCase().includes(q),
+            (t.filename?.toLowerCase().includes(q) ?? false),
       )
       .sort(SORTERS[sort]);
   }, [tracks, query, sort, format]);

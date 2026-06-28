@@ -11,6 +11,9 @@ export default defineConfig(({ mode }) => {
   const streamingTarget = env.STREAMING_URL ?? "http://127.0.0.1:8002";
   const metadataTarget = env.METADATA_URL ?? "http://127.0.0.1:8003";
   const keycloakTarget = env.KEYCLOAK_URL ?? "http://127.0.0.1:8080";
+  // Must match the host management signs presigned URLs against, so the SigV4
+  // Host header still validates after proxying (changeOrigin rewrites it).
+  const s3Target = env.S3_URL ?? "http://127.0.0.1:9000";
 
   return {
     plugins: [react()],
@@ -39,6 +42,11 @@ export default defineConfig(({ mode }) => {
           target: keycloakTarget,
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api\/auth/, ""),
+        },
+        "/api/s3": {
+          target: s3Target,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api\/s3/, ""),
         },
       },
     },

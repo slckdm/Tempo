@@ -14,18 +14,24 @@ interface TrackMetadataDTO {
   artist: string | null;
   album: string | null;
   genre: string | null;
+  year: string | null;
   duration: number | null;
   cover_key: string | null;
-  filename: string;
-  content_type: string;
   size: number;
   created_at: string;
-  processing_status: string;
+  // The read-model no longer exposes these; keep them optional so the parser
+  // degrades gracefully (title/artist come from tags, format tag falls back).
+  filename?: string | null;
+  content_type?: string | null;
+  processing_status?: string;
 }
 
+// The metadata list endpoint returns pagination fields flat, alongside the rows.
 interface TracksMetadataResponse {
   metadata: TrackMetadataDTO[];
-  pagination: { limit: number; offset: number; total: number };
+  total: number;
+  limit: number;
+  offset: number;
 }
 
 /** Server-side filters the metadata list endpoint understands. */
@@ -39,16 +45,16 @@ export interface MetadataQuery {
 }
 
 function toTrack(dto: TrackMetadataDTO): Track {
-  const parsed = parseTrackName(dto.filename);
+  const parsed = parseTrackName(dto.filename ?? "");
   return {
     urn: dto.urn,
-    filename: dto.filename,
+    filename: dto.filename ?? null,
     title: dto.title?.trim() || parsed.title,
     artist: dto.artist?.trim() || parsed.artist,
     album: dto.album?.trim() || null,
     genre: dto.genre?.trim() || null,
     duration: typeof dto.duration === "number" ? dto.duration : null,
-    contentType: dto.content_type,
+    contentType: dto.content_type ?? null,
     size: dto.size,
     hasCover: Boolean(dto.cover_key),
     createdAt: dto.created_at,
@@ -73,5 +79,5 @@ export async function fetchTracks(query: MetadataQuery = {}): Promise<TracksPage
   const data = await apiJson<TracksMetadataResponse>(
     `${config.metadataBase}/?${params.toString()}`,
   );
-  return { tracks: data.metadata.map(toTrack), total: data.pagination.total };
+  return { tracks: data.metadata.map(toTrack), total: data.total };
 }

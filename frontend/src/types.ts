@@ -5,8 +5,8 @@
 export interface Track {
   /** Backend URN, e.g. `urn:mng.upload:<uuid>` — used as the streaming id. */
   urn: string;
-  /** Original filename as uploaded. */
-  filename: string;
+  /** Original filename as uploaded; null when the read-model omits it. */
+  filename: string | null;
   /** Display title — metadata tag if present, otherwise parsed from filename. */
   title: string;
   /** Display artist — metadata tag if present, otherwise parsed from filename. */
@@ -15,7 +15,7 @@ export interface Track {
   genre: string | null;
   /** Duration in seconds, if the metadata service extracted it. */
   duration: number | null;
-  contentType: string;
+  contentType: string | null;
   size: number;
   /** Whether the metadata service has cover art for this track. */
   hasCover: boolean;

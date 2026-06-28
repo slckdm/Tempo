@@ -8,7 +8,8 @@ import { resolveContentType } from "../lib/audioFiles";
 import { apiJson, ApiError } from "./client";
 
 interface CreateUploadResponse {
-  upload: { urn: string };
+  /** The reserved upload's URN, e.g. `urn:mng.upload:<uuid>`. */
+  upload: string;
   presigned_url: string;
 }
 
@@ -16,6 +17,17 @@ export interface ReservedUpload {
   urn: string;
   presignedUrl: string;
   contentType: string;
+}
+
+/**
+ * The presigned URL is signed by the management service against the S3 endpoint
+ * *it* can reach (a container hostname in Docker), which the browser can't
+ * resolve. Route the path + query through the same-origin `/api/s3` proxy, which
+ * forwards to MinIO with the signed Host header intact (see nginx.conf).
+ */
+function toProxiedS3Url(presignedUrl: string): string {
+  const u = new URL(presignedUrl);
+  return `${config.s3Base}${u.pathname}${u.search}`;
 }
 
 export async function createUpload(file: File): Promise<ReservedUpload> {
@@ -29,13 +41,17 @@ export async function createUpload(file: File): Promise<ReservedUpload> {
       size: file.size,
     }),
   });
-  return { urn: data.upload.urn, presignedUrl: data.presigned_url, contentType };
+  return {
+    urn: data.upload,
+    presignedUrl: toProxiedS3Url(data.presigned_url),
+    contentType,
+  };
 }
 
 /**
- * Upload the file to the presigned S3 URL. Uses XHR (not fetch) so we can report
- * progress. The PUT goes directly to MinIO, whose default CORS policy allows it;
- * the Content-Type must match what the backend signed.
+ * Upload the file to the presigned S3 URL (same-origin via the `/api/s3` proxy).
+ * Uses XHR (not fetch) so we can report progress. The Content-Type must match
+ * what the backend signed, or MinIO rejects the signature.
  */
 export function putToPresigned(
   presignedUrl: string,

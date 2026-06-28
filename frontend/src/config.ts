@@ -8,6 +8,8 @@ export const config = {
   metadataBase: "/api/metadata",
   streamingBase: "/api/streaming",
   authBase: "/api/auth",
+  /** Same-origin proxy to S3/MinIO for presigned uploads (see nginx.conf). */
+  s3Base: "/api/s3",
 
   keycloak: {
     realm: import.meta.env.VITE_KEYCLOAK_REALM ?? "muslick",

@@ -1,0 +1,20 @@
+services:
+  frontend:
+    container_name: tempo.frontend
+    build:
+      context: .
+      target: frontend
+      network: host
+      args:
+        VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM:-muslick}
+        VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID:-management-service-client}
+        VITE_KEYCLOAK_CLIENT_SECRET: ${VITE_KEYCLOAK_CLIENT_SECRET:-zkkbWU1ff4QRLqGTx1idCVmCcLnqyzYJ}
+    networks:
+      - local-network
+    ports:
+      - 5173:80
+
+networks:
+  local-network:
+    name: local.network
+    external: true
