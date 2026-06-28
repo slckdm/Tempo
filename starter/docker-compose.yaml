@@ -1,7 +1,7 @@
 services:
   s3:
     image: minio/minio:latest
-    container_name: local_s3_minio
+    container_name: local-s3-minio
     ports:
       - 9000:9000 # S3 API Port
       - 9001:9001 # Web Console UI Port
