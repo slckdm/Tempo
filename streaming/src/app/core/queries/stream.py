@@ -21,7 +21,7 @@ def _iter_chunks(bytes: IOBase, chunk_size=_DEFAULT_CHUNK_SIZE) -> Generator[Any
 @dataclass(frozen=True)
 class StreamData:
     content_type: str
-    content_range: int | None
+    content_range: str | None
     content_length: int
     chunks: Iterator[bytes]
 
