@@ -2,11 +2,15 @@
 
 from typing import Sequence
 
-from dishka import Provider, Scope, provide
+from fastapi.security import OAuth2
+
+from dishka import Provider, Scope, collect, provide
 
 from toolkit.clients import KeycloakClient, KeycloakConfig
 from toolkit.s3 import S3Client
 
+from app.core.common.auth.service import AuthorizationService
+from app.core.common.security.schemas import get_cookie_schema, get_oauth2_schema
 from app.main.config.settings import KeycloakSettings, S3Settings
 
 
@@ -37,5 +41,14 @@ class KeycloakClientProvider(Provider):
         )
 
 
+class AuthProvider(Provider):
+    scope = Scope.REQUEST
+
+    oauth2_schema = provide(get_cookie_schema, provides=OAuth2)
+    cookie_schema = provide(get_oauth2_schema, provides=OAuth2)
+    auth_schemas = collect(OAuth2)
+    auth_serivce = provide(AuthorizationService)
+
+
 def get_outbound_providers() -> Sequence[Provider]:
-    return (S3Provider(), KeycloakClientProvider())
+    return (S3Provider(), AuthProvider(), KeycloakClientProvider())
