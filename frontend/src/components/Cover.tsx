@@ -9,8 +9,8 @@ interface CoverProps {
 }
 
 /**
- * Track artwork. Library rows use the deterministic gradient placeholder (so we
- * don't fire a cover request per row); the player passes the fetched image.
+ * Track artwork. Callers pass the fetched cover image (via `useCover`); when it's
+ * absent or still loading, we render a deterministic gradient placeholder.
  */
 export function Cover({ track, className = "cover", imageUrl }: CoverProps) {
   if (imageUrl) {

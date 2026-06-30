@@ -1,5 +1,6 @@
 import { usePlayer } from "../context/PlayerContext";
 import { formatTime } from "../lib/format";
+import { useCover } from "../lib/useCover";
 import { Cover } from "./Cover";
 import {
   AlertIcon,
@@ -28,6 +29,7 @@ export function PlayerBar() {
     repeat,
     shuffle,
   } = player;
+  const coverUrl = useCover(current);
 
   const hasTrack = current !== null;
   const seekFill = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -38,7 +40,7 @@ export function PlayerBar() {
       <div className="player-track">
         {hasTrack ? (
           <>
-            <Cover track={current} className="cover player-cover" imageUrl={player.coverUrl} />
+            <Cover track={current} className="cover player-cover" imageUrl={coverUrl} />
             <div className="player-text">
               <div className="player-title">{current.title}</div>
               {error ? (

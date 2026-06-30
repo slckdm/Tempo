@@ -3,8 +3,10 @@ import { useMemo, useState } from "react";
 import { useLibrary } from "../context/LibraryContext";
 import { usePlayer } from "../context/PlayerContext";
 import { formatAddedAt, formatBytes, formatTime } from "../lib/format";
+import { useCover } from "../lib/useCover";
 import type { Track } from "../types";
 import { Cover } from "./Cover";
+import { UploadMenu } from "./UploadMenu";
 import { AlertIcon, MusicIcon, PlayIcon, RefreshIcon, SearchIcon, SpinnerIcon } from "./Icons";
 
 type SortKey = "recent" | "title" | "artist" | "duration" | "size";
@@ -104,6 +106,7 @@ export function LibraryView() {
           >
             {loading ? <SpinnerIcon size={18} /> : <RefreshIcon size={18} />}
           </button>
+          <UploadMenu />
         </div>
       </div>
 
@@ -137,6 +140,7 @@ export function LibraryView() {
 
 function TrackRow({ track, index, queue }: { track: Track; index: number; queue: Track[] }) {
   const { current, isPlaying, playTrack } = usePlayer();
+  const coverUrl = useCover(track);
   const isCurrent = current?.urn === track.urn;
   const playingThis = isCurrent && isPlaying;
 
@@ -160,7 +164,7 @@ function TrackRow({ track, index, queue }: { track: Track; index: number; queue:
       </div>
 
       <div className="track-main">
-        <Cover track={track} />
+        <Cover track={track} imageUrl={coverUrl} />
         <div className="track-text">
           <div className="track-title">{track.title}</div>
           <div className="track-artist">

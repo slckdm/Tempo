@@ -3,7 +3,6 @@ import { LibraryProvider } from "./context/LibraryContext";
 import { PlayerProvider } from "./context/PlayerContext";
 import { Header } from "./components/Header";
 import { LoginScreen } from "./components/LoginScreen";
-import { UploadPanel } from "./components/UploadPanel";
 import { LibraryView } from "./components/LibraryView";
 import { PlayerBar } from "./components/PlayerBar";
 
@@ -13,7 +12,6 @@ function Workspace() {
       <Header />
       <main className="main">
         <div className="layout">
-          <UploadPanel />
           <LibraryView />
         </div>
       </main>

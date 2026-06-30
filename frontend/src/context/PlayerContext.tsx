@@ -9,7 +9,7 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 
-import { fetchAudioObjectUrl, fetchCoverObjectUrl } from "../api/stream";
+import { resolveAudioStreamUrl } from "../api/stream";
 import { ApiError } from "../api/client";
 import type { Track } from "../types";
 
@@ -24,7 +24,6 @@ interface PlayerContextValue {
   muted: boolean;
   repeat: boolean;
   shuffle: boolean;
-  coverUrl: string | null;
   /** Play a track; pass the surrounding list to enable next/prev navigation. */
   playTrack: (track: Track, queue?: Track[]) => void;
   toggle: () => void;
@@ -53,7 +52,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [muted, setMuted] = useState(false);
   const [repeat, setRepeat] = useState(false);
   const [shuffle, setShuffle] = useState(false);
-  const [coverUrl, setCoverUrl] = useState<string | null>(null);
 
   // Refs read inside the once-attached audio event handlers (avoid stale state).
   const queueRef = useRef<Track[]>([]);
@@ -61,22 +59,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const repeatRef = useRef(false);
   const shuffleRef = useRef(false);
   const loadToken = useRef(0);
-  const audioUrlRef = useRef<string | null>(null);
-  const coverUrlRef = useRef<string | null>(null);
-
-  const revokeAudioUrl = useCallback(() => {
-    if (audioUrlRef.current) {
-      URL.revokeObjectURL(audioUrlRef.current);
-      audioUrlRef.current = null;
-    }
-  }, []);
-
-  const revokeCoverUrl = useCallback(() => {
-    if (coverUrlRef.current) {
-      URL.revokeObjectURL(coverUrlRef.current);
-      coverUrlRef.current = null;
-    }
-  }, []);
 
   const loadAndPlay = useCallback(
     async (track: Track) => {
@@ -87,31 +69,19 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       setCurrentTime(0);
       // Show the metadata duration right away; refined once the audio loads.
       setDuration(track.duration ?? 0);
-
-      // Cover art loads independently. Only request it when the metadata service
-      // reported one, so we don't fire pointless 404s for cover-less tracks.
-      revokeCoverUrl();
-      setCoverUrl(null);
-      if (track.hasCover) {
-        void fetchCoverObjectUrl(track.urn).then((url) => {
-          if (token !== loadToken.current) {
-            if (url) URL.revokeObjectURL(url);
-            return;
-          }
-          revokeCoverUrl();
-          coverUrlRef.current = url;
-          setCoverUrl(url);
-        });
-      }
+      // Cover art is rendered by PlayerBar via the shared `useCover` cache.
 
       try {
-        const url = await fetchAudioObjectUrl(track.urn);
-        if (token !== loadToken.current) {
-          URL.revokeObjectURL(url);
+        // The <audio> element streams the URL directly (native HTTP Range),
+        // authenticating via the cookie auth.ts keeps in sync.
+        const url = await resolveAudioStreamUrl(track.urn);
+        if (token !== loadToken.current) return;
+        if (!url) {
+          setError("Session expired, please sign in again");
+          setLoading(false);
+          setIsPlaying(false);
           return;
         }
-        revokeAudioUrl();
-        audioUrlRef.current = url;
         audio.src = url;
         audio.load();
         await audio.play();
@@ -124,7 +94,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
         setIsPlaying(false);
       }
     },
-    [revokeAudioUrl, revokeCoverUrl],
+    [],
   );
 
   const playByIndex = useCallback(
@@ -202,15 +172,13 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     };
   }, [advance]);
 
-  // Revoke any outstanding object URLs on unmount.
+  // Stop playback on unmount.
   useEffect(() => {
     const audio = audioRef.current!;
     return () => {
       audio.pause();
-      revokeAudioUrl();
-      revokeCoverUrl();
     };
-  }, [revokeAudioUrl, revokeCoverUrl]);
+  }, []);
 
   const playTrack = useCallback(
     (track: Track, queue?: Track[]) => {
@@ -288,7 +256,6 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       muted,
       repeat,
       shuffle,
-      coverUrl,
       playTrack,
       toggle,
       next,
@@ -301,7 +268,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     }),
     [
       current, isPlaying, loading, error, currentTime, duration, volume, muted,
-      repeat, shuffle, coverUrl, playTrack, toggle, next, prev, seek, setVolume,
+      repeat, shuffle, playTrack, toggle, next, prev, seek, setVolume,
       toggleMute, toggleRepeat, toggleShuffle,
     ],
   );

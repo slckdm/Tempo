@@ -14,7 +14,13 @@ interface Session {
 
 const tokenUrl = `${config.authBase}/realms/${config.keycloak.realm}/protocol/openid-connect/token`;
 
+/** Cookie the access token is mirrored into; must match the streaming backend. */
+const STREAM_TOKEN_COOKIE = "access_token";
+
 let session: Session | null = loadSession();
+// Re-establish the streaming cookie on a fresh page load (it may have expired
+// while the tab was closed even though the refreshable session survived).
+if (session) syncStreamCookie(session);
 /** Coalesces concurrent refreshes into a single in-flight request. */
 let refreshing: Promise<boolean> | null = null;
 
@@ -42,12 +48,33 @@ function loadSession(): Session | null {
 function persist(next: Session | null) {
   const hadSession = session !== null;
   session = next;
-  if (next) localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(next));
-  else localStorage.removeItem(STORAGE_KEYS.session);
+  if (next) {
+    localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(next));
+    syncStreamCookie(next);
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.session);
+    clearStreamCookie();
+  }
   // Notify on meaningful transitions (login or logout), not token refreshes.
   if (hadSession !== (next !== null)) {
     for (const listener of listeners) listener();
   }
+}
+
+// The streaming service authenticates <audio>/<img> requests — which cannot
+// carry an Authorization header — via a cookie that mirrors the access token.
+// Scoped to the streaming path and SameSite=Lax so it's never sent cross-site
+// or to the other services; max-age tracks the token's own lifetime.
+function syncStreamCookie(s: Session) {
+  const maxAge = Math.max(0, Math.floor((accessExpiresAt(s) - Date.now()) / 1000));
+  const secure = location.protocol === "https:" ? "; Secure" : "";
+  document.cookie =
+    `${STREAM_TOKEN_COOKIE}=${s.tokens.access_token}` +
+    `; Path=${config.streamingBase}; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+}
+
+function clearStreamCookie() {
+  document.cookie = `${STREAM_TOKEN_COOKIE}=; Path=${config.streamingBase}; Max-Age=0; SameSite=Lax`;
 }
 
 function accessExpiresAt(s: Session): number {

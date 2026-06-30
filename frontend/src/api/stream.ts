@@ -1,23 +1,27 @@
-// The streaming service requires a bearer token, but <audio src> / <img src>
-// can't send Authorization headers. So we fetch the bytes with auth and hand the
-// element a blob: URL instead. Blob URLs are fully seekable, so scrubbing works;
-// the trade-off is the whole track loads up front (fine for a music player).
+// The streaming service requires a token, but <audio src> / <img src> can't send
+// an Authorization header. Audio now streams natively: we hand the element the
+// same-origin stream URL and the backend authenticates via the access-token
+// cookie (kept in sync by auth.ts), so the browser does real HTTP Range requests
+// and seeking only fetches the bytes it needs. Covers are tiny, so they still use
+// the fetch-to-blob path below.
 
 import { config } from "../config";
-import { authedFetch, ApiError } from "./client";
+import { authedFetch } from "./client";
+import { getAccessToken } from "./auth";
 
 function streamPath(urn: string): string {
   return `${config.streamingBase}/stream/${encodeURIComponent(urn)}`;
 }
 
-/** Download a track and return an object URL. Caller must revokeObjectURL it. */
-export async function fetchAudioObjectUrl(urn: string): Promise<string> {
-  const res = await authedFetch(streamPath(urn));
-  if (!res.ok) {
-    throw new ApiError(`Failed to load track (${res.status})`, res.status);
-  }
-  const blob = await res.blob();
-  return URL.createObjectURL(blob);
+/**
+ * Resolve a track's same-origin stream URL for direct use as an <audio> src.
+ * Refreshes the token first (if near expiry) so the auth cookie is fresh when
+ * the element starts requesting bytes. Returns null if the session is gone.
+ */
+export async function resolveAudioStreamUrl(urn: string): Promise<string | null> {
+  const token = await getAccessToken();
+  if (!token) return null;
+  return streamPath(urn);
 }
 
 /**
