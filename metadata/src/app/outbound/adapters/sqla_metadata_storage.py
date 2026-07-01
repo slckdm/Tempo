@@ -15,3 +15,6 @@ class SQLAMetadataStorage(MetadataStorage):
 
     async def get_by_id(self, id: UUID, for_update: bool = False) -> TrackMetadata | None:
         return await self._session.get(TrackMetadata, id, with_for_update=for_update)
+
+    async def delete(self, metadata: TrackMetadata) -> None:
+        await self._session.delete(metadata)

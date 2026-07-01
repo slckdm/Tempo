@@ -6,8 +6,15 @@ from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from toolkit.service.exceptions import Forbidden, Unauthorized, UnsupportedMediaType
+from toolkit.service.exceptions import (
+    Conflict,
+    Forbidden,
+    NotFound,
+    Unauthorized,
+    UnsupportedMediaType,
+)
 
+from app.core.common.exceptions import StatusUpdateFlowError
 from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
 from app.inbound.http.uploads.router import make_uploads_router
 from app.main.config.loader import (
@@ -52,6 +59,10 @@ def create_service() -> FastAPI:
             HTTPStatus.UNPROCESSABLE_CONTENT: JsendErrorHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
             HTTPStatus.NOT_FOUND: JsendErrorHandler(HTTPStatus.NOT_FOUND),
             HTTPStatus.INTERNAL_SERVER_ERROR: JsendFailHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
+            HTTPStatus.CONFLICT: JsendErrorHandler(HTTPStatus.CONFLICT),
+            StatusUpdateFlowError: JsendErrorHandler(HTTPStatus.FORBIDDEN),
+            NotFound: JsendErrorHandler(HTTPStatus.NOT_FOUND),
+            Conflict: JsendErrorHandler(HTTPStatus.CONFLICT),
             Unauthorized: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
             Forbidden: JsendErrorHandler(HTTPStatus.FORBIDDEN),
             UnsupportedMediaType: JsendErrorHandler(HTTPStatus.UNSUPPORTED_MEDIA_TYPE),

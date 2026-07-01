@@ -1,3 +1,6 @@
+from typing import Callable
+from uuid import UUID
+
 import pytest
 from faker import Faker
 
@@ -13,10 +16,12 @@ from app.core.common.ports.utc_timer import UTCTimer
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.outbox_service import OutboxService
 from app.core.common.services.upload_service import UploadService
+from app.core.models.upload import Upload
 from tests.unit.core.factories import (
     create_current_user_service,
     create_outbox_service,
     create_upload_service,
+    create_user,
 )
 
 
@@ -42,6 +47,12 @@ def make_create_upload_command(
     )
 
 
+def __generate_fake_id(uuid: UUID) -> Callable:
+    """Generate a fake ID for the upload."""
+    async def wrap(upload: Upload) -> None:
+        upload.id = uuid
+    return wrap
+
 @pytest.mark.asyncio
 async def test_create_upload_success(
     faker: Faker,
@@ -54,7 +65,11 @@ async def test_create_upload_success(
     flusher: Flusher,
     transaction: Transaction,
 ) -> None:
+    upload_uuid = Faker().uuid4(cast_to=None)
+    user = create_user()
+    authorized_user_finder.get_by_id.return_value = user
     object_storage.make_object_upload_url.return_value = "test_url"
+    upload_storage.add = __generate_fake_id(upload_uuid)
     create_upload_command = make_create_upload_command(
         current_user_service=create_current_user_service(
             identity_provider, authorized_user_finder
@@ -76,6 +91,6 @@ async def test_create_upload_success(
     )
     response = await create_upload_command(request_body)
     assert response.model_dump() == {
-        "upload": "urn:mng.upload:None",
+        "upload": f"urn:mng.upload:{upload_uuid}",
         "presigned_url": "test_url",
     }

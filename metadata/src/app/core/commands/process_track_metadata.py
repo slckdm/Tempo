@@ -28,22 +28,18 @@ class ProcessTrackMetadata:
         self,
         metadata_service: MetadataService,
         metadata_storage: MetadataStorage,
-        metadata_reader: MetadataParser,
+        metadata_parser: MetadataParser,
         object_storage: ObjectStorage,
         outbox_storage: OutboxStorage,
         outbox_service: OutboxService,
         transaction: Transaction,
         flusher: Flusher,
-        s3: S3Client,
-        utc_timer: UTCTimer,
     ) -> None:
         self._metadata_service = metadata_service
         self._metadata_storage = metadata_storage
-        self._metadata_reader = metadata_reader
+        self._metadata_parser = metadata_parser
         self._transaction = transaction
         self._flusher = flusher
-        self._utc_timer = utc_timer
-        self._s3 = s3
         self._object_storage = object_storage
         self._outbox_storage = outbox_storage
         self._outbox_service = outbox_service
@@ -55,7 +51,7 @@ class ProcessTrackMetadata:
             raise MetadataAlreadyProcessed
 
         object_data = await self._object_storage.get_object(payload.s3_key)
-        raw = await self._metadata_reader.read(
+        raw = await self._metadata_parser.read(
             io.BytesIO(await asyncio.to_thread(object_data.body.read))
         )
         metadata = await self._metadata_service.create(raw, payload)

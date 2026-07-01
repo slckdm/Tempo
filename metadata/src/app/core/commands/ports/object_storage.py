@@ -11,3 +11,6 @@ class ObjectStorage(Protocol):
 
     @abstractmethod
     async def put_object(self, key: str, body: bytes, **kwargs) -> None: ...
+
+    @abstractmethod
+    async def delete_object(self, key: str, **kwargs) -> None: ...

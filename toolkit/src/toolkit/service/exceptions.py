@@ -32,3 +32,7 @@ class NotFound(TempoBaseError):
 
 class UnsupportedMediaType(TempoBaseError):
     ...
+
+
+class Conflict(TempoBaseError):
+    ...

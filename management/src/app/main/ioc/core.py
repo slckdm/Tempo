@@ -2,6 +2,7 @@ from dishka import Provider, Scope, provide
 
 from app.core.commands.complete_upload import CompleteUpload
 from app.core.commands.create_upload import CreateUpload
+from app.core.commands.delete_upload import DeleteUpload
 from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.object_storage import ObjectStorage
 from app.core.commands.ports.outbox_storage import OutboxStorage
@@ -49,3 +50,4 @@ class CoreProvider(Provider):
     # commands
     create_upload = provide(CreateUpload)
     complete_upload = provide(CompleteUpload)
+    delete_upload = provide(DeleteUpload)

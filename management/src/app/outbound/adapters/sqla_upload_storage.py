@@ -15,3 +15,6 @@ class SQLAUploadStorage(UploadStorage):
 
     async def get_by_id(self, id: UUID, for_update: bool = False) -> Upload | None:
         return await self.__session.get(Upload, id, with_for_update=for_update)
+
+    async def delete(self, upload: Upload) -> None:
+        await self.__session.delete(upload)

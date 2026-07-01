@@ -7,6 +7,7 @@ from toolkit.service import response
 
 from .complete_upload import complete_upload
 from .create_upload import create_upload
+from .delete_upload import delete_upload
 
 
 def make_uploads_router() -> APIRouter:
@@ -48,6 +49,22 @@ def make_uploads_router() -> APIRouter:
         complete_upload,
         methods=["POST"],
         responses={**common_responses},
+    )
+    router.add_api_route(
+        "/{upload_id}",
+        delete_upload,
+        methods=["DELETE"],
+        responses={
+            **common_responses,
+            HTTPStatus.NOT_FOUND: {
+                "model": response.NotFoundResponse,
+                "description": "Upload not found",
+            },
+            HTTPStatus.CONFLICT: {
+                "model": response.ConflictResponse,
+                "description": "Conflict",
+            },
+        },
     )
 
     return router

@@ -23,3 +23,6 @@ class S3ObjectStorage(ObjectStorage):
         return await self._s3.generate_presigned_url(
             bucket=self._s3_settings.BUCKET, key=key, content_type=content_type
         )
+
+    async def delete_object(self, key: str, **kwargs) -> None:
+        return await self._s3.delete_object(bucket=self._s3_settings.BUCKET, key=key, **kwargs)

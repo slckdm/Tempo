@@ -90,3 +90,9 @@ class UnauthorizedResponse(JSendFailResponse):
     """Unauthorized error response."""
 
     message: str = Field(default=HTTPStatus.UNAUTHORIZED.phrase)
+
+
+class ConflictResponse(JSendFailResponse):
+    """Unauthorized error response."""
+
+    message: str = Field(default=HTTPStatus.CONFLICT.phrase)

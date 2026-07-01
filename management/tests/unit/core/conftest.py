@@ -25,12 +25,12 @@ from tests.unit.core.mock_types import (
 
 @pytest.fixture
 def identity_provider() -> IdentityProvider:
-    return IdentityProviderMock()
+    return cast(IdentityProviderMock, create_autospec(IdentityProvider, instance=True))
 
 
 @pytest.fixture
 def authorized_user_finder() -> AuthorizedUserFinder:
-    return AuthorizedUserFinderMock()
+    return cast(AuthorizedUserFinderMock, create_autospec(AuthorizedUserFinder, instance=True))
 
 
 @pytest.fixture

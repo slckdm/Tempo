@@ -27,3 +27,9 @@ class S3ObjectStorage(ObjectStorage):
             )
         except Boto3Error as boto3_err:
             raise ObjectStorageError from boto3_err
+
+    async def delete_object(self, key: str, **kwargs) -> None:
+        try:
+            await self._s3.delete_object(bucket=self._s3_settings.BUCKET, key=key, **kwargs)
+        except Boto3Error as boto3_err:
+            raise ObjectStorageError from boto3_err

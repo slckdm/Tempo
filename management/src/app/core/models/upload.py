@@ -32,7 +32,7 @@ class Upload(Base):
 
     def __repr__(self) -> str:
         """Object representation."""
-        return f"{self.__class__.__name__}(uuid={self.id}, status={self.status})"
+        return f"{self.__class__.__name__}(id={self.id}, status={self.status})"
 
     @property
     def urn(self) -> UploadURNType:

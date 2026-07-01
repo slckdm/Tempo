@@ -50,16 +50,16 @@ class S3Client:
             ExpiresIn=expiration,
         )
 
-    async def put_object(
-        self, bucket: str, key: str, body: bytes, **kwargs
-    ) -> None:
+    async def put_object(self, bucket: str, key: str, body: bytes, **kwargs) -> None:
         try:
             await asyncio.to_thread(
-                self._client.put_object,
-                Bucket=bucket,
-                Key=key,
-                Body=body,
-                **kwargs,
+                self._client.put_object, Bucket=bucket, Key=key, Body=body, **kwargs
             )
+        except ClientError as client_err:
+            raise client_err
+
+    async def delete_object(self, bucket: str, key: str, **kwargs) -> None:
+        try:
+            await asyncio.to_thread(self._client.delete_object, Bucket=bucket, Key=key, **kwargs)
         except ClientError as client_err:
             raise client_err

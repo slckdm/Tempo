@@ -1,5 +1,6 @@
 from dishka import Provider, Scope, provide
 
+from app.core.commands.delete_track_metadata import DeleteTrackMetadata
 from app.core.commands.fail_metadata import FailMetadata
 from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.metadata_parser import MetadataParser
@@ -37,5 +38,4 @@ class ConsumerProvider(Provider):
     # commands
     process_metadata = provide(ProcessTrackMetadata)
     fail_metadata = provide(FailMetadata)
-
-    #
+    delete_metadata = provide(DeleteTrackMetadata)

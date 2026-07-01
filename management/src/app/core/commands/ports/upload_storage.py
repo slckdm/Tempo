@@ -12,3 +12,6 @@ class UploadStorage(Protocol):
 
     @abstractmethod
     async def get_by_id(self, id: UUID, for_update: bool = False) -> Upload | None: ...
+
+    @abstractmethod
+    async def delete(self, upload: Upload): ...

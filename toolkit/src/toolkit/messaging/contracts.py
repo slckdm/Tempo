@@ -37,6 +37,11 @@ class UploadCompletedEvent(MessageContract):
     status: UploadStatus
 
 
+class UploadDeletedEvent(MessageContract):
+    upload_id: UploadURNType
+    s3_key: str
+
+
 class MetadataReadyEvent(MessageContract):
     upload_id: UploadURNType
     cover_key: str | None = None
