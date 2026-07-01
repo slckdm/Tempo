@@ -14,6 +14,6 @@ from app.core.commands.create_upload import (
 async def create_upload(
     body: CreateUploadRequestBody, interactor: FromDishka[CreateUpload]
 ) -> JSendSuccessfulResponse[CreateUploadResponse]:
-    """Create file upload."""
+    """Create upload."""
     upload_data = await interactor(body)
     return JSendSuccessfulResponse(data=upload_data)

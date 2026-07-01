@@ -11,6 +11,6 @@ from app.core.commands.delete_upload import DeleteUpload
 async def delete_upload(
     upload_id: UploadURNType, interactor: FromDishka[DeleteUpload]
 ) -> JSendSuccessfulResponse:
-    """Create file upload."""
+    """Delete upload."""
     await interactor(upload_id)
     return JSendSuccessfulResponse()
