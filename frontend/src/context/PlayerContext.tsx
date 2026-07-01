@@ -11,7 +11,37 @@ import type { ReactNode } from "react";
 
 import { resolveAudioStreamUrl } from "../api/stream";
 import { ApiError } from "../api/client";
+import { STORAGE_KEYS } from "../config";
 import type { Track } from "../types";
+
+interface StoredVolume {
+  volume: number;
+  muted: boolean;
+}
+
+/** Read the persisted volume/mute state, falling back to full volume, unmuted. */
+function readStoredVolume(): StoredVolume {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.volume);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Partial<StoredVolume>;
+      const volume = Math.min(1, Math.max(0, Number(parsed.volume)));
+      if (Number.isFinite(volume)) return { volume, muted: Boolean(parsed.muted) };
+    }
+  } catch {
+    /* absent or malformed storage — use the default */
+  }
+  return { volume: 1, muted: false };
+}
+
+/** Persist the volume slider state so it survives reloads. */
+function writeStoredVolume(volume: number, muted: boolean): void {
+  try {
+    localStorage.setItem(STORAGE_KEYS.volume, JSON.stringify({ volume, muted }));
+  } catch {
+    /* storage unavailable (private mode / quota) — non-fatal */
+  }
+}
 
 interface PlayerContextValue {
   current: Track | null;
@@ -40,7 +70,13 @@ const PlayerContext = createContext<PlayerContextValue | null>(null);
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  if (audioRef.current === null) audioRef.current = new Audio();
+  if (audioRef.current === null) {
+    const audio = new Audio();
+    const stored = readStoredVolume();
+    audio.volume = stored.volume;
+    audio.muted = stored.muted;
+    audioRef.current = audio;
+  }
 
   const [current, setCurrent] = useState<Track | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -48,8 +84,8 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [error, setError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [volume, setVolumeState] = useState(1);
-  const [muted, setMuted] = useState(false);
+  const [volume, setVolumeState] = useState(() => readStoredVolume().volume);
+  const [muted, setMuted] = useState(() => readStoredVolume().muted);
   const [repeat, setRepeat] = useState(false);
   const [shuffle, setShuffle] = useState(false);
 
@@ -149,6 +185,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     const onVolume = () => {
       setVolumeState(audio.volume);
       setMuted(audio.muted);
+      writeStoredVolume(audio.volume, audio.muted);
     };
 
     audio.addEventListener("timeupdate", onTime);

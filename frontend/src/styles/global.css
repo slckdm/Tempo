@@ -466,7 +466,7 @@ input {
 }
 .track-head {
   display: grid;
-  grid-template-columns: 44px 1fr 64px 116px 92px;
+  grid-template-columns: 44px 1fr 64px 116px 92px 40px;
   gap: 14px;
   padding: 0 14px 10px;
   font-size: 11.5px;
@@ -477,7 +477,7 @@ input {
 }
 @media (max-width: 620px) {
   .track-head {
-    grid-template-columns: 44px 1fr 64px;
+    grid-template-columns: 44px 1fr 64px 40px;
   }
   .col-added,
   .col-size {
@@ -486,7 +486,7 @@ input {
 }
 .track {
   display: grid;
-  grid-template-columns: 44px 1fr 64px 116px 92px;
+  grid-template-columns: 44px 1fr 64px 116px 92px 40px;
   gap: 14px;
   align-items: center;
   padding: 8px 14px;
@@ -496,7 +496,7 @@ input {
 }
 @media (max-width: 620px) {
   .track {
-    grid-template-columns: 44px 1fr 64px;
+    grid-template-columns: 44px 1fr 64px 40px;
   }
 }
 .track:hover {
@@ -703,11 +703,34 @@ input {
   padding: 0 22px;
 }
 @media (max-width: 720px) {
+  /* Give the player its natural (taller) height when it stacks into rows. */
+  .app {
+    grid-template-rows: var(--header-h) 1fr auto;
+  }
+  /* Free up header space for the brand by dropping the subtitle. */
+  .brand-sub {
+    display: none;
+  }
+  /* Current track becomes its own row above full-width controls. */
   .player {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+  button.player-track {
+    margin: 0;
+    padding: 4px;
   }
   .player-right {
     display: none !important;
+  }
+  .player-center {
+    width: 100%;
+  }
+  .player-controls {
+    width: 100%;
+    justify-content: space-between;
   }
 }
 .player-track {
@@ -715,6 +738,16 @@ input {
   align-items: center;
   gap: 12px;
   min-width: 0;
+}
+button.player-track {
+  text-align: left;
+  padding: 6px 8px;
+  margin: -6px -8px;
+  border-radius: 12px;
+  transition: background 0.15s;
+}
+button.player-track:hover {
+  background: var(--bg-hover);
 }
 .player-cover {
   width: 54px;
@@ -866,6 +899,125 @@ input {
   display: flex;
   align-items: center;
   gap: 5px;
+}
+
+/* ===================== Track details modal ===================== */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(5, 5, 9, 0.72);
+  backdrop-filter: blur(6px);
+  animation: modal-fade 0.16s ease;
+}
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 26px 22px;
+  box-shadow: var(--shadow);
+  animation: modal-pop 0.18s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--text-dim);
+  transition: background 0.15s, color 0.15s;
+}
+.modal-close:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.modal-cover {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.modal-art {
+  width: min(280px, 62vw);
+  height: min(280px, 62vw);
+  border-radius: 16px;
+  font-size: 64px;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.5);
+}
+.modal-title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-align: center;
+  line-height: 1.25;
+}
+.modal-artist {
+  margin-top: 5px;
+  text-align: center;
+  color: var(--text-dim);
+  font-size: 15px;
+}
+.modal-note {
+  margin-top: 12px;
+  text-align: center;
+  color: var(--danger);
+  font-size: 12.5px;
+}
+.modal-meta {
+  margin: 22px 0 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+}
+.modal-meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 2px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13.5px;
+}
+.modal-meta-row dt {
+  color: var(--text-faint);
+}
+.modal-meta-row dd {
+  margin: 0;
+  color: var(--text);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* ===================== Login ===================== */

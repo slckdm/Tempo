@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 
 import { ApiError } from "../api/client";
 import { fetchTracks } from "../api/metadata";
-import { completeUpload, createUpload, putToPresigned } from "../api/uploads";
+import { completeUpload, createUpload, deleteUpload, putToPresigned } from "../api/uploads";
 import { isAudioFile, resolveContentType } from "../lib/audioFiles";
 import type { Track, UploadItem, UploadPhase } from "../types";
 import { useAuth } from "./AuthContext";
@@ -13,6 +13,7 @@ interface LibraryContextValue {
   loading: boolean;
   error: string | null;
   refresh: () => void;
+  removeTrack: (urn: string) => void;
   uploads: UploadItem[];
   isUploading: boolean;
   addFiles: (files: File[]) => void;
@@ -44,6 +45,10 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
 
   const reqId = useRef(0);
   const timers = useRef<number[]>([]);
+  // URNs deleted locally whose removal hasn't yet propagated to the metadata
+  // read-model. We hide them from every refetch until the server confirms
+  // they're gone, so an in-flight poll can't briefly resurrect a deleted track.
+  const pendingDeletions = useRef<Set<string>>(new Set());
 
   const doRefresh = useCallback(async () => {
     const id = ++reqId.current;
@@ -51,7 +56,12 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
     try {
       const { tracks: fetched } = await fetchTracks({ limit: 100 });
       if (id !== reqId.current) return;
-      setTracks(fetched);
+      const pending = pendingDeletions.current;
+      // Stop tracking any pending deletion the server has already dropped.
+      for (const urn of pending) {
+        if (!fetched.some((t) => t.urn === urn)) pending.delete(urn);
+      }
+      setTracks(pending.size ? fetched.filter((t) => !pending.has(t.urn)) : fetched);
       setError(null);
     } catch (err) {
       if (id !== reqId.current) return;
@@ -62,6 +72,30 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const refresh = useCallback(() => void doRefresh(), [doRefresh]);
+
+  // Delete a track: optimistically drop it, ask management to delete, then
+  // reconcile. The metadata row/cover are removed asynchronously (outbox →
+  // consumer), so mark it pending (hidden from refetches until the read-model
+  // catches up) and re-poll a couple of times.
+  const removeTrack = useCallback(
+    async (urn: string) => {
+      pendingDeletions.current.add(urn);
+      setTracks((cur) => cur.filter((t) => t.urn !== urn));
+      try {
+        await deleteUpload(urn);
+      } catch (err) {
+        // Deletion failed (e.g. 403 not owner, 409 not ready): stop hiding it
+        // and restore the true state from the server.
+        pendingDeletions.current.delete(urn);
+        setError(err instanceof ApiError ? err.message : "Failed to delete track");
+        void doRefresh();
+        return;
+      }
+      timers.current.push(window.setTimeout(() => void doRefresh(), 1500));
+      timers.current.push(window.setTimeout(() => void doRefresh(), 4000));
+    },
+    [doRefresh],
+  );
 
   // Initial load and reload when the signed-in user changes.
   useEffect(() => {
@@ -166,13 +200,14 @@ export function LibraryProvider({ children }: { children: ReactNode }) {
       loading,
       error,
       refresh,
+      removeTrack,
       uploads,
       isUploading,
       addFiles,
       dismissUpload,
       clearFinished,
     }),
-    [tracks, loading, error, refresh, uploads, isUploading, addFiles, dismissUpload, clearFinished],
+    [tracks, loading, error, refresh, removeTrack, uploads, isUploading, addFiles, dismissUpload, clearFinished],
   );
 
   return <LibraryContext value={value}>{children}</LibraryContext>;

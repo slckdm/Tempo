@@ -85,3 +85,14 @@ export async function completeUpload(urn: string): Promise<void> {
     method: "POST",
   });
 }
+
+/**
+ * Delete an upload. Management removes its own row + the audio object and emits
+ * an event; the metadata row and cover are cleaned up asynchronously, so the
+ * caller should re-poll the library shortly after to reconcile.
+ */
+export async function deleteUpload(urn: string): Promise<void> {
+  await apiJson(`${config.managementBase}/uploads/${encodeURIComponent(urn)}`, {
+    method: "DELETE",
+  });
+}

@@ -21,4 +21,5 @@ export const config = {
 
 export const STORAGE_KEYS = {
   session: "tempo.session.v1",
+  volume: "tempo.volume.v1",
 } as const;

@@ -1,7 +1,11 @@
+import { useState } from "react";
+
 import { usePlayer } from "../context/PlayerContext";
 import { formatTime } from "../lib/format";
 import { useCover } from "../lib/useCover";
+import { useMediaSession } from "../lib/useMediaSession";
 import { Cover } from "./Cover";
+import { TrackModal } from "./TrackModal";
 import {
   AlertIcon,
   NextIcon,
@@ -30,6 +34,9 @@ export function PlayerBar() {
     shuffle,
   } = player;
   const coverUrl = useCover(current);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  useMediaSession(player, coverUrl);
 
   const hasTrack = current !== null;
   const seekFill = duration > 0 ? (currentTime / duration) * 100 : 0;
@@ -37,30 +44,36 @@ export function PlayerBar() {
 
   return (
     <footer className="player">
-      <div className="player-track">
-        {hasTrack ? (
-          <>
-            <Cover track={current} className="cover player-cover" imageUrl={coverUrl} />
-            <div className="player-text">
-              <div className="player-title">{current.title}</div>
-              {error ? (
-                <div className="player-error">
-                  <AlertIcon size={13} /> {error}
-                </div>
-              ) : (
-                <div className="player-artist">{current.artist}</div>
-              )}
-            </div>
-          </>
-        ) : (
+      {hasTrack ? (
+        <button
+          type="button"
+          className="player-track"
+          onClick={() => setDetailsOpen(true)}
+          title="Show track details"
+          aria-haspopup="dialog"
+        >
+          <Cover track={current} className="cover player-cover" imageUrl={coverUrl} />
+          <div className="player-text">
+            <div className="player-title">{current.title}</div>
+            {error ? (
+              <div className="player-error">
+                <AlertIcon size={13} /> {error}
+              </div>
+            ) : (
+              <div className="player-artist">{current.artist}</div>
+            )}
+          </div>
+        </button>
+      ) : (
+        <div className="player-track">
           <div className="player-text">
             <div className="player-title" style={{ color: "var(--text-faint)" }}>
               Nothing playing
             </div>
             <div className="player-artist">Pick a track from your library</div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="player-center">
         <div className="player-controls">
@@ -144,6 +157,10 @@ export function PlayerBar() {
           />
         </div>
       </div>
+
+      {current && detailsOpen && (
+        <TrackModal track={current} onClose={() => setDetailsOpen(false)} />
+      )}
     </footer>
   );
 }

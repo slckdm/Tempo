@@ -1,13 +1,21 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type MouseEvent } from "react";
 
 import { useLibrary } from "../context/LibraryContext";
 import { usePlayer } from "../context/PlayerContext";
-import { formatAddedAt, formatBytes, formatTime } from "../lib/format";
+import { formatAddedAt, formatBytes, formatTag, formatTime } from "../lib/format";
 import { useCover } from "../lib/useCover";
 import type { Track } from "../types";
 import { Cover } from "./Cover";
 import { UploadMenu } from "./UploadMenu";
-import { AlertIcon, MusicIcon, PlayIcon, RefreshIcon, SearchIcon, SpinnerIcon } from "./Icons";
+import {
+  AlertIcon,
+  MusicIcon,
+  PlayIcon,
+  RefreshIcon,
+  SearchIcon,
+  SpinnerIcon,
+  TrashIcon,
+} from "./Icons";
 
 type SortKey = "recent" | "title" | "artist" | "duration" | "size";
 
@@ -18,15 +26,6 @@ const SORTERS: Record<SortKey, (a: Track, b: Track) => number> = {
   duration: (a, b) => (b.duration ?? 0) - (a.duration ?? 0),
   size: (a, b) => b.size - a.size,
 };
-
-/** A short, uppercase format tag from a content type or filename. */
-function formatTag(track: Track): string {
-  const fromType = track.contentType?.split("/")[1]?.toUpperCase();
-  const map: Record<string, string> = { MPEG: "MP3", "X-WAV": "WAV", "MP4": "M4A" };
-  if (fromType) return map[fromType] ?? fromType;
-  const ext = track.filename?.split(".").pop()?.toUpperCase();
-  return ext ?? "AUDIO";
-}
 
 export function LibraryView() {
   const { tracks, loading, error, refresh } = useLibrary();
@@ -126,6 +125,7 @@ export function LibraryView() {
             <span className="col-duration">Time</span>
             <span className="col-added">Added</span>
             <span className="col-size">Size</span>
+            <span className="col-actions" aria-hidden="true" />
           </div>
           <div className="tracklist">
             {visible.map((track, i) => (
@@ -140,9 +140,17 @@ export function LibraryView() {
 
 function TrackRow({ track, index, queue }: { track: Track; index: number; queue: Track[] }) {
   const { current, isPlaying, playTrack } = usePlayer();
+  const { removeTrack } = useLibrary();
   const coverUrl = useCover(track);
   const isCurrent = current?.urn === track.urn;
   const playingThis = isCurrent && isPlaying;
+
+  const handleDelete = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm(`Delete “${track.title}”? This can't be undone.`)) {
+      removeTrack(track.urn);
+    }
+  };
 
   return (
     <div className={`track${isCurrent ? " active" : ""}`} onClick={() => playTrack(track, queue)}>
@@ -176,6 +184,18 @@ function TrackRow({ track, index, queue }: { track: Track; index: number; queue:
       <span className="col-duration">{track.duration ? formatTime(track.duration) : "—"}</span>
       <span className="col-added">{formatAddedAt(track.createdAt)}</span>
       <span className="col-size">{formatBytes(track.size)}</span>
+
+      <div className="track-actions">
+        <button
+          type="button"
+          className="track-del"
+          title="Delete track"
+          aria-label={`Delete ${track.title}`}
+          onClick={handleDelete}
+        >
+          <TrashIcon size={16} />
+        </button>
+      </div>
     </div>
   );
 }
@@ -215,7 +235,7 @@ function EmptyLibrary() {
       </div>
       <h3>Nothing here yet</h3>
       <p>
-        Upload your first track from the panel on the left. Once its metadata is processed,
+        Upload your first track with the Upload button above. Once its metadata is processed,
         it'll appear here and be ready to play.
       </p>
     </div>

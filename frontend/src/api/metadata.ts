@@ -66,6 +66,27 @@ export interface TracksPage {
   total: number;
 }
 
+/** A track with the extra fields only the single-record endpoint exposes. */
+export interface TrackDetail extends Track {
+  year: string | null;
+}
+
+/** Shape of the single-track endpoint payload (JSend `data`). */
+interface TrackMetadataResponse {
+  metadata: TrackMetadataDTO;
+}
+
+/**
+ * Fetch a single track's full metadata record (`GET /metadata/{urn}`). Unlike the
+ * list, this is the authoritative per-track record and carries `year` too.
+ */
+export async function fetchTrackMetadata(urn: string): Promise<TrackDetail> {
+  const data = await apiJson<TrackMetadataResponse>(
+    `${config.metadataBase}/${encodeURIComponent(urn)}`,
+  );
+  return { ...toTrack(data.metadata), year: data.metadata.year?.trim() || null };
+}
+
 /** Fetch the library page from the metadata service. */
 export async function fetchTracks(query: MetadataQuery = {}): Promise<TracksPage> {
   const params = new URLSearchParams();
