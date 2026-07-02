@@ -1,4 +1,9 @@
 {
     "python.analysis.extraPaths": ["src"],
-    "python.defaultInterpreterPath": "streaming/.venv"
+    "python.defaultInterpreterPath": "streaming/.venv",
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
 }
