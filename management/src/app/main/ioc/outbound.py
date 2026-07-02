@@ -3,7 +3,8 @@
 from collections.abc import AsyncIterator
 from typing import Sequence
 
-from dishka import Provider, Scope, provide
+from dishka import Provider, Scope, collect, provide
+from fastapi.security import APIKeyCookie, OAuth2, OAuth2PasswordBearer
 from redis.asyncio.client import Redis
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -14,6 +15,7 @@ from sqlalchemy.ext.asyncio import (
 from toolkit.clients import KeycloakClient, KeycloakConfig
 from toolkit.s3 import S3Client
 
+from app.core.common.auth.service import AuthorizationService
 from app.main.config.loader import PostgresSettings
 from app.main.config.settings import KeycloakSettings, RedisSettings, S3Settings
 
@@ -84,10 +86,27 @@ class S3Provider(Provider):
         )
 
 
+class AuthProvider(Provider):
+    scope = Scope.REQUEST
+    ACCESS_TOKEN_COOKIE = "access_token"
+
+    @provide(provides=OAuth2)
+    def provide_bearer_schema(self, config: KeycloakSettings) -> OAuth2PasswordBearer:
+        return OAuth2PasswordBearer(tokenUrl=config.token_url, auto_error=False)
+
+    @provide(provides=OAuth2)
+    def provide_cookie_schema(self) -> APIKeyCookie:
+        return APIKeyCookie(name=self.ACCESS_TOKEN_COOKIE, auto_error=False)
+
+    auth_schemas = collect(OAuth2)
+    auth_service = provide(AuthorizationService)
+
+
 def get_outbound_providers() -> Sequence[Provider]:
     return (
         PostgresProvider(),
         KeycloakClientProvider(),
         RedisClientProvider(),
         S3Provider(),
+        AuthProvider(),
     )

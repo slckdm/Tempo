@@ -46,5 +46,4 @@ async def upload_metadata_failed(
 
 @router.subscriber(MANAGEMENT_DLQ, MANAGEMENT_DLE)
 async def on_dead_letter(msg: RabbitMessage) -> None:
-    print("dead-lettered: %r" % msg.body)
     logging.warning("dead-lettered: %r", msg.body)
