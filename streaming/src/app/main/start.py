@@ -10,14 +10,24 @@ from toolkit.service.exceptions import Forbidden, NotFound, Unauthorized
 
 from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
 from app.inbound.http.stream.router import make_stream_router
-from app.main.config.loader import load_app_settings, load_keycloak_settings, load_s3_settings
+from app.main.config.loader import (
+    load_app_settings,
+    load_keycloak_settings,
+    load_logging_settings,
+    load_s3_settings,
+)
 from app.main.config.settings import AppSettings, KeycloakSettings, S3Settings
 from app.main.ioc.core import CoreProvider
 from app.main.ioc.outbound import get_outbound_providers
+from app.main.setup import setup_logging
 from app.outbound.exceptions import ObjectNotFound
 
 
 def create_service() -> FastAPI:
+    logging_settings = load_logging_settings()
+
+    setup_logging(level=logging_settings.LEVEL)
+
     app_settings = load_app_settings()
     s3_settings = load_s3_settings()
     keycloak_settings = load_keycloak_settings()

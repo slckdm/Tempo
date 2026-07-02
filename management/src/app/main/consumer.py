@@ -1,3 +1,4 @@
+import logging
 import asyncio
 
 from dishka import make_async_container
@@ -12,6 +13,7 @@ from toolkit.messaging.broker import (
 
 from app.inbound.amqp.router import router
 from app.main.config.loader import (
+    load_logging_settings,
     load_postgres_settings,
     load_rabbitmq_settings,
     load_redis_settings,
@@ -20,9 +22,13 @@ from app.main.config.loader import (
 from app.main.config.settings import PostgresSettings, RedisSettings, S3Settings
 from app.main.ioc.consumer import ConsumerProvider
 from app.main.ioc.outbound import PostgresProvider, RedisClientProvider, S3Provider
+from app.main.setup import setup_logging
 
 
 async def create_app() -> None:
+    logging_settings = load_logging_settings()
+    setup_logging(level=logging_settings.LEVEL)
+
     rmq_settings = load_rabbitmq_settings()
 
     broker = make_rabbit_broker(rmq_settings)
@@ -49,6 +55,7 @@ async def create_app() -> None:
 
     setup_dishka(container, app)
 
+    logging.info("Starting consumer service")
     await app.run()
 
 

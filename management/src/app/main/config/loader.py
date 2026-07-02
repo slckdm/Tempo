@@ -7,6 +7,7 @@ from toolkit.messaging.settings import RabbitMQSettings
 from .settings import (
     AppSettings,
     KeycloakSettings,
+    LoggingSettings,
     PostgresSettings,
     RedisSettings,
     S3Settings,
@@ -53,6 +54,10 @@ class RedisEnvConfig(BaseSettings, RedisSettings):
     model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="REDIS_")
 
 
+class LoggingEnvConfig(BaseSettings, LoggingSettings):
+    model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="LOGGING_")
+
+
 def load_app_settings() -> AppSettings:
     return _load_settings(AppEnvConfig)
 
@@ -79,3 +84,7 @@ def load_rabbitmq_settings() -> RabbitMQSettings:
 
 def load_redis_settings() -> RedisSettings:
     return _load_settings(RedisEnvConfig)
+
+
+def load_logging_settings() -> LoggingSettings:
+    return _load_settings(LoggingEnvConfig)

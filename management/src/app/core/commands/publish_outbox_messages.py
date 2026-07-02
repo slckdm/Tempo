@@ -1,3 +1,5 @@
+import logging
+
 from app.core.commands.ports.outbox_message_publisher import OutboxMessagePublisher
 from app.core.commands.ports.outbox_storage import OutboxStorage
 from app.core.commands.ports.transaction import Transaction
@@ -25,9 +27,12 @@ class PublishOutboxMessages:
             return
 
         for message in messages:
+            logging.info(f"Publishing message {str(message)}")
             await self._publisher.publish(message)
 
         await self._outbox_storage.mark_as_published(
             [message.id for message in messages], self._timer.now
         )
+        logging.info(f"Marked {len(messages)} messages as published")
+
         await self._transaction.commit()

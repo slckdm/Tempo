@@ -15,6 +15,7 @@ from app.inbound.http.metadata.router import make_tracks_metadata_router
 from app.main.config.loader import (
     load_app_settings,
     load_keycloak_settings,
+    load_logging_settings,
     load_postgres_settings,
     load_s3_settings,
     load_sqlalchemy_settings,
@@ -28,11 +29,15 @@ from app.main.config.settings import (
 )
 from app.main.ioc.core import CoreProvider
 from app.main.ioc.outbound import get_outbound_providers
+from app.main.setup import setup_logging
 
 
 def create_service() -> FastAPI:
     """Create a service."""
     # initialize service
+    logging_settings = load_logging_settings()
+
+    setup_logging(level=logging_settings.LEVEL)
 
     app_settings = load_app_settings()
     postgres_settings = load_postgres_settings()

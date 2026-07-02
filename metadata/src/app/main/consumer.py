@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from dishka import make_async_container
 from dishka_faststream import FastStreamProvider, setup_dishka
@@ -17,13 +18,18 @@ from app.main.config.loader import (
     load_postgres_settings,
     load_rabbitmq_settings,
     load_s3_settings,
+    load_logging_settings,
 )
 from app.main.config.settings import KeycloakSettings, PostgresSettings, S3Settings
 from app.main.ioc.consumer import ConsumerProvider
 from app.main.ioc.outbound import get_outbound_providers
+from app.main.setup import setup_logging
 
 
 async def create_app() -> None:
+    logging_settings = load_logging_settings()
+    setup_logging(level=logging_settings.LEVEL)
+
     rmq_settings = load_rabbitmq_settings()
 
     broker = make_rabbit_broker(rmq_settings)
@@ -48,6 +54,7 @@ async def create_app() -> None:
 
     setup_dishka(container, app)
 
+    logging.info("Starting consumer service")
     await app.run()
 
 

@@ -8,6 +8,7 @@ from toolkit.messaging.settings import RabbitMQSettings
 from .settings import (
     AppSettings,
     KeycloakSettings,
+    LoggingSettings,
     PostgresSettings,
     S3Settings,
     SQLAlchemySettings,
@@ -49,6 +50,10 @@ class RabbitMQEnvConfig(BaseSettings, RabbitMQSettings):
     model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="RMQ_")
 
 
+class LoggingEnvConfig(BaseSettings, LoggingSettings):
+    model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="LOGGING_")
+
+
 def load_app_settings() -> AppSettings:
     return _load_settings(AppEnvConfig)
 
@@ -71,3 +76,7 @@ def load_sqlalchemy_settings() -> SQLAlchemySettings:
 
 def load_rabbitmq_settings() -> RabbitMQSettings:
     return _load_settings(RabbitMQEnvConfig)
+
+
+def load_logging_settings() -> LoggingSettings:
+    return _load_settings(LoggingEnvConfig)

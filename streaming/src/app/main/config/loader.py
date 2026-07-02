@@ -6,6 +6,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from .settings import (
     AppSettings,
     KeycloakSettings,
+    LoggingSettings,
     S3Settings,
 )
 
@@ -32,6 +33,10 @@ class AppEnvConfig(BaseSettings, AppSettings):
     model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="APP_")
 
 
+class LoggingEnvConfig(BaseSettings, LoggingSettings):
+    model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="LOGGING_")
+
+
 def load_app_settings() -> AppSettings:
     return _load_settings(AppEnvConfig)
 
@@ -42,3 +47,7 @@ def load_keycloak_settings() -> KeycloakSettings:
 
 def load_s3_settings() -> S3Settings:
     return _load_settings(S3EnvConfig)
+
+
+def load_logging_settings() -> LoggingSettings:
+    return _load_settings(LoggingEnvConfig)

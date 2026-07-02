@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from toolkit.logging import LoggingLevel
+
 
 class KeycloakSettings(BaseModel):
     URL: str
@@ -26,3 +28,7 @@ class AppSettings(BaseModel):
     PORT: int
     DEBUG: bool = False
     ALLOWED_ORIGINS: list[str]
+
+
+class LoggingSettings(BaseModel):
+    LEVEL: LoggingLevel = LoggingLevel.INFO

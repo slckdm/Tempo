@@ -1,5 +1,7 @@
 from pydantic import BaseModel, PostgresDsn
 
+from toolkit.logging import LoggingLevel
+
 
 class PostgresSettings(BaseModel):
     HOST: str
@@ -54,3 +56,7 @@ class AppSettings(BaseModel):
     PORT: int
     DEBUG: bool = False
     ALLOWED_ORIGINS: list[str]
+
+
+class LoggingSettings(BaseModel):
+    LEVEL: LoggingLevel = LoggingLevel.INFO
