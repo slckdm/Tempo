@@ -1,11 +1,11 @@
-from boto3.exceptions import Boto3Error
+from botocore.exceptions import ClientError
 
 from toolkit.entities.object import Object
 from toolkit.s3 import S3Client
 
 from app.core.queries.ports.object_storage import ObjectStorage
 from app.main.config.settings import S3Settings
-from app.outbound.exceptions import StorageError, ObjectNotFound
+from app.outbound.exceptions import StorageError
 
 
 class S3ObjectStorage(ObjectStorage):
@@ -17,13 +17,13 @@ class S3ObjectStorage(ObjectStorage):
     async def get_object(self, key: str, **kwargs) -> Object:
         try:
             return await self._s3.get_object(bucket=self._s3_settings.BUCKET, key=key, **kwargs)
-        except Boto3Error as boto3_err:
-            raise ObjectNotFound from boto3_err
+        except ClientError as exception:
+            raise StorageError from exception
 
     async def put_object(self, key: str, body: bytes, **kwargs) -> None:
         try:
             await self._s3.put_object(
                 bucket=self._s3_settings.BUCKET, key=key, body=body, **kwargs
             )
-        except Boto3Error as boto3_err:
+        except ClientError as boto3_err:
             raise StorageError from boto3_err
