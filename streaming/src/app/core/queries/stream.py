@@ -2,10 +2,12 @@ from dataclasses import dataclass
 from io import IOBase
 from typing import Any, Generator, Iterator
 
+from toolkit.service.exceptions import NotFound
 from toolkit.types.urn import UploadURNType
 
 from app.core.common.ports.identity_provider import IdentityProvider
 from app.core.queries.ports.object_storage import ObjectStorage
+from app.outbound.exceptions import StorageError
 
 _DEFAULT_CHUNK_SIZE = 256 * 1024
 
@@ -43,7 +45,10 @@ class Stream:
 
         params = {"Range": range_header} if range_header else {}
         key = ("covers/" if cover else "") + str(id)
-        object = await self._object_storage.get_object(key, **params)
+        try:
+            object = await self._object_storage.get_object(key, **params)
+        except StorageError as storage_err:
+            raise NotFound from storage_err
 
         return StreamData(
             content_type=object.content_type,
