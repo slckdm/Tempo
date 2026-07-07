@@ -2,38 +2,25 @@
 
 from jwt import decode
 
-from toolkit.entities import ServiceAccount, User
 
-from .token_parsers import get_service_account_data_from_token, get_user_data_from_token
-
-
-def decode_token(token: str, public_key: str) -> User | ServiceAccount:
+def decode_token(token: str, public_key: str, audience: list[str]) -> dict:
     """Decode token data into `User` object.
 
     Args:
         token (str): Client token.
         public_key (str): Public key for decoding.
+        audience (list[str]): List of valid audiences.
 
     Returns:
-        User | ServiceAccount: Decoded user or service account data from token.
+        dict: Decoded token data.
     """
-    validation_options = {
-        "options": {
-            "verify_exp": True,
-            "verify_aud": False,
-        },
-        "audience": [],
-    }
+    options = {"verify_exp": True, "verify_aud": True}
     payload = decode(
         jwt=token,
         key=public_key,
         algorithms=["RS256"],
-        verify=False,
-        **validation_options,
+        audience=audience or [],
+        options=options,
     )
 
-    parser = get_service_account_data_from_token
-    if "client_id" not in payload:
-        parser = get_user_data_from_token
-
-    return parser(payload)
+    return payload
