@@ -18,6 +18,9 @@
         {
             "path": "./streaming"
         },
+        {
+            "path": "./library"
+        },
     ],
     "settings": {
         "python.analysis.extraPaths": [
@@ -26,6 +29,7 @@
             "/Users/slick/projects/github/Tempo/metadata",
             "/Users/slick/projects/github/Tempo/starter",
             "/Users/slick/projects/github/Tempo/streaming",
+            "/Users/slick/projects/github/Tempo/library",
         ],
         "cSpell.words": [
         ],
