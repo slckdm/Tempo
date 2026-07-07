@@ -12,4 +12,4 @@ async def test_get_current_user(
     authorized_user_finder: AuthorizedUserFinder
 ) -> None:
     current_user_service = create_current_user_service(identity_provider, authorized_user_finder)
-    await current_user_service.get_current_user()
+    await current_user_service.get_current_user(audience=["test-audience"])

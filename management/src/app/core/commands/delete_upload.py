@@ -35,7 +35,7 @@ class DeleteUpload:
         self._outbox_service = outbox_service
 
     async def __call__(self, upload_id: UploadURNType) -> None:
-        user = await self._current_user_service.get_current_user()
+        user = await self._current_user_service.get_current_user(["tempo:etc"])
         upload = await self._upload_storage.get_by_id(upload_id.id, for_update=True)
 
         if not upload:

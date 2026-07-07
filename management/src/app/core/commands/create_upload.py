@@ -55,7 +55,7 @@ class CreateUpload:
         self,
         body: CreateUploadRequestBody,
     ) -> CreateUploadResponse:
-        user = await self._current_user_service.get_current_user()
+        user = await self._current_user_service.get_current_user(["tempo:etc"])
         upload = await self._upload_service.create_upload(body.filename, body.size, user)
         await self._upload_storage.add(upload)
         await self._flusher.flush([upload])
