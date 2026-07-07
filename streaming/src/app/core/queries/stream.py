@@ -5,7 +5,7 @@ from typing import Any, Generator, Iterator
 from toolkit.service.exceptions import NotFound
 from toolkit.types.urn import UploadURNType
 
-from app.core.common.ports.identity_provider import IdentityProvider
+from app.core.common.services.current_user_service import CurrentUserService
 from app.core.queries.ports.object_storage import ObjectStorage
 from app.outbound.exceptions import StorageError
 
@@ -33,15 +33,15 @@ class Stream:
     def __init__(
         self,
         object_storage: ObjectStorage,
-        identity: IdentityProvider,
+        current_user_service: CurrentUserService,
     ) -> None:
         self._object_storage = object_storage
-        self._identity = identity
+        self._current_user_service = current_user_service
 
     async def __call__(
         self, id: UploadURNType, range_header: str | None, cover: bool = False
     ) -> StreamData:
-        await self._identity.get_current_user_id()
+        await self._current_user_service.get_current_user(["tempo:streaming"])
 
         params = {"Range": range_header} if range_header else {}
         key = ("covers/" if cover else "") + str(id)
