@@ -25,17 +25,14 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-toolkit = { workspace = true }
-
-[tool.uv.workspace]
-members = ["../toolkit"]
+toolkit = { url = "http://localhost:1010/packages/toolkit-0.1.6-py3-none-any.whl" }
 
 [dependency-groups]
-local = [
+local_pypi = [
     "toolkit",
 ]
 
 [tool.pytest.ini_options]
-pythonpath = ["src", "."]
+pythonpath = ["src"]
 testpaths = ["tests"]
 asyncio_mode = "auto"
