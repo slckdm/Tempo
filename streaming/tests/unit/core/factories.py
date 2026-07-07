@@ -11,15 +11,19 @@ from toolkit.entities.object import Object
 from toolkit.types.urn import UploadURNType
 
 from app.core.common.auth.service import AuthorizationService
+from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
 from app.core.common.ports.identity_provider import IdentityProvider
+from app.core.common.services.current_user_service import CurrentUserService
 from app.core.queries.ports.object_storage import ObjectStorage
 from app.core.queries.stream import Stream
 
 faker = Faker()
 
 
-def create_stream(object_storage: ObjectStorage, identity: IdentityProvider) -> Stream:
-    return Stream(object_storage=object_storage, identity=identity)
+def create_stream(
+    object_storage: ObjectStorage, current_user_service: CurrentUserService
+) -> Stream:
+    return Stream(object_storage=object_storage, current_user_service=current_user_service)
 
 
 def create_upload_urn(id: UUID | None = None) -> UploadURNType:
@@ -45,3 +49,12 @@ def create_authorization_service(
     request: Request, schemas: Sequence[OAuth2]
 ) -> AuthorizationService:
     return AuthorizationService(request=request, schemas=list(schemas))
+
+
+def create_current_user_service(
+    identity_provider: IdentityProvider, authorized_user_finder: AuthorizedUserFinder
+) -> CurrentUserService:
+    return CurrentUserService(
+        identity_provider=identity_provider,
+        authorized_user_finder=authorized_user_finder,
+    )
