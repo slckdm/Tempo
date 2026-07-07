@@ -8,6 +8,7 @@ from toolkit.types_ import UserID
 from app.core.common.auth.service import AuthorizationService
 from app.core.common.ports.cacher import Cacher
 from app.core.common.ports.identity_provider import IdentityProvider
+from toolkit.security.utils import get_user_data_from_token
 
 
 class KeycloakIdentityProvider(IdentityProvider):
@@ -18,7 +19,7 @@ class KeycloakIdentityProvider(IdentityProvider):
         self._client = client
         self._cacher = cacher
 
-    async def get_current_user_id(self) -> UserID:
+    async def get_current_user_id(self, audience: list[str]) -> UserID:
         token = await self._auth_service.get_token()
         if not token:
             raise Unauthorized
@@ -29,7 +30,9 @@ class KeycloakIdentityProvider(IdentityProvider):
             await self._cacher.set("service_keycloak_jwk", jwk)
 
         try:
-            user_data = decode_token(token, normalize_public_key(jwk))
+            user_data = get_user_data_from_token(
+                decode_token(token, normalize_public_key(jwk), audience)
+            )
         except PyJWTError as invalid_token_exc:
             raise Unauthorized from invalid_token_exc
         if isinstance(user_data, ServiceAccount):
