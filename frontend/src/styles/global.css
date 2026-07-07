@@ -466,7 +466,7 @@ input {
 }
 .track-head {
   display: grid;
-  grid-template-columns: 44px 1fr 64px 116px 92px 40px;
+  grid-template-columns: 44px 1fr 64px 116px 92px 104px;
   gap: 14px;
   padding: 0 14px 10px;
   font-size: 11.5px;
@@ -477,16 +477,21 @@ input {
 }
 @media (max-width: 620px) {
   .track-head {
-    grid-template-columns: 44px 1fr 64px 40px;
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    gap: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
   }
+  /* On mobile the title is the priority column — shed the secondary ones. */
   .col-added,
-  .col-size {
+  .col-size,
+  .col-duration {
     display: none;
   }
 }
 .track {
   display: grid;
-  grid-template-columns: 44px 1fr 64px 116px 92px 40px;
+  grid-template-columns: 44px 1fr 64px 116px 92px 104px;
   gap: 14px;
   align-items: center;
   padding: 8px 14px;
@@ -496,7 +501,30 @@ input {
 }
 @media (max-width: 620px) {
   .track {
-    grid-template-columns: 44px 1fr 64px 40px;
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    gap: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .track-main {
+    gap: 10px;
+  }
+  .track-actions {
+    gap: 2px;
+  }
+  /* Trim the page gutters so the row itself gets more width on phones. */
+  .main {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}
+/* Touch devices can't hover, so surface the per-row actions permanently. */
+@media (hover: none) {
+  .track-fav,
+  .track-add,
+  .track-remove,
+  .track-del {
+    opacity: 1;
   }
 }
 .track:hover {
@@ -580,7 +608,9 @@ input {
 }
 .track-actions {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
+  gap: 4px;
 }
 .track-del {
   width: 30px;
@@ -689,6 +719,428 @@ input {
   max-width: 360px;
   margin-inline: auto;
   line-height: 1.5;
+}
+
+/* ===================== Workspace (sidebar + content) ===================== */
+.workspace {
+  position: relative;
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+}
+.workspace-main {
+  min-width: 0;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+@media (max-width: 860px) {
+  .sidebar {
+    position: static;
+    gap: 12px;
+  }
+  /* Stacked layout: put the two nav entries side by side instead of full rows.
+     Scoped under .sidebar to outrank the base `.side-nav { flex-direction }`. */
+  .sidebar .side-nav {
+    flex-direction: row;
+    gap: 8px;
+  }
+  .sidebar .side-nav .side-item {
+    flex: 1;
+    min-width: 0;
+  }
+}
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.side-item,
+.side-pl-btn {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 9px 11px;
+  border-radius: 10px;
+  color: var(--text-dim);
+  font-weight: 600;
+  font-size: 14px;
+  text-align: left;
+  transition: background 0.14s, color 0.14s;
+}
+.side-item:hover,
+.side-pl-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.side-item.active,
+.side-pl.active .side-pl-btn {
+  background: var(--accent-soft);
+  color: var(--accent-2);
+}
+.side-item svg,
+.side-pl-btn svg {
+  flex-shrink: 0;
+}
+.side-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.side-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.side-item.active .side-count,
+.side-pl.active .side-count {
+  color: var(--accent-2);
+}
+
+.side-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.side-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 0 4px;
+}
+.side-head-toggle {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+  padding: 5px 7px;
+  border-radius: 8px;
+  color: var(--text-faint);
+  transition: background 0.14s, color 0.14s;
+}
+.side-head-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-dim);
+}
+.side-head-toggle .section-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  text-align: left;
+}
+.side-chevron {
+  flex-shrink: 0;
+  transition: transform 0.18s ease;
+}
+.side-chevron:not(.open) {
+  transform: rotate(-90deg);
+}
+.side-pl-total {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.side-add {
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  color: var(--text-faint);
+  transition: background 0.14s, color 0.14s;
+}
+.side-add:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.side-new {
+  padding: 0 4px;
+}
+.side-new input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 9px;
+  color: var(--text);
+  padding: 8px 11px;
+  outline: none;
+  font-size: 13.5px;
+}
+.side-new input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.side-playlists {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.side-pl {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+}
+.side-pl .side-pl-btn {
+  flex: 1;
+  min-width: 0;
+}
+.side-pl-del {
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.13s, background 0.13s, color 0.13s;
+}
+.side-pl:hover .side-pl-del {
+  opacity: 1;
+}
+.side-pl-del:hover {
+  background: rgba(255, 92, 122, 0.14);
+  color: var(--danger);
+}
+.side-empty {
+  padding: 6px 11px;
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+
+/* ===================== Track row actions (favorite / add / remove) ===================== */
+.track-fav,
+.track-add,
+.track-remove {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--text-faint);
+  opacity: 0;
+  transition: opacity 0.13s, background 0.13s, color 0.13s;
+}
+.track:hover .track-fav,
+.track:hover .track-add,
+.track:hover .track-remove {
+  opacity: 1;
+}
+.track-fav.on {
+  opacity: 1;
+  color: var(--danger);
+}
+.track-fav:hover {
+  background: rgba(255, 92, 122, 0.14);
+  color: var(--danger);
+}
+.track-add:hover,
+.track-add.on {
+  opacity: 1;
+  background: var(--accent-soft);
+  color: var(--accent-2);
+}
+.track-remove:hover {
+  background: rgba(255, 92, 122, 0.14);
+  color: var(--danger);
+}
+
+/* Add-to-playlist popover */
+.add-menu {
+  position: relative;
+  display: flex;
+}
+.add-pop {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  width: 224px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  cursor: default;
+}
+.add-pop-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-faint);
+  font-weight: 600;
+  padding: 4px 8px 6px;
+}
+.add-pop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  max-height: 210px;
+  overflow-y: auto;
+}
+.add-pop-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  color: var(--text-dim);
+  font-size: 13.5px;
+  text-align: left;
+  transition: background 0.13s, color 0.13s;
+}
+.add-pop-item:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+.add-pop-item.on {
+  color: var(--accent-2);
+}
+.add-pop-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.add-pop-empty {
+  padding: 8px;
+  font-size: 12.5px;
+  color: var(--text-faint);
+}
+.add-pop-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px;
+  margin-top: 4px;
+  border-top: 1px solid var(--border);
+  color: var(--accent-2);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.add-pop-add:hover {
+  background: var(--bg-hover);
+}
+.add-pop-new {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+.add-pop-new input {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  color: var(--text);
+  padding: 7px 9px;
+  outline: none;
+  font-size: 13px;
+}
+.add-pop-new input:focus {
+  border-color: var(--accent);
+}
+.add-pop-create {
+  padding: 0 12px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #0b0b12;
+  font-weight: 600;
+  font-size: 13px;
+}
+.add-pop-create:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Delete-playlist button beside the playlist title */
+.title-del {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  display: inline-grid;
+  place-items: center;
+  vertical-align: middle;
+  margin-left: 10px;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+  transition: background 0.14s, color 0.14s, border-color 0.14s;
+}
+.title-del:hover {
+  background: rgba(255, 92, 122, 0.14);
+  color: var(--danger);
+  border-color: transparent;
+}
+
+/* ===================== Toast ===================== */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--player-h) + 18px);
+  transform: translateX(-50%);
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 11px 12px 11px 14px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-strong);
+  border-radius: 11px;
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 13.5px;
+  animation: toast-in 0.18s ease;
+}
+.toast > svg {
+  color: var(--danger);
+  flex-shrink: 0;
+}
+.toast-close {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  color: var(--text-faint);
+  flex-shrink: 0;
+}
+.toast-close:hover {
+  background: var(--bg-hover);
+  color: var(--text);
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 /* ===================== Player bar ===================== */

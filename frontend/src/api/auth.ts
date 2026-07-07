@@ -18,11 +18,17 @@ const tokenUrl = `${config.authBase}/realms/${config.keycloak.realm}/protocol/op
 const STREAM_TOKEN_COOKIE = "access_token";
 
 let session: Session | null = loadSession();
-// Re-establish the streaming cookie on a fresh page load (it may have expired
-// while the tab was closed even though the refreshable session survived).
-if (session) syncStreamCookie(session);
 /** Coalesces concurrent refreshes into a single in-flight request. */
 let refreshing: Promise<boolean> | null = null;
+
+// Stream-scoped access token mirrored into the streaming cookie for the <audio>
+// element. It carries only the streaming audience, so a stolen cookie grants
+// streaming reads and nothing else. Minted lazily (see getStreamToken) by
+// down-scoping the session's refresh token; the broad session token stays the
+// bearer for the management/metadata APIs.
+let streamToken: { value: string; expiresAt: number } | null = null;
+/** Coalesces concurrent stream-token mints into a single in-flight request. */
+let streamMinting: Promise<string | null> | null = null;
 
 /** Subscribers notified whenever the session changes (login / logout / expiry). */
 const listeners = new Set<() => void>();
@@ -50,7 +56,6 @@ function persist(next: Session | null) {
   session = next;
   if (next) {
     localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(next));
-    syncStreamCookie(next);
   } else {
     localStorage.removeItem(STORAGE_KEYS.session);
     clearStreamCookie();
@@ -61,19 +66,54 @@ function persist(next: Session | null) {
   }
 }
 
-// The streaming service authenticates <audio>/<img> requests — which cannot
-// carry an Authorization header — via a cookie that mirrors the access token.
-// Scoped to the streaming path and SameSite=Lax so it's never sent cross-site
-// or to the other services; max-age tracks the token's own lifetime.
-function syncStreamCookie(s: Session) {
-  const maxAge = Math.max(0, Math.floor((accessExpiresAt(s) - Date.now()) / 1000));
+// The <audio> element can't send an Authorization header, so the streaming
+// service reads the token from a cookie. We mirror a *stream-scoped* token here
+// (never the API bearer): down-scoped to the streaming audience, path-scoped to
+// the streaming service, and SameSite=Lax — so a stolen cookie only grants
+// streaming reads, and management/metadata reject it (wrong audience).
+async function mintStreamToken(): Promise<string | null> {
+  const current = session;
+  if (!current) return null;
+  try {
+    const tokens = await requestToken({
+      grant_type: "refresh_token",
+      refresh_token: current.tokens.refresh_token,
+      scope: config.keycloak.streamScope,
+    });
+    // A concurrent refresh may have rotated the session; re-read it and keep its
+    // refresh token current so both flows stay valid.
+    if (!session) return null;
+    session = { ...session, tokens: { ...session.tokens, refresh_token: tokens.refresh_token } };
+    localStorage.setItem(STORAGE_KEYS.session, JSON.stringify(session));
+    const expiresAt = Date.now() + tokens.expires_in * 1000;
+    streamToken = { value: tokens.access_token, expiresAt };
+    writeStreamCookie(tokens.access_token, expiresAt);
+    return tokens.access_token;
+  } catch {
+    return null;
+  }
+}
+
+/** Returns a valid stream-scoped token, (re)writing the cookie, or null. */
+export async function getStreamToken(): Promise<string | null> {
+  if (!session) return null;
+  if (streamToken && Date.now() < streamToken.expiresAt - 15_000) return streamToken.value;
+  streamMinting ??= mintStreamToken().finally(() => {
+    streamMinting = null;
+  });
+  return streamMinting;
+}
+
+function writeStreamCookie(token: string, expiresAt: number) {
+  const maxAge = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
   const secure = location.protocol === "https:" ? "; Secure" : "";
   document.cookie =
-    `${STREAM_TOKEN_COOKIE}=${s.tokens.access_token}` +
+    `${STREAM_TOKEN_COOKIE}=${token}` +
     `; Path=${config.streamingBase}; Max-Age=${maxAge}; SameSite=Lax${secure}`;
 }
 
 function clearStreamCookie() {
+  streamToken = null;
   document.cookie = `${STREAM_TOKEN_COOKIE}=; Path=${config.streamingBase}; Max-Age=0; SameSite=Lax`;
 }
 
@@ -139,7 +179,12 @@ export function userFromToken(token: string): AuthUser | null {
 }
 
 export async function login(username: string, password: string): Promise<AuthUser> {
-  const tokens = await requestToken({ grant_type: "password", username, password, scope: "openid" });
+  const tokens = await requestToken({
+    grant_type: "password",
+    username,
+    password,
+    scope: config.keycloak.loginScope,
+  });
   persist({ tokens, obtainedAt: Date.now() });
   const user = userFromToken(tokens.access_token);
   if (!user) throw new AuthError("Could not read user data from the token");

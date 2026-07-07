@@ -10,6 +10,7 @@ export default defineConfig(({ mode }) => {
   const managementTarget = env.MANAGEMENT_URL ?? "http://127.0.0.1:8001";
   const streamingTarget = env.STREAMING_URL ?? "http://127.0.0.1:8002";
   const metadataTarget = env.METADATA_URL ?? "http://127.0.0.1:8003";
+  const libraryTarget = env.LIBRARY_URL ?? "http://127.0.0.1:8004";
   const keycloakTarget = env.KEYCLOAK_URL ?? "http://127.0.0.1:8080";
   // MinIO is reachable from the host at 127.0.0.1:9000, but management (running
   // in a container) signs presigned URLs against its internal endpoint hostname
@@ -39,6 +40,13 @@ export default defineConfig(({ mode }) => {
           // The metadata service already serves under `/metadata`, so we strip
           // only the `/api` namespace prefix (unlike management/streaming, whose
           // alias segment is not part of their real path).
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ""),
+        },
+        "/api/library": {
+          target: libraryTarget,
+          // Like metadata, the library service already serves under `/library`,
+          // so strip only the `/api` namespace prefix.
           changeOrigin: true,
           rewrite: (path) => path.replace(/^\/api/, ""),
         },

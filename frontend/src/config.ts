@@ -7,6 +7,7 @@ export const config = {
   managementBase: "/api/management",
   metadataBase: "/api/metadata",
   streamingBase: "/api/streaming",
+  libraryBase: "/api/library",
   authBase: "/api/auth",
   /** Same-origin proxy to S3/MinIO for presigned uploads (see nginx.conf). */
   s3Base: "/api/s3",
@@ -16,6 +17,12 @@ export const config = {
     clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? "management-service-client",
     clientSecret:
       import.meta.env.VITE_KEYCLOAK_CLIENT_SECRET ?? "zkkbWU1ff4QRLqGTx1idCVmCcLnqyzYJ",
+    // Keycloak client-scope NAMES (not the audience values their mappers emit).
+    // Both are Optional scopes on the client; login requests both, and the
+    // streaming cookie is down-scoped to `streamScope` so a stolen cookie only
+    // grants streaming reads — management/metadata reject it (wrong audience).
+    loginScope: "openid etc streaming",
+    streamScope: "openid streaming",
   },
 } as const;
 

@@ -23,6 +23,28 @@ export interface Track {
   createdAt: string;
 }
 
+/** A user's playlist, sourced from the library service (`GET /library/playlists`). */
+export interface Playlist {
+  id: string;
+  name: string;
+  /** Number of tracks in the playlist (from the read-model). */
+  tracksCount: number;
+}
+
+/** A favorited track, sourced from the library service (`GET /library/favorites`). */
+export interface Favorite {
+  /** The favorite record's id — needed to remove it (`DELETE /favorites/{id}`). */
+  id: string;
+  /** The favorited track's URN. */
+  trackId: string;
+}
+
+/** Which library section is currently shown in the main view. */
+export type LibrarySection =
+  | { kind: "all" }
+  | { kind: "favorites" }
+  | { kind: "playlist"; id: string };
+
 /** Authenticated user, decoded from the Keycloak token. */
 export interface AuthUser {
   username: string;

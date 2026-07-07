@@ -1,255 +1,42 @@
-import { useMemo, useState, type MouseEvent } from "react";
+import { useState } from "react";
 
-import { useLibrary } from "../context/LibraryContext";
-import { usePlayer } from "../context/PlayerContext";
-import { formatAddedAt, formatBytes, formatTag, formatTime } from "../lib/format";
-import { useCover } from "../lib/useCover";
-import type { Track } from "../types";
-import { Cover } from "./Cover";
-import { UploadMenu } from "./UploadMenu";
-import {
-  AlertIcon,
-  MusicIcon,
-  PlayIcon,
-  RefreshIcon,
-  SearchIcon,
-  SpinnerIcon,
-  TrashIcon,
-} from "./Icons";
+import type { LibrarySection } from "../types";
+import { AllMusicView } from "./AllMusicView";
+import { FavoritesView } from "./FavoritesView";
+import { PlaylistView } from "./PlaylistView";
+import { Sidebar } from "./Sidebar";
+import { Toast } from "./Toast";
 
-type SortKey = "recent" | "title" | "artist" | "duration" | "size";
-
-const SORTERS: Record<SortKey, (a: Track, b: Track) => number> = {
-  recent: (a, b) => b.createdAt.localeCompare(a.createdAt),
-  title: (a, b) => a.title.localeCompare(b.title, "en"),
-  artist: (a, b) => a.artist.localeCompare(b.artist, "en"),
-  duration: (a, b) => (b.duration ?? 0) - (a.duration ?? 0),
-  size: (a, b) => b.size - a.size,
-};
-
+/**
+ * The library workspace: a left sidebar (All music / Favorites / playlists) and
+ * the section-specific content. Which section is shown is local UI state.
+ */
 export function LibraryView() {
-  const { tracks, loading, error, refresh } = useLibrary();
-  const [query, setQuery] = useState("");
-  const [sort, setSort] = useState<SortKey>("recent");
-  const [format, setFormat] = useState("all");
-
-  const formats = useMemo(() => {
-    const set = new Set(tracks.map(formatTag));
-    return Array.from(set).sort();
-  }, [tracks]);
-
-  const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return tracks
-      .filter((t) => (format === "all" ? true : formatTag(t) === format))
-      .filter((t) =>
-        q === ""
-          ? true
-          : t.title.toLowerCase().includes(q) ||
-            t.artist.toLowerCase().includes(q) ||
-            (t.album?.toLowerCase().includes(q) ?? false) ||
-            (t.filename?.toLowerCase().includes(q) ?? false),
-      )
-      .sort(SORTERS[sort]);
-  }, [tracks, query, sort, format]);
-
+  const [view, setView] = useState<LibrarySection>({ kind: "all" });
   return (
-    <section>
-      <div className="library-head">
-        <h1 className="library-title">
-          My music
-          <span className="library-count">{tracks.length}</span>
-        </h1>
-        <div className="controls">
-          <div className="search">
-            <SearchIcon size={17} />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search by title, artist…"
-            />
-          </div>
-          {formats.length > 1 && (
-            <select
-              className="select"
-              value={format}
-              onChange={(e) => setFormat(e.target.value)}
-              aria-label="Filter by format"
-            >
-              <option value="all">All formats</option>
-              {formats.map((f) => (
-                <option key={f} value={f}>
-                  {f}
-                </option>
-              ))}
-            </select>
-          )}
-          <select
-            className="select"
-            value={sort}
-            onChange={(e) => setSort(e.target.value as SortKey)}
-            aria-label="Sort"
-          >
-            <option value="recent">Recent</option>
-            <option value="title">By title</option>
-            <option value="artist">By artist</option>
-            <option value="duration">By duration</option>
-            <option value="size">By size</option>
-          </select>
-          <button
-            className="refresh-btn"
-            onClick={refresh}
-            disabled={loading}
-            title="Refresh library"
-            aria-label="Refresh library"
-          >
-            {loading ? <SpinnerIcon size={18} /> : <RefreshIcon size={18} />}
-          </button>
-          <UploadMenu />
-        </div>
+    <div className="workspace">
+      <Sidebar view={view} onNavigate={setView} />
+      <div className="workspace-main">
+        <MainView view={view} onNavigate={setView} />
       </div>
-
-      {error && tracks.length === 0 ? (
-        <LibraryError message={error} onRetry={refresh} />
-      ) : loading && tracks.length === 0 ? (
-        <LibraryLoading />
-      ) : tracks.length === 0 ? (
-        <EmptyLibrary />
-      ) : visible.length === 0 ? (
-        <NoResults />
-      ) : (
-        <>
-          <div className="track-head">
-            <span>#</span>
-            <span>Title</span>
-            <span className="col-duration">Time</span>
-            <span className="col-added">Added</span>
-            <span className="col-size">Size</span>
-            <span className="col-actions" aria-hidden="true" />
-          </div>
-          <div className="tracklist">
-            {visible.map((track, i) => (
-              <TrackRow key={track.urn} track={track} index={i + 1} queue={visible} />
-            ))}
-          </div>
-        </>
-      )}
-    </section>
-  );
-}
-
-function TrackRow({ track, index, queue }: { track: Track; index: number; queue: Track[] }) {
-  const { current, isPlaying, playTrack } = usePlayer();
-  const { removeTrack } = useLibrary();
-  const coverUrl = useCover(track);
-  const isCurrent = current?.urn === track.urn;
-  const playingThis = isCurrent && isPlaying;
-
-  const handleDelete = (e: MouseEvent) => {
-    e.stopPropagation();
-    if (window.confirm(`Delete “${track.title}”? This can't be undone.`)) {
-      removeTrack(track.urn);
-    }
-  };
-
-  return (
-    <div className={`track${isCurrent ? " active" : ""}`} onClick={() => playTrack(track, queue)}>
-      <div className="track-index">
-        {playingThis ? (
-          <div className="now-bars">
-            <span />
-            <span />
-            <span />
-          </div>
-        ) : (
-          <>
-            <span className="idx">{index}</span>
-            <span className="hover-play">
-              <PlayIcon size={16} />
-            </span>
-          </>
-        )}
-      </div>
-
-      <div className="track-main">
-        <Cover track={track} imageUrl={coverUrl} />
-        <div className="track-text">
-          <div className="track-title">{track.title}</div>
-          <div className="track-artist">
-            {track.artist} · {formatTag(track)}
-          </div>
-        </div>
-      </div>
-
-      <span className="col-duration">{track.duration ? formatTime(track.duration) : "—"}</span>
-      <span className="col-added">{formatAddedAt(track.createdAt)}</span>
-      <span className="col-size">{formatBytes(track.size)}</span>
-
-      <div className="track-actions">
-        <button
-          type="button"
-          className="track-del"
-          title="Delete track"
-          aria-label={`Delete ${track.title}`}
-          onClick={handleDelete}
-        >
-          <TrashIcon size={16} />
-        </button>
-      </div>
+      <Toast />
     </div>
   );
 }
 
-function LibraryLoading() {
-  return (
-    <div className="empty">
-      <div className="empty-icon">
-        <SpinnerIcon size={28} />
-      </div>
-      <h3>Loading library…</h3>
-      <p>Fetching the track list from the metadata service.</p>
-    </div>
-  );
-}
-
-function LibraryError({ message, onRetry }: { message: string; onRetry: () => void }) {
-  return (
-    <div className="empty">
-      <div className="empty-icon">
-        <AlertIcon size={28} />
-      </div>
-      <h3>Failed to load library</h3>
-      <p>{message}. Make sure the metadata service is running.</p>
-      <button className="retry" onClick={onRetry}>
-        Retry
-      </button>
-    </div>
-  );
-}
-
-function EmptyLibrary() {
-  return (
-    <div className="empty">
-      <div className="empty-icon">
-        <MusicIcon size={30} />
-      </div>
-      <h3>Nothing here yet</h3>
-      <p>
-        Upload your first track with the Upload button above. Once its metadata is processed,
-        it'll appear here and be ready to play.
-      </p>
-    </div>
-  );
-}
-
-function NoResults() {
-  return (
-    <div className="empty">
-      <div className="empty-icon">
-        <SearchIcon size={28} />
-      </div>
-      <h3>Nothing found</h3>
-      <p>Try a different search or reset the format filter.</p>
-    </div>
-  );
+function MainView({
+  view,
+  onNavigate,
+}: {
+  view: LibrarySection;
+  onNavigate: (view: LibrarySection) => void;
+}) {
+  switch (view.kind) {
+    case "all":
+      return <AllMusicView />;
+    case "favorites":
+      return <FavoritesView />;
+    case "playlist":
+      return <PlaylistView key={view.id} id={view.id} onNavigate={onNavigate} />;
+  }
 }
