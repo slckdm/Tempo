@@ -16,7 +16,7 @@ async def test_get_current_user_success(
     authorized_user_finder.get_by_id.return_value = user
     current_user_service = create_current_user_service(identity_provider, authorized_user_finder)
 
-    result = await current_user_service.get_current_user()
+    result = await current_user_service.get_current_user([])
 
     assert result is user
     identity_provider.get_current_user_id.assert_called_once()
@@ -31,4 +31,4 @@ async def test_get_current_user_unauthorized(
     current_user_service = create_current_user_service(identity_provider, authorized_user_finder)
 
     with pytest.raises(Unauthorized):
-        await current_user_service.get_current_user()
+        await current_user_service.get_current_user([])
