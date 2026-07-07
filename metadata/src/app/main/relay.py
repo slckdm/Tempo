@@ -20,7 +20,7 @@ from app.main.config.loader import (
     load_s3_settings,
 )
 from app.main.config.settings import KeycloakSettings, PostgresSettings, S3Settings
-from app.main.ioc.outbound import get_outbound_providers
+from app.main.ioc.outbound import KeycloakClientProvider, PostgresProvider, S3Provider
 from app.main.ioc.relay import RelayProvider
 from app.main.setup import setup_logging
 
@@ -39,7 +39,9 @@ async def start_relay() -> None:
 
     container = make_async_container(
         RelayProvider(),
-        *get_outbound_providers(),
+        KeycloakClientProvider(),
+        PostgresProvider(),
+        S3Provider(),
         context={
             PostgresSettings: load_postgres_settings(),
             RabbitBroker: broker,
