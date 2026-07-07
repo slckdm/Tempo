@@ -1,0 +1,17 @@
+
+FROM python:3.14-slim AS base
+
+RUN pip install uv==0.11.2
+
+ENV PATH="/app/.venv/bin:${PATH}"
+
+WORKDIR /app
+COPY ./pyproject.toml.local-docker /app/pyproject.toml
+COPY ./src /app
+
+RUN uv lock && uv sync --frozen --group local_pypi
+
+
+FROM base AS backend
+
+ENTRYPOINT python -m app.main.start
