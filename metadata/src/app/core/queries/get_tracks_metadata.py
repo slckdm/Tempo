@@ -19,5 +19,5 @@ class GetTracksMetadata:
     async def __call__(
         self, filters: FilterParams, pagination: PaginationParams
     ) -> ListMetadataQM:
-        await self._current_user_service.get_current_user()
+        await self._current_user_service.get_current_user(["tempo:etc"])
         return await self._metadata_reader.list_by_filter(filters, pagination)

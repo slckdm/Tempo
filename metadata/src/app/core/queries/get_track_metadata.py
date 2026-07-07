@@ -17,7 +17,7 @@ class GetTrackMetadata:
         self._current_user_service = current_user_service
 
     async def __call__(self, upload_id: UUID) -> MetadataQM:
-        await self._current_user_service.get_current_user()
+        await self._current_user_service.get_current_user(["tempo:etc"])
         metadata = await self._metadata_reader.get_by_id(upload_id)
         if not metadata:
             raise NotFound
