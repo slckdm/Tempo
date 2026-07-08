@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from toolkit.service.exceptions import NotFound
 from toolkit.types.urn import UploadURNType
 
@@ -10,6 +8,7 @@ from app.core.commands.ports.transaction import Transaction
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.playlist_service import PlaylistService
 from app.core.common.services.playlist_track_service import PlaylistTrackService
+from app.core.common.types import PlaylistID
 
 
 class AddTrackToPlaylist:
@@ -32,7 +31,7 @@ class AddTrackToPlaylist:
         self._flusher = flusher
 
     async def __call__(
-        self, playlist_id: UUID, track_id: UploadURNType
+        self, playlist_id: PlaylistID, track_id: UploadURNType
     ) -> None:
         user = await self._current_user_service.get_current_user(["tempo:etc"])
         playlist = await self._playlist_storage.get(user.id, playlist_id)

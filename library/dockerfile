@@ -15,3 +15,7 @@ RUN uv lock && uv sync --frozen --group local_pypi
 FROM base AS backend
 
 ENTRYPOINT python -m app.main.start
+
+FROM base AS consumer
+
+ENTRYPOINT python -m app.main.consumer

@@ -12,6 +12,18 @@ services:
     ports:
       - 8004:8080
 
+  library-consumer:
+    container_name: tempo.library.consumer
+    build:
+      context: .
+      target: consumer
+      network: host
+    env_file:
+      - .dev/.env.docker.local
+
+    networks:
+      - local-network
+
 networks:
   local-network:
     name: local.network

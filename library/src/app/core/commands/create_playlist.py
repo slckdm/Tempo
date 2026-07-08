@@ -9,6 +9,7 @@ from app.core.commands.ports.playlist_storage import PlaylistStorage
 from app.core.commands.ports.transaction import Transaction
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.playlist_service import PlaylistService
+from app.core.common.types import PlaylistID
 
 
 class CreatePlaylistRequest(BaseModel):
@@ -16,7 +17,7 @@ class CreatePlaylistRequest(BaseModel):
 
 
 class CreatePlaylistResponse(BaseModel):
-    id: UUID
+    id: PlaylistID
     user_id: UserID
     name: str
 

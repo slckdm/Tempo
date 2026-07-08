@@ -7,6 +7,7 @@ from app.core.commands.ports.playlist_storage import PlaylistStorage
 from app.core.commands.ports.transaction import Transaction
 from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.playlist_service import PlaylistService
+from app.core.common.types import PlaylistID
 
 
 class DeletePlaylist:
@@ -24,7 +25,7 @@ class DeletePlaylist:
         self._transaction = transaction
         self._flusher = flusher
 
-    async def __call__(self, playlist_id: UUID) -> None:
+    async def __call__(self, playlist_id: PlaylistID) -> None:
         user = await self._current_user_service.get_current_user(["tempo:etc"])
 
         playlist = await self._playlist_storage.get(user.id, playlist_id)

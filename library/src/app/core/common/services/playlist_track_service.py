@@ -1,6 +1,4 @@
 
-from toolkit.types.urn import UploadURNType
-
 from app.core.models.playlist_track import PlaylistTrack
 
 

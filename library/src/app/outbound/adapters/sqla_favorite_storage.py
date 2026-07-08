@@ -1,7 +1,7 @@
 from typing import Sequence
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from toolkit.types.urn import UploadURNType
@@ -22,7 +22,8 @@ class SQLAFavoriteStorage(FavoriteStorage):
         self, user_id: UserID, track_id: UploadURNType
     ) -> Favorite | None:
         favorites = await self._session.scalar(
-            select(Favorite).where(Favorite.user_id == str(user_id), Favorite.track_id == str(track_id))
+            select(Favorite)
+            .where(Favorite.user_id == str(user_id), Favorite.track_id == str(track_id))
         )
         return favorites
 
@@ -31,6 +32,11 @@ class SQLAFavoriteStorage(FavoriteStorage):
 
     async def remove(self, favorite: Favorite) -> None:
         await self._session.delete(favorite)
+
+    async def remove_all(self, track_id: UploadURNType) -> None:
+        await self._session.execute(
+            delete(Favorite).where(Favorite.track_id == str(track_id))
+        )
 
     async def get_list(self, user_id: UserID) -> Sequence[Favorite]:
         return (await self._session.scalars(select(Favorite))).all()

@@ -3,6 +3,8 @@ from typing import Final
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from toolkit.messaging.settings import RabbitMQSettings
+
 from .settings import (
     AppSettings,
     KeycloakSettings,
@@ -48,6 +50,10 @@ class RedisEnvConfig(BaseSettings, RedisSettings):
     model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="REDIS_")
 
 
+class RabbitMQEnvConfig(BaseSettings, RabbitMQSettings):
+    model_config = _DEFAULT_CONFIG_DICT | SettingsConfigDict(env_prefix="RMQ_")
+
+
 def load_app_settings() -> AppSettings:
     return _load_settings(AppEnvConfig)
 
@@ -70,3 +76,7 @@ def load_logging_settings() -> LoggingSettings:
 
 def load_redis_settings() -> RedisSettings:
     return _load_settings(RedisEnvConfig)
+
+
+def load_rabbitmq_settings() -> RabbitMQSettings:
+    return _load_settings(RabbitMQEnvConfig)

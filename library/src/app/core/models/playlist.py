@@ -1,9 +1,11 @@
-from uuid import UUID, uuid4
 from typing import TYPE_CHECKING
+from uuid import uuid4
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from toolkit.types_ import UserID
+
+from app.core.common.types import PlaylistID
 
 from .base import Base
 
@@ -16,7 +18,7 @@ class Playlist(Base):
 
     __tablename__ = "playlists"
 
-    id: Mapped[UUID] = mapped_column(default=uuid4, primary_key=True)
+    id: Mapped[PlaylistID] = mapped_column(default=uuid4, primary_key=True)
     user_id: Mapped[UserID] = mapped_column()
     name: Mapped[str] = mapped_column()
 
