@@ -6,7 +6,7 @@
     "configurations": [
         {
             "name": "FastAPI",
-            "consoleName": "Metadata: FastAPI",
+            "consoleName": "Library: FastAPI",
             "type": "debugpy",
             "request": "launch",
             "cwd": "${workspaceFolder}/src",
@@ -15,20 +15,11 @@
         },
         {
             "name": "Consumer",
-            "consoleName": "Metadata: Consumer",
+            "consoleName": "Library: Consumer",
             "type": "debugpy",
             "request": "launch",
             "cwd": "${workspaceFolder}/src",
             "module": "app.main.consumer",
-            "console": "integratedTerminal",
-        },
-        {
-            "name": "Publisher",
-            "consoleName": "Metadata: Publisher",
-            "type": "debugpy",
-            "request": "launch",
-            "cwd": "${workspaceFolder}/src",
-            "module": "app.main.relay",
             "console": "integratedTerminal",
         },
     ]
