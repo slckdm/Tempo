@@ -1,5 +1,5 @@
-import logging
 import asyncio
+import logging
 
 from dishka import make_async_container
 from dishka_faststream import FastStreamProvider, setup_dishka
@@ -7,7 +7,6 @@ from faststream import FastStream
 from toolkit.messaging.broker import (
     MANAGEMENT_DLE,
     MANAGEMENT_DLQ,
-    MANAGEMENT_EXCHANGE,
     make_rabbit_broker,
 )
 
@@ -34,7 +33,6 @@ async def create_app() -> None:
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
     broker.include_router(router)
-    await broker.declare_exchange(MANAGEMENT_EXCHANGE)
     await broker.declare_exchange(MANAGEMENT_DLE)
     await broker.declare_queue(MANAGEMENT_DLQ)
 

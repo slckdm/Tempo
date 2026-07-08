@@ -5,8 +5,6 @@ from dishka import make_async_container
 from faststream.rabbit import RabbitBroker
 
 from toolkit.messaging.broker import (
-    METADATA_DLE,
-    METADATA_DLQ,
     METADATA_EXCHANGE,
     make_rabbit_broker,
 )
@@ -34,8 +32,6 @@ async def start_relay() -> None:
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
     await broker.declare_exchange(METADATA_EXCHANGE)
-    await broker.declare_exchange(METADATA_DLE)
-    await broker.declare_queue(METADATA_DLQ)
 
     container = make_async_container(
         RelayProvider(),

@@ -32,8 +32,6 @@ async def start_relay() -> None:
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
     await broker.declare_exchange(MANAGEMENT_EXCHANGE)
-    await broker.declare_exchange(MANAGEMENT_DLE)
-    await broker.declare_queue(MANAGEMENT_DLQ)
 
     container = make_async_container(
         RelayProvider(),

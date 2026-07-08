@@ -8,7 +8,6 @@ from faststream import FastStream
 from toolkit.messaging.broker import (
     METADATA_DLE,
     METADATA_DLQ,
-    METADATA_EXCHANGE,
     make_rabbit_broker,
 )
 
@@ -35,7 +34,6 @@ async def create_app() -> None:
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
     broker.include_router(router)
-    await broker.declare_exchange(METADATA_EXCHANGE)
     await broker.declare_exchange(METADATA_DLE)
     await broker.declare_queue(METADATA_DLQ)
 

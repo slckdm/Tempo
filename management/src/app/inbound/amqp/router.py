@@ -4,6 +4,7 @@ from dishka import FromDishka
 from dishka_faststream import inject
 from faststream.rabbit import RabbitMessage, RabbitRouter
 from toolkit.messaging.broker import (
+    MANAGEMENT_CONSUMER_QUEUE,
     MANAGEMENT_DLE,
     MANAGEMENT_DLQ,
     METADATA_EXCHANGE,
@@ -18,13 +19,21 @@ from app.core.common.exceptions import StatusUpdateFlowError
 
 router = RabbitRouter()
 
-metadata_ready_queue = make_queue(str(METADATA_READY_RK), MANAGEMENT_DLE)
-metadata_failed_queue = make_queue(str(METADATA_FAILED_RK), MANAGEMENT_DLE)
+metadata_ready_queue = make_queue(
+    f"{MANAGEMENT_CONSUMER_QUEUE.name}.upload_metadata_completed_handler",
+    METADATA_READY_RK,
+    MANAGEMENT_DLE,
+)
+metadata_failed_queue = make_queue(
+    f"{MANAGEMENT_CONSUMER_QUEUE.name}.upload_metadata_failed_handler",
+    METADATA_FAILED_RK,
+    MANAGEMENT_DLE,
+)
 
 
 @router.subscriber(metadata_ready_queue, METADATA_EXCHANGE)
 @inject
-async def upload_metadata_completed(
+async def upload_metadata_completed_handler(
     payload: MetadataReadyEvent, handler: FromDishka[FinishUpload]
 ) -> None:
     try:
@@ -35,7 +44,7 @@ async def upload_metadata_completed(
 
 @router.subscriber(metadata_failed_queue, METADATA_EXCHANGE)
 @inject
-async def upload_metadata_failed(
+async def upload_metadata_failed_handler(
     payload: MetadataFailedEvent, handler: FromDishka[FailUpload]
 ) -> None:
     try:
