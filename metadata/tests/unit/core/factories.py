@@ -199,6 +199,7 @@ def create_metadata_qm(
         cover_key=None,
         size=faker.random_int(),
         created_at=datetime.now(UTC),
+        created_by=create_user_id(),
     )
 
 

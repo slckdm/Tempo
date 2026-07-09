@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field, computed_field
 
 from toolkit.types.enum import UploadStatus
 from toolkit.types.urn import UploadURNType
+from toolkit.types_ import UserID
 
 
 class MetadataQM(BaseModel):
@@ -21,6 +22,7 @@ class MetadataQM(BaseModel):
     cover_key: str | None
     size: int
     created_at: datetime
+    created_by: UserID
 
     @computed_field
     @property
