@@ -168,10 +168,12 @@ async function requestToken(body: Record<string, string>): Promise<TokenResponse
 export function userFromToken(token: string): AuthUser | null {
   const payload = decodeJwt(token);
   if (!payload || typeof payload.preferred_username !== "string") return null;
+  if (typeof payload.sub !== "string") return null;
   const first = typeof payload.given_name === "string" ? payload.given_name : "";
   const last = typeof payload.family_name === "string" ? payload.family_name : "";
   const name = [first, last].filter(Boolean).join(" ") || payload.preferred_username;
   return {
+    id: payload.sub,
     username: payload.preferred_username,
     name,
     email: typeof payload.email === "string" ? payload.email : undefined,

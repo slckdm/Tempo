@@ -21,6 +21,8 @@ export interface Track {
   hasCover: boolean;
   /** ISO timestamp from the metadata record (original upload time). */
   createdAt: string;
+  /** Keycloak `sub` of the uploader — only the owner may delete the track. */
+  userId: string;
 }
 
 /** A user's playlist, sourced from the library service (`GET /library/playlists`). */
@@ -47,6 +49,8 @@ export type LibrarySection =
 
 /** Authenticated user, decoded from the Keycloak token. */
 export interface AuthUser {
+  /** Keycloak `sub` — matched against a track's `userId` to gate deletion. */
+  id: string;
   username: string;
   name: string;
   email?: string;

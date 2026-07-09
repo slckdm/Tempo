@@ -19,6 +19,7 @@ interface TrackMetadataDTO {
   cover_key: string | null;
   size: number;
   created_at: string;
+  created_by: string;
   // The read-model no longer exposes these; keep them optional so the parser
   // degrades gracefully (title/artist come from tags, format tag falls back).
   filename?: string | null;
@@ -58,6 +59,7 @@ function toTrack(dto: TrackMetadataDTO): Track {
     size: dto.size,
     hasCover: Boolean(dto.cover_key),
     createdAt: dto.created_at,
+    userId: dto.created_by,
   };
 }
 

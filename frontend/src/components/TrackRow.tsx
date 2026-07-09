@@ -1,5 +1,6 @@
 import type { MouseEvent } from "react";
 
+import { useAuth } from "../context/AuthContext";
 import { useLibrary } from "../context/LibraryContext";
 import { usePlayer } from "../context/PlayerContext";
 import { formatAddedAt, formatBytes, formatTag, formatTime } from "../lib/format";
@@ -21,10 +22,12 @@ interface TrackRowProps {
 export function TrackRow({ track, index, queue, view }: TrackRowProps) {
   const { current, isPlaying, playTrack } = usePlayer();
   const { removeTrack, isFavorite, toggleFavorite, removeTrackFromPlaylist } = useLibrary();
+  const { user } = useAuth();
   const coverUrl = useCover(track);
   const isCurrent = current?.urn === track.urn;
   const playingThis = isCurrent && isPlaying;
   const favorited = isFavorite(track.urn);
+  const canDelete = user?.id === track.userId;
 
   const handleFavorite = (e: MouseEvent) => {
     e.stopPropagation();
@@ -100,7 +103,7 @@ export function TrackRow({ track, index, queue, view }: TrackRowProps) {
           </button>
         )}
 
-        {view.kind === "all" && (
+        {view.kind === "all" && canDelete && (
           <button
             type="button"
             className="track-del"
