@@ -1,4 +1,4 @@
-from boto3.exceptions import Boto3Error
+from botocore.exceptions import ClientError
 
 from toolkit.entities.object import Object
 from toolkit.s3 import S3Client
@@ -17,7 +17,7 @@ class S3ObjectStorage(ObjectStorage):
     async def get_object(self, key: str) -> Object:
         try:
             return await self._s3.get_object(bucket=self._s3_settings.BUCKET, key=key)
-        except Boto3Error as boto3_err:
+        except ClientError as boto3_err:
             raise ObjectStorageError from boto3_err
 
     async def put_object(self, key: str, body: bytes, **kwargs) -> None:
@@ -25,11 +25,11 @@ class S3ObjectStorage(ObjectStorage):
             await self._s3.put_object(
                 bucket=self._s3_settings.BUCKET, key=key, body=body, **kwargs
             )
-        except Boto3Error as boto3_err:
+        except ClientError as boto3_err:
             raise ObjectStorageError from boto3_err
 
     async def delete_object(self, key: str, **kwargs) -> None:
         try:
             await self._s3.delete_object(bucket=self._s3_settings.BUCKET, key=key, **kwargs)
-        except Boto3Error as boto3_err:
+        except ClientError as boto3_err:
             raise ObjectStorageError from boto3_err
