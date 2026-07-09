@@ -10,7 +10,6 @@ from toolkit.messaging.broker import (
     LIBRARY_DLE,
     LIBRARY_DLQ,
     MANAGEMENT_EXCHANGE,
-    METADATA_DLE,
     make_queue,
 )
 from toolkit.messaging.contracts import UploadDeletedEvent
@@ -22,7 +21,7 @@ from app.core.commands.remove_track_from_playlists import RemoveTrackFromPlaylis
 router = RabbitRouter()
 
 upload_deleted_queue = make_queue(
-    f"{LIBRARY_CONSUMER_QUEUE.name}.upload_deleted_handler", UPLOAD_DELETED_RK, METADATA_DLE
+    f"{LIBRARY_CONSUMER_QUEUE.name}.upload_deleted_handler", UPLOAD_DELETED_RK, LIBRARY_DLE
 )
 
 @router.subscriber(upload_deleted_queue, MANAGEMENT_EXCHANGE, ack_policy=AckPolicy.NACK_ON_ERROR)
