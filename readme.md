@@ -4,6 +4,8 @@ A self-hosted online music player, built as a pet project for practicing event-d
 
 Upload an audio file and Tempo extracts its tags and cover art, adds it to a shared track library, and streams it back — with playlists and favorites on top.
 
+![Tempo Screenshot](assets/SPA.png)
+
 ## Architecture
 
 ```mermaid
