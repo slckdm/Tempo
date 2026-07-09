@@ -6,6 +6,86 @@ Upload an audio file and Tempo extracts its tags and cover art, adds it to a sha
 
 ## Architecture
 
+```mermaid
+%%{init: {"flowchart": {"curve": "linear"}} }%%
+flowchart TB
+  subgraph Client["Client / Edge"]
+    FE["React frontend"]
+    Proxy["same-origin proxy /api/*"]
+    FE --> Proxy
+  end
+
+  subgraph Auth["Auth"]
+    KC["Keycloak"]
+  end
+
+  subgraph APIs["HTTP services"]
+    MAPI["management<br/>uploads"]
+    METAAPI["metadata<br/>track read model"]
+    LIBAPI["library<br/>favorites + playlists"]
+    STRAPI["streaming<br/>audio + covers"]
+  end
+
+  subgraph Data["Storage"]
+    S3["MinIO / S3<br/>audio + covers"]
+    MDB["management Postgres<br/>uploads + outbox"]
+    METADB["metadata Postgres<br/>tracks + outbox"]
+    LIBDB["library Postgres<br/>favorites + playlists"]
+    Redis["Redis cache"]
+  end
+
+  subgraph Messaging["Async messaging"]
+    RMQ["RabbitMQ topic exchanges"]
+
+    MRelay["management relay"]
+    METAConsumer["metadata consumer"]
+    METARelay["metadata relay"]
+    MConsumer["management consumer"]
+    LIBConsumer["library consumer"]
+  end
+
+  Proxy -->|login / refresh| KC
+  Proxy -->|uploads| MAPI
+  Proxy -->|track queries| METAAPI
+  Proxy -->|favorites / playlists| LIBAPI
+  Proxy -->|audio / cover reads| STRAPI
+  Proxy -->|presigned upload PUT| S3
+
+  MAPI --> KC
+  METAAPI --> KC
+  LIBAPI --> KC
+  STRAPI --> KC
+
+  MAPI --> MDB
+  MAPI --> S3
+  MAPI --> Redis
+
+  METAAPI --> METADB
+
+  LIBAPI --> LIBDB
+  LIBAPI --> Redis
+
+  STRAPI --> S3
+
+  MRelay -->|poll outbox| MDB
+  MRelay -->|UPLOAD_CREATED<br/>UPLOAD_COMPLETED<br/>UPLOAD_DELETED| RMQ
+
+  RMQ -->|UPLOAD_COMPLETED| METAConsumer
+  RMQ -->|UPLOAD_DELETED| METAConsumer
+  RMQ -->|UPLOAD_DELETED| LIBConsumer
+
+  METAConsumer --> METADB
+  METAConsumer --> S3
+
+  METARelay -->|poll outbox| METADB
+  METARelay -->|METADATA_READY<br/>METADATA_FAILED| RMQ
+
+  RMQ -->|METADATA_READY<br/>METADATA_FAILED| MConsumer
+  MConsumer --> MDB
+
+  LIBConsumer --> LIBDB
+```
+
 Five independent uv projects (Python 3.14) plus a React SPA:
 
 | Component | Port | Purpose |
