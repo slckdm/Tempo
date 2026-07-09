@@ -22,6 +22,9 @@ skip-magic-trailing-comma = false
 [lint.pydocstyle]
 convention = "google"
 
+[lint.per-file-ignores]
+"tests/**/*.py" = ["D"]
+
 [lint.flake8-quotes]
 inline-quotes = "double"
 multiline-quotes = "double"
