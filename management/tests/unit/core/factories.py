@@ -72,7 +72,7 @@ def create_upload(
     content_type: str | None = None,
     size: int | None = None,
     status: UploadStatus | None = None,
-    created_by: str | None = None,
+    created_by: UserID | None = None,
     created_at: datetime | None = None,
 ) -> Upload:
     faker = Faker()

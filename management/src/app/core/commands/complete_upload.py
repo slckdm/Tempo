@@ -1,6 +1,6 @@
 from toolkit.messaging.contracts import UploadCompletedEvent
 from toolkit.messaging.routing import UPLOAD_COMPLETED_RK
-from toolkit.service.exceptions import NotFound
+from toolkit.service.exceptions import Forbidden, NotFound
 from toolkit.types.enum import UploadStatus
 from toolkit.types.urn import UploadURNType
 
@@ -37,11 +37,14 @@ class CompleteUpload:
     async def __call__(
         self, upload_id: UploadURNType
     ) -> None:
-        await self._current_user_service.get_current_user(["tempo:etc"])
+        user = await self._current_user_service.get_current_user(["tempo:etc"])
         upload = await self._upload_storage.get_by_id(upload_id.id, for_update=True)
 
         if not upload:
             raise NotFound(data={"upload": upload_id})
+        if upload.created_by != user.id:
+            raise Forbidden()
+
 
         await self._object_storage.get_object(str(upload.urn))
         await self._upload_service.transit_status(upload, UploadStatus.PROCESSING)

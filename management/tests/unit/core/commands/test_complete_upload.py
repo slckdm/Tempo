@@ -19,6 +19,7 @@ from tests.unit.core.factories import (
     create_outbox_service,
     create_upload,
     create_upload_service,
+    create_user,
 )
 
 
@@ -55,7 +56,9 @@ async def test_complete_upload_success(
     flusher: Flusher,
     transaction: Transaction,
 ) -> None:
-    upload = create_upload(status=UploadStatus.PENDING)
+    user = create_user()
+    upload = create_upload(status=UploadStatus.PENDING, created_by=user.id)
+    authorized_user_finder.get_by_id.return_value = user
     upload_storage.get_by_id.return_value = upload
     complete_upload_command = make_complete_upload_command(
         current_user_service=create_current_user_service(
