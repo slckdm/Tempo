@@ -49,17 +49,17 @@ def create_service() -> FastAPI:
         debug=app_settings.DEBUG,
         title=app_settings.NAME,
         exception_handlers={
-            HTTPStatus.UNAUTHORIZED: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
-            HTTPStatus.FORBIDDEN: JsendErrorHandler(HTTPStatus.FORBIDDEN),
-            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: JsendErrorHandler(
+            HTTPStatus.UNAUTHORIZED: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
+            HTTPStatus.FORBIDDEN: JsendFailHandler(HTTPStatus.FORBIDDEN),
+            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: JsendFailHandler(
                 HTTPStatus.UNSUPPORTED_MEDIA_TYPE
             ),
-            HTTPStatus.UNPROCESSABLE_CONTENT: JsendErrorHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
-            HTTPStatus.NOT_FOUND: JsendErrorHandler(HTTPStatus.NOT_FOUND),
-            HTTPStatus.INTERNAL_SERVER_ERROR: JsendFailHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
-            Unauthorized: JsendErrorHandler(HTTPStatus.UNAUTHORIZED),
-            Forbidden: JsendErrorHandler(HTTPStatus.FORBIDDEN),
-            NotFound: JsendErrorHandler(HTTPStatus.NOT_FOUND),
+            HTTPStatus.UNPROCESSABLE_CONTENT: JsendFailHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
+            HTTPStatus.NOT_FOUND: JsendFailHandler(HTTPStatus.NOT_FOUND),
+            HTTPStatus.INTERNAL_SERVER_ERROR: JsendErrorHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
+            Unauthorized: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
+            Forbidden: JsendFailHandler(HTTPStatus.FORBIDDEN),
+            NotFound: JsendFailHandler(HTTPStatus.NOT_FOUND),
         },
         routes=[*make_tracks_metadata_router().routes],
     )
