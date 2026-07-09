@@ -9,83 +9,95 @@ Upload an audio file and Tempo extracts its tags and cover art, adds it to a sha
 ## Architecture
 
 ```mermaid
-%%{init: {"flowchart": {"curve": "linear"}} }%%
 flowchart TB
-  subgraph Client["Client / Edge"]
-    FE["React frontend"]
-    Proxy["same-origin proxy /api/*"]
-    FE --> Proxy
-  end
+  FE["Frontend"] --> PX["same-origin proxy /api/*"]
 
-  subgraph Auth["Auth"]
-    KC["Keycloak"]
-  end
-
-  subgraph APIs["HTTP services"]
+  subgraph HTTP["HTTP APIs"]
+    direction LR
     MAPI["management<br/>uploads"]
     METAAPI["metadata<br/>track read model"]
     LIBAPI["library<br/>favorites + playlists"]
-    STRAPI["streaming<br/>audio + covers"]
+    STREAMAPI["streaming<br/>audio + covers"]
   end
 
-  subgraph Data["Storage"]
-    S3["MinIO / S3<br/>audio + covers"]
-    MDB["management Postgres<br/>uploads + outbox"]
-    METADB["metadata Postgres<br/>tracks + outbox"]
-    LIBDB["library Postgres<br/>favorites + playlists"]
-    Redis["Redis cache"]
+  PX -->|/management| MAPI
+  PX -->|/metadata| METAAPI
+  PX -->|/library| LIBAPI
+  PX -->|/streaming| STREAMAPI
+
+  subgraph Management["Management service"]
+    MDB["Postgres + outbox"]
+    MRELAY["relay"]
+    MCONSUMER["consumer<br/>finish / fail upload"]
+    MAPI --> MDB --> MRELAY
+    MCONSUMER --> MDB
   end
 
-  subgraph Messaging["Async messaging"]
-    RMQ["RabbitMQ topic exchanges"]
-
-    MRelay["management relay"]
-    METAConsumer["metadata consumer"]
-    METARelay["metadata relay"]
-    MConsumer["management consumer"]
-    LIBConsumer["library consumer"]
+  subgraph Metadata["Metadata service"]
+    METADB["Postgres + outbox"]
+    METARELAY["relay"]
+    METACONSUMER["consumer<br/>extract / delete metadata"]
+    METAAPI --> METADB
+    METACONSUMER --> METADB --> METARELAY
   end
 
-  Proxy -->|login / refresh| KC
-  Proxy -->|uploads| MAPI
-  Proxy -->|track queries| METAAPI
-  Proxy -->|favorites / playlists| LIBAPI
-  Proxy -->|audio / cover reads| STRAPI
-  Proxy -->|presigned upload PUT| S3
+  subgraph Library["Library service"]
+    LIBDB["Postgres"]
+    LIBCONSUMER["consumer<br/>remove track references"]
+    LIBAPI --> LIBDB
+    LIBCONSUMER --> LIBDB
+  end
 
-  MAPI --> KC
-  METAAPI --> KC
-  LIBAPI --> KC
-  STRAPI --> KC
+  subgraph AMQP["RabbitMQ"]
+    MX["management exchange"]
+    METAX["metadata exchange"]
+  end
 
-  MAPI --> MDB
-  MAPI --> S3
-  MAPI --> Redis
+  MRELAY -->|UPLOAD_COMPLETED / UPLOAD_DELETED| MX
+  MX -->|UPLOAD_COMPLETED / UPLOAD_DELETED| METACONSUMER
+  MX -->|UPLOAD_DELETED| LIBCONSUMER
+  METARELAY -->|METADATA_READY / METADATA_FAILED| METAX
+  METAX --> MCONSUMER
 
-  METAAPI --> METADB
+  S3["MinIO / S3"]
+  MAPI -->|presign / verify / delete| S3
+  METACONSUMER -->|read audio / write cover| S3
+  STREAMAPI -->|stream objects| S3
 
-  LIBAPI --> LIBDB
-  LIBAPI --> Redis
+  KC["Keycloak"]
+  HTTP -.->|JWT validation| KC
+```
 
-  STRAPI --> S3
+Upload saga
+```mermaid
+sequenceDiagram
+  participant F as Frontend
+  participant M as Management API
+  participant MDB as Management DB/outbox
+  participant S3 as MinIO / S3
+  participant MR as Management relay
+  participant MX as RabbitMQ: management exchange
+  participant MC as Metadata consumer
+  participant METADB as Metadata DB/outbox
+  participant METAR as Metadata relay
+  participant METAX as RabbitMQ: metadata exchange
+  participant MGC as Management consumer
 
-  MRelay -->|poll outbox| MDB
-  MRelay -->|UPLOAD_CREATED<br/>UPLOAD_COMPLETED<br/>UPLOAD_DELETED| RMQ
-
-  RMQ -->|UPLOAD_COMPLETED| METAConsumer
-  RMQ -->|UPLOAD_DELETED| METAConsumer
-  RMQ -->|UPLOAD_DELETED| LIBConsumer
-
-  METAConsumer --> METADB
-  METAConsumer --> S3
-
-  METARelay -->|poll outbox| METADB
-  METARelay -->|METADATA_READY<br/>METADATA_FAILED| RMQ
-
-  RMQ -->|METADATA_READY<br/>METADATA_FAILED| MConsumer
-  MConsumer --> MDB
-
-  LIBConsumer --> LIBDB
+  F->>M: POST /uploads
+  M->>S3: generate presigned PUT URL
+  M-->>F: upload URL
+  F->>S3: PUT audio
+  F->>M: POST /uploads/{id}/complete
+  M->>MDB: PROCESSING + UPLOAD_COMPLETED outbox event
+  MR->>MDB: poll unpublished event
+  MR->>MX: publish UPLOAD_COMPLETED
+  MX->>MC: deliver event
+  MC->>S3: read audio, write embedded cover
+  MC->>METADB: metadata + METADATA_READY/FAILED outbox event
+  METAR->>METADB: poll unpublished event
+  METAR->>METAX: publish result
+  METAX->>MGC: deliver result
+  MGC->>MDB: mark upload COMPLETED or FAILED
 ```
 
 Five independent uv projects (Python 3.14) plus a React SPA:
