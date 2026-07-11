@@ -1,8 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from toolkit.types.enum import UploadStatus
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.contracts.uploads import UploadStatus, UploadURN
 
 
 class TrackMetadata:
@@ -60,5 +59,5 @@ class TrackMetadata:
         self.updated_at = updated_at
 
     @property
-    def urn(self) -> UploadURNType:
-        return UploadURNType(id=self.upload_id)
+    def urn(self) -> UploadURN:
+        return UploadURN(id=self.upload_id)

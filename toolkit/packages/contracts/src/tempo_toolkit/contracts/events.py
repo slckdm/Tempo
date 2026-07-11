@@ -1,0 +1,64 @@
+"""Cross-service event contracts."""
+
+from datetime import UTC, datetime
+from uuid import UUID, uuid4
+
+from pydantic import BaseModel, Field
+
+from .identifiers import UserID
+from .uploads import UploadStatus, UploadURN
+
+
+class EventContract(BaseModel):
+    """Base event envelope."""
+
+    schema_version: int = 1
+    event_id: UUID = Field(default_factory=uuid4)
+    occurred_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
+class UploadCreatedEvent(EventContract):
+    """Upload-created event."""
+
+    upload_id: UploadURN
+    s3_key: str
+    filename: str
+    content_type: str
+    size: int
+    created_by: UserID
+    created_at: datetime
+    status: UploadStatus
+
+
+class UploadCompletedEvent(EventContract):
+    """Upload-completed event."""
+
+    upload_id: UploadURN
+    s3_key: str
+    filename: str
+    content_type: str
+    size: int
+    created_by: UserID
+    created_at: datetime
+    status: UploadStatus
+
+
+class UploadDeletedEvent(EventContract):
+    """Upload-deleted event."""
+
+    upload_id: UploadURN
+    s3_key: str
+
+
+class MetadataReadyEvent(EventContract):
+    """Metadata-ready event."""
+
+    upload_id: UploadURN
+    cover_key: str | None = None
+
+
+class MetadataFailedEvent(EventContract):
+    """Metadata-failed event."""
+
+    upload_id: UploadURN
+    reason: str

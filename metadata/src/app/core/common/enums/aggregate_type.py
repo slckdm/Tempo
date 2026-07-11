@@ -1,4 +1,4 @@
-from toolkit.outbox.types import AggregateType as _AggregateType
+from tempo_toolkit.application.outbox import AggregateType as _AggregateType
 
 
 class AggregateType(_AggregateType):

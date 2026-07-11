@@ -1,4 +1,4 @@
-from toolkit.service.exceptions import TempoBaseError
+from tempo_toolkit.application.errors import TempoBaseError
 
 
 class MetadataReaderError(TempoBaseError):

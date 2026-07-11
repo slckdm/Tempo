@@ -1,0 +1,39 @@
+"""RabbitMQ and FastStream integration."""
+
+from .outbox import FastStreamOutboxMessagePublisher
+from .rabbitmq import (
+    LIBRARY_CONSUMER_QUEUE,
+    LIBRARY_DLE,
+    LIBRARY_DLQ,
+    LIBRARY_EXCHANGE,
+    MANAGEMENT_CONSUMER_QUEUE,
+    MANAGEMENT_DLE,
+    MANAGEMENT_DLQ,
+    MANAGEMENT_EXCHANGE,
+    METADATA_CONSUMER_QUEUE,
+    METADATA_DLE,
+    METADATA_DLQ,
+    METADATA_EXCHANGE,
+    make_queue,
+    make_rabbit_broker,
+)
+from .settings import RabbitMQSettings
+
+__all__ = [
+    "FastStreamOutboxMessagePublisher",
+    "LIBRARY_CONSUMER_QUEUE",
+    "LIBRARY_DLE",
+    "LIBRARY_DLQ",
+    "LIBRARY_EXCHANGE",
+    "MANAGEMENT_CONSUMER_QUEUE",
+    "MANAGEMENT_DLE",
+    "MANAGEMENT_DLQ",
+    "MANAGEMENT_EXCHANGE",
+    "METADATA_CONSUMER_QUEUE",
+    "METADATA_DLE",
+    "METADATA_DLQ",
+    "METADATA_EXCHANGE",
+    "RabbitMQSettings",
+    "make_queue",
+    "make_rabbit_broker",
+]

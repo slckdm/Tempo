@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
 
 from app.core.queries.models.favorite import FavoriteQM
 from app.core.queries.models.favorites import FavoritesQM

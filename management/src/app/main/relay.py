@@ -3,9 +3,10 @@ import logging
 
 from dishka import make_async_container
 from faststream.rabbit import RabbitBroker, RabbitExchange
-from toolkit.config.settings import PostgresSettings, RedisSettings
-from toolkit.messaging.broker import MANAGEMENT_EXCHANGE, make_rabbit_broker
-from toolkit.providers.postgres_provider import PostgresProvider
+
+from tempo_toolkit.infrastructure.cache import RedisSettings
+from tempo_toolkit.infrastructure.database import PostgresProvider, PostgresSettings
+from tempo_toolkit.infrastructure.messaging import MANAGEMENT_EXCHANGE, make_rabbit_broker
 
 from app.core.commands.publish_outbox_messages import PublishOutboxMessages
 from app.main.config.loader import (

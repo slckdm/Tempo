@@ -1,0 +1,41 @@
+[project]
+name = "tempo-toolkit-infrastructure"
+version = "0.2.0"
+description = "Infrastructure integrations for Tempo services"
+requires-python = ">=3.14"
+dependencies = [
+    "dishka>=1.10.1,<2.0.0",
+    "pydantic>=2.13.4,<3.0.0",
+    "pydantic-settings>=2.14.2,<3.0.0",
+    "tempo-toolkit-application==0.2.0",
+    "tempo-toolkit-contracts==0.2.0",
+]
+
+[project.optional-dependencies]
+web = ["fastapi>=0.139.0"]
+keycloak = [
+    "aiohttp>=3.14.1,<4.0.0",
+    "pyjwt[crypto]>=2.13.0,<3.0.0",
+]
+postgres = [
+    "asyncpg>=0.31.0,<0.32.0",
+    "sqlalchemy>=2.0.51,<3.0.0",
+]
+redis = ["redis>=8.0.1"]
+s3 = [
+    "boto3>=1.43.25,<2.0.0",
+    "boto3-stubs[essential]>=1.43.25,<2.0.0",
+]
+rabbitmq = ["faststream[rabbit]>=0.7.1,<0.8.0"]
+
+[tool.uv.sources]
+tempo-toolkit-application = { workspace = true }
+tempo-toolkit-contracts = { workspace = true }
+
+[build-system]
+requires = ["uv_build>=0.11.25,<0.12.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "tempo_toolkit.infrastructure"
+

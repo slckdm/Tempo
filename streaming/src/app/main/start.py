@@ -6,9 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
-from toolkit.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
-from toolkit.config.settings import AppSettings, KeycloakSettings, RedisSettings, S3Settings
-from toolkit.service.exceptions import Forbidden, NotFound, Unauthorized
+from tempo_toolkit.application.errors import Forbidden, NotFound, Unauthorized
+from tempo_toolkit.infrastructure.cache import RedisSettings
+from tempo_toolkit.infrastructure.identity import KeycloakSettings
+from tempo_toolkit.infrastructure.object_storage import S3Settings
+from tempo_toolkit.infrastructure.web import AppSettings, JSendErrorHandler, JSendFailHandler
 
 from app.inbound.http.stream.router import make_stream_router
 from app.main.config.loader import (
@@ -38,17 +40,17 @@ def create_service() -> FastAPI:
         title=app_settings.NAME,
         routes=[*make_stream_router().routes],
         exception_handlers={
-            HTTPStatus.UNAUTHORIZED: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
-            HTTPStatus.FORBIDDEN: JsendFailHandler(HTTPStatus.FORBIDDEN),
-            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: JsendFailHandler(HTTPStatus.UNSUPPORTED_MEDIA_TYPE),
-            HTTPStatus.UNPROCESSABLE_CONTENT: JsendFailHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
-            HTTPStatus.NOT_FOUND: JsendFailHandler(HTTPStatus.NOT_FOUND),
-            HTTPStatus.INTERNAL_SERVER_ERROR: JsendErrorHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
-            Unauthorized: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
-            Forbidden: JsendFailHandler(HTTPStatus.FORBIDDEN),
-            NotFound: JsendFailHandler(HTTPStatus.NOT_FOUND),
-            ObjectNotFound: JsendFailHandler(HTTPStatus.NOT_FOUND),
-            ObjectRangeError: JsendFailHandler(HTTPStatus.RANGE_NOT_SATISFIABLE),
+            HTTPStatus.UNAUTHORIZED: JSendFailHandler(HTTPStatus.UNAUTHORIZED),
+            HTTPStatus.FORBIDDEN: JSendFailHandler(HTTPStatus.FORBIDDEN),
+            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: JSendFailHandler(HTTPStatus.UNSUPPORTED_MEDIA_TYPE),
+            HTTPStatus.UNPROCESSABLE_CONTENT: JSendFailHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
+            HTTPStatus.NOT_FOUND: JSendFailHandler(HTTPStatus.NOT_FOUND),
+            HTTPStatus.INTERNAL_SERVER_ERROR: JSendErrorHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
+            Unauthorized: JSendFailHandler(HTTPStatus.UNAUTHORIZED),
+            Forbidden: JSendFailHandler(HTTPStatus.FORBIDDEN),
+            NotFound: JSendFailHandler(HTTPStatus.NOT_FOUND),
+            ObjectNotFound: JSendFailHandler(HTTPStatus.NOT_FOUND),
+            ObjectRangeError: JSendFailHandler(HTTPStatus.RANGE_NOT_SATISFIABLE),
         },
     )
 

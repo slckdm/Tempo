@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Protocol
 
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
 
 from app.core.common.types import PlaylistID
 from app.core.queries.models.playlist import PlaylistQM

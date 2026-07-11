@@ -1,6 +1,7 @@
 import pytest
 from faker import Faker
-from toolkit.types.enum import UploadStatus
+
+from tempo_toolkit.contracts.uploads import UploadStatus
 
 from app.core.common.exceptions import StatusUpdateFlowError
 from app.core.models.upload import Upload

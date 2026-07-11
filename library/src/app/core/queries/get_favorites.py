@@ -1,4 +1,4 @@
-from toolkit.common.services.current_user_service import CurrentUserService
+from tempo_toolkit.application.auth import CurrentUserService
 
 from app.core.queries.models.favorites import FavoritesQM
 from app.core.queries.ports.favorite_reader import FavoriteReader

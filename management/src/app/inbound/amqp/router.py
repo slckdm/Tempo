@@ -3,15 +3,16 @@ import logging
 from dishka import FromDishka
 from dishka_faststream import inject
 from faststream.rabbit import RabbitMessage, RabbitRouter
-from toolkit.messaging.broker import (
+
+from tempo_toolkit.contracts.events import MetadataFailedEvent, MetadataReadyEvent
+from tempo_toolkit.contracts.routing import METADATA_FAILED_RK, METADATA_READY_RK
+from tempo_toolkit.infrastructure.messaging import (
     MANAGEMENT_CONSUMER_QUEUE,
     MANAGEMENT_DLE,
     MANAGEMENT_DLQ,
     METADATA_EXCHANGE,
     make_queue,
 )
-from toolkit.messaging.contracts import MetadataFailedEvent, MetadataReadyEvent
-from toolkit.messaging.routing import METADATA_FAILED_RK, METADATA_READY_RK
 
 from app.core.commands.fail_upload import FailUpload
 from app.core.commands.finish_upload import FinishUpload

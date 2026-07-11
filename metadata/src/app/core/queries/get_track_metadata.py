@@ -1,7 +1,7 @@
 from uuid import UUID
 
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.service.exceptions import NotFound
+from tempo_toolkit.application.auth import CurrentUserService
+from tempo_toolkit.application.errors import NotFound
 
 from app.core.queries.models.metadata import MetadataQM
 from app.core.queries.ports.metadata_reader import MetadataReader

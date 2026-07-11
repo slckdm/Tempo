@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
 
 from app.core.commands.ports.playlist_storage import PlaylistStorage
 from app.core.models.playlist import Playlist

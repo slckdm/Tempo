@@ -2,10 +2,10 @@ from dataclasses import dataclass
 from io import IOBase
 from typing import Any, Generator, Iterator
 
-from toolkit.common.ports.object_storage import ObjectStorage
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.service.exceptions import NotFound, ObjectStorageError
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.application.auth import CurrentUserService
+from tempo_toolkit.application.errors import NotFound, ObjectStorageError
+from tempo_toolkit.application.storage import ObjectStorage
+from tempo_toolkit.contracts.uploads import UploadURN
 
 _DEFAULT_CHUNK_SIZE = 256 * 1024
 
@@ -36,7 +36,7 @@ class Stream:
         self._current_user_service = current_user_service
 
     async def __call__(
-        self, id: UploadURNType, range_header: str | None, cover: bool = False
+        self, id: UploadURN, range_header: str | None, cover: bool = False
     ) -> StreamData:
         await self._current_user_service.get_current_user(["tempo:streaming"])
 

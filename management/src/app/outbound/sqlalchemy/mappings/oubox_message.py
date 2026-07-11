@@ -1,6 +1,6 @@
 
-from toolkit.outbox.model import OutboxMessage
-from toolkit.outbox.table import make_outbox_message_table
+from tempo_toolkit.application.outbox import OutboxMessage
+from tempo_toolkit.infrastructure.database import make_outbox_message_table
 
 from app.outbound.sqlalchemy.registry import mapper_registry
 

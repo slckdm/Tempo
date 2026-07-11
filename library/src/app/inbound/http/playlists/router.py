@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter
 
-from toolkit.service import response
+from tempo_toolkit.infrastructure.web import jsend as response
 
 from .add_track_to_playlist import add_track_to_playlist
 from .create_playlist import create_playlist

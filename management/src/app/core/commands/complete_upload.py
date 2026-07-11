@@ -1,14 +1,11 @@
-from toolkit.common.ports.flusher import Flusher
-from toolkit.common.ports.object_storage import ObjectStorage
-from toolkit.common.ports.transaction import Transaction
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.messaging.contracts import UploadCompletedEvent
-from toolkit.messaging.routing import UPLOAD_COMPLETED_RK
-from toolkit.outbox.ports.outbox_storage import OutboxStorage
-from toolkit.outbox.service import OutboxService
-from toolkit.service.exceptions import Forbidden, NotFound
-from toolkit.types.enum import UploadStatus
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.application.auth import CurrentUserService
+from tempo_toolkit.application.errors import Forbidden, NotFound
+from tempo_toolkit.application.outbox import OutboxService, OutboxStorage
+from tempo_toolkit.application.persistence import Flusher, Transaction
+from tempo_toolkit.application.storage import ObjectStorage
+from tempo_toolkit.contracts.events import UploadCompletedEvent
+from tempo_toolkit.contracts.routing import UPLOAD_COMPLETED_RK
+from tempo_toolkit.contracts.uploads import UploadStatus, UploadURN
 
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.enums.aggregate_type import AggregateType
@@ -36,7 +33,7 @@ class CompleteUpload:
         self._transaction = transaction
         self._flusher = flusher
 
-    async def __call__(self, upload_id: UploadURNType) -> None:
+    async def __call__(self, upload_id: UploadURN) -> None:
         user = await self._current_user_service.get_current_user(["tempo:etc"])
         upload = await self._upload_storage.get_by_id(upload_id.id, for_update=True)
 

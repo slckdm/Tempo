@@ -5,15 +5,15 @@ from dishka_faststream import inject
 from faststream import AckPolicy
 from faststream.rabbit import RabbitMessage, RabbitRouter
 
-from toolkit.messaging.broker import (
+from tempo_toolkit.contracts.events import UploadDeletedEvent
+from tempo_toolkit.contracts.routing import UPLOAD_DELETED_RK
+from tempo_toolkit.infrastructure.messaging import (
     LIBRARY_CONSUMER_QUEUE,
     LIBRARY_DLE,
     LIBRARY_DLQ,
     MANAGEMENT_EXCHANGE,
     make_queue,
 )
-from toolkit.messaging.contracts import UploadDeletedEvent
-from toolkit.messaging.routing import UPLOAD_DELETED_RK
 
 from app.core.commands.remove_track_from_favorites import RemoveTrackFromFavorites
 from app.core.commands.remove_track_from_playlists import RemoveTrackFromPlaylists

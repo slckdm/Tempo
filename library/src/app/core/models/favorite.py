@@ -1,6 +1,6 @@
 """Favorite ORM model."""
 
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
 
 from app.core.common.types import FavoriteID
 

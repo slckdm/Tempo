@@ -3,14 +3,12 @@ from typing import Final
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from toolkit.config.loader import load_settings
-from toolkit.config.settings import (
-    AppSettings,
-    KeycloakSettings,
-    LoggingSettings,
-    RedisSettings,
-    S3Settings,
-)
+from tempo_toolkit.infrastructure.cache import RedisSettings
+from tempo_toolkit.infrastructure.configuration import load_settings
+from tempo_toolkit.infrastructure.identity import KeycloakSettings
+from tempo_toolkit.infrastructure.logging import LoggingSettings
+from tempo_toolkit.infrastructure.object_storage import S3Settings
+from tempo_toolkit.infrastructure.web import AppSettings
 
 BASE_DIR: Final[Path] = Path(__file__).resolve().parents[4]
 _ENV_FILE: Final[Path] = BASE_DIR.joinpath(".env")

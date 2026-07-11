@@ -2,12 +2,14 @@ from uuid import uuid4
 
 from faker import Faker
 
-from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
-from toolkit.common.ports.identity_provider import IdentityProvider
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.entities import User
-from toolkit.types.urn import UploadURNType
-from toolkit.types_ import UserID
+from tempo_toolkit.application.auth import (
+    AuthorizedUserFinder,
+    CurrentUserService,
+    IdentityProvider,
+    User,
+)
+from tempo_toolkit.contracts.identifiers import UserID
+from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.common.factories.id_factory import (
     generate_favorite_id,
@@ -57,6 +59,10 @@ def create_user_id(value: UserID | None = None) -> UserID:
     return value or UserID(uuid4())
 
 
+def create_playlist_id(value: PlaylistID | None = None) -> PlaylistID:
+    return value or generate_playlist_id()
+
+
 def create_user(
     id: UserID | None = None,
     username: str | None = None,
@@ -73,14 +79,14 @@ def create_user(
     )
 
 
-def create_upload_urn(value=None) -> UploadURNType:
-    return UploadURNType(value or uuid4())
+def create_upload_urn(value=None) -> UploadURN:
+    return UploadURN(value or uuid4())
 
 
 def create_favorite(
     id: FavoriteID | None = None,
     user_id: UserID | None = None,
-    track_id: UploadURNType | None = None,
+    track_id: UploadURN | None = None,
 ) -> Favorite:
     track_urn = track_id or create_upload_urn()
     return Favorite(
@@ -105,7 +111,7 @@ def create_playlist(
 def create_playlist_track(
     id: TrackID | None = None,
     playlist_id: PlaylistID | None = None,
-    track_id: UploadURNType | None = None,
+    track_id: UploadURN | None = None,
 ) -> PlaylistTrack:
     track_urn = track_id or create_upload_urn()
     return PlaylistTrack(
@@ -118,7 +124,7 @@ def create_playlist_track(
 def create_favorite_qm(
     id=None,
     user_id: UserID | None = None,
-    track_id: UploadURNType | None = None,
+    track_id: UploadURN | None = None,
 ) -> FavoriteQM:
     return FavoriteQM(
         id=id or uuid4(),
@@ -160,7 +166,7 @@ def create_playlists_qm(
     )
 
 
-def create_tracks_qm(tracks: list[UploadURNType] | None = None) -> TracksQM:
+def create_tracks_qm(tracks: list[UploadURN] | None = None) -> TracksQM:
     return TracksQM(tracks=tracks if tracks is not None else [create_upload_urn()])
 
 

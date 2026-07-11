@@ -4,13 +4,13 @@ import logging
 from dishka import make_async_container
 from faststream.rabbit import RabbitBroker, RabbitExchange
 
-from toolkit.config.settings import KeycloakSettings, PostgresSettings, S3Settings
-from toolkit.messaging.broker import (
+from tempo_toolkit.infrastructure.database import PostgresProvider, PostgresSettings
+from tempo_toolkit.infrastructure.identity import KeycloakSettings
+from tempo_toolkit.infrastructure.messaging import (
     METADATA_EXCHANGE,
     make_rabbit_broker,
 )
-from toolkit.providers.postgres_provider import PostgresProvider
-from toolkit.providers.s3_provider import S3Provider
+from tempo_toolkit.infrastructure.object_storage import S3Provider, S3Settings
 
 from app.core.commands.publish_outbox_messages import PublishOutboxMessages
 from app.main.config.loader import (

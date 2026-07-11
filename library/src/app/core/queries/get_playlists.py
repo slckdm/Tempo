@@ -1,4 +1,4 @@
-from toolkit.common.services.current_user_service import CurrentUserService
+from tempo_toolkit.application.auth import CurrentUserService
 
 from app.core.queries.models.playlists import PlaylistsQM
 from app.core.queries.ports.playlist_reader import PlaylistReader

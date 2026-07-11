@@ -1,9 +1,9 @@
 from datetime import datetime, timezone
 from mimetypes import guess_type
 
-from toolkit.entities import User
-from toolkit.service.exceptions import UnsupportedMediaType
-from toolkit.types.enum import UploadStatus
+from tempo_toolkit.application.auth import User
+from tempo_toolkit.application.errors import UnsupportedMediaType
+from tempo_toolkit.contracts.uploads import UploadStatus
 
 from app.core.common.exceptions import StatusUpdateFlowError
 from app.core.common.factories.id_factory import generate_upload_id

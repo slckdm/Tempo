@@ -1,7 +1,8 @@
 from uuid import uuid4
 
 from sqlalchemy import UUID, Column, DateTime, Enum, Integer, String, Table
-from toolkit.types.enum import UploadStatus
+
+from tempo_toolkit.contracts.uploads import UploadStatus
 
 from app.core.models.upload import Upload
 from app.outbound.sqlalchemy.registry import mapper_registry

@@ -2,7 +2,7 @@ from uuid import uuid4
 
 from sqlalchemy import UUID, Column, DateTime, Enum, Float, Integer, String, Table
 
-from toolkit.types.enum import UploadStatus
+from tempo_toolkit.contracts.uploads import UploadStatus
 
 from app.core.models.track_metadata import TrackMetadata
 from app.outbound.sqlalchemy.registry import mapper_registry

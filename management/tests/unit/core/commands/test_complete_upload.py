@@ -1,14 +1,17 @@
+import io
+
 import pytest
-from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
-from toolkit.common.ports.flusher import Flusher
-from toolkit.common.ports.identity_provider import IdentityProvider
-from toolkit.common.ports.object_storage import ObjectStorage
-from toolkit.common.ports.transaction import Transaction
-from toolkit.common.ports.utc_timer import UTCTimer
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.outbox.ports.outbox_storage import OutboxStorage
-from toolkit.outbox.service import OutboxService
-from toolkit.types.enum import UploadStatus
+
+from tempo_toolkit.application.auth import (
+    AuthorizedUserFinder,
+    CurrentUserService,
+    IdentityProvider,
+)
+from tempo_toolkit.application.outbox import OutboxService, OutboxStorage
+from tempo_toolkit.application.persistence import Flusher, Transaction
+from tempo_toolkit.application.storage import ObjectStorage, StoredObject
+from tempo_toolkit.application.time import UTCTimer
+from tempo_toolkit.contracts.uploads import UploadStatus
 
 from app.core.commands.complete_upload import CompleteUpload
 from app.core.commands.ports.upload_storage import UploadStorage
@@ -59,6 +62,12 @@ async def test_complete_upload_success(
     upload = create_upload(status=UploadStatus.PENDING, created_by=user.id)
     authorized_user_finder.get_by_id.return_value = user
     upload_storage.get_by_id.return_value = upload
+    stored_object = StoredObject(
+        body=io.BytesIO(b"audio"),
+        content_length=5,
+        content_type="audio/mpeg",
+    )
+    object_storage.get_object.return_value = stored_object
     complete_upload_command = make_complete_upload_command(
         current_user_service=create_current_user_service(
             identity_provider, authorized_user_finder
@@ -71,10 +80,11 @@ async def test_complete_upload_success(
         flusher=flusher,
         transaction=transaction,
     )
-    response = await complete_upload_command(upload.urn)
+    await complete_upload_command(upload.urn)
 
     upload_storage.get_by_id.assert_called_once_with(upload.id, True)
     object_storage.get_object.assert_called_once_with(str(upload.urn))
+    assert stored_object.body.closed
     outbox_storage.add.assert_called_once()
     flusher.flush.assert_called_once()
     transaction.commit.assert_called_once()

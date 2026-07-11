@@ -4,14 +4,14 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from pydantic import BaseModel
 
-from toolkit.service.response import JSendSuccessfulResponse
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.contracts.uploads import UploadURN
+from tempo_toolkit.infrastructure.web import JSendSuccessfulResponse
 
 from app.core.commands.add_track_to_playlist import AddTrackToPlaylist
 
 
 class AddTrackRequestBody(BaseModel):
-    track_id: UploadURNType
+    track_id: UploadURN
 
 
 @inject

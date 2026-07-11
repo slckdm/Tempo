@@ -1,8 +1,7 @@
 import pytest
 
-from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
-from toolkit.common.ports.identity_provider import IdentityProvider
-from toolkit.common.ports.utc_timer import UTCTimer
+from tempo_toolkit.application.auth import AuthorizedUserFinder, IdentityProvider
+from tempo_toolkit.application.time import UTCTimer
 
 from app.core.queries.get_tracks_metadata import GetTracksMetadata
 from app.core.queries.ports.metadata_reader import MetadataReader

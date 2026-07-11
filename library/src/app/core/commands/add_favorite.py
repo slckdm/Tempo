@@ -1,10 +1,9 @@
 from pydantic import BaseModel
 
-from toolkit.common.ports.flusher import Flusher
-from toolkit.common.ports.transaction import Transaction
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.service.exceptions import ResourceAlreadyExists
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.application.auth import CurrentUserService
+from tempo_toolkit.application.errors import ResourceAlreadyExists
+from tempo_toolkit.application.persistence import Flusher, Transaction
+from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.commands.ports.favorite_storage import FavoriteStorage
 from app.core.common.services.favorite_service import FavoriteService
@@ -13,13 +12,13 @@ from app.core.common.services.favorite_service import FavoriteService
 class AddFavoriteRequest(BaseModel):
     """Request model for adding a favorite."""
 
-    track_id: UploadURNType
+    track_id: UploadURN
 
 
 class AddFavoriteResponse(BaseModel):
     """Response model for adding a favorite."""
 
-    track_id: UploadURNType
+    track_id: UploadURN
 
 
 class AddFavorite:

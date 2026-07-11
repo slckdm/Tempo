@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Protocol, Sequence, overload
 
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.common.types import PlaylistID, TrackID
 from app.core.models.playlist import Playlist
@@ -12,7 +12,7 @@ class PlaylistTrackStorage(Protocol):
 
     @abstractmethod
     async def get(
-        self, playlist_id: PlaylistID, track_id: UploadURNType
+        self, playlist_id: PlaylistID, track_id: UploadURN
     ) -> PlaylistTrack | None: ...
 
     @abstractmethod
@@ -28,7 +28,7 @@ class PlaylistTrackStorage(Protocol):
     async def delete(self, track) -> None: ...
 
     @abstractmethod
-    async def delete_all(self, track_id: UploadURNType) -> None: ...
+    async def delete_all(self, track_id: UploadURN) -> None: ...
 
     @abstractmethod
     async def get_list(self, playlist_id: PlaylistID) -> Sequence[PlaylistTrack]: ...

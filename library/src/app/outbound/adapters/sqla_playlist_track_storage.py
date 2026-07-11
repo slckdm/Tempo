@@ -4,7 +4,7 @@ from uuid import UUID
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.commands.ports.playlist_track_storage import PlaylistTrackStorage
 from app.core.common.types import PlaylistID, TrackID
@@ -17,7 +17,7 @@ class SQLAPlaylistTrackStorage(PlaylistTrackStorage):
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
-    async def get(self, playlist_id: PlaylistID, track_id: UploadURNType) -> PlaylistTrack | None:
+    async def get(self, playlist_id: PlaylistID, track_id: UploadURN) -> PlaylistTrack | None:
         return await self._session.scalar(
             select(PlaylistTrack).where(
                 PlaylistTrack.playlist_id == playlist_id, PlaylistTrack.track_id == str(track_id)
@@ -35,7 +35,7 @@ class SQLAPlaylistTrackStorage(PlaylistTrackStorage):
                 delete(PlaylistTrack).where(PlaylistTrack.id == track)
             )
 
-    async def delete_all(self, track_id: UploadURNType) -> None:
+    async def delete_all(self, track_id: UploadURN) -> None:
         await self._session.execute(
             delete(PlaylistTrack).where(PlaylistTrack.track_id == str(track_id))
         )

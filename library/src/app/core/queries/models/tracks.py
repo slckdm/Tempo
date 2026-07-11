@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.contracts.uploads import UploadURN
 
 
 class TracksQM(BaseModel):
-    tracks: list[UploadURNType]
+    tracks: list[UploadURN]

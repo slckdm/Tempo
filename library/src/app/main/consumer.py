@@ -5,8 +5,10 @@ from dishka import make_async_container
 from dishka_faststream import FastStreamProvider, setup_dishka
 from faststream import FastStream
 
-from toolkit.config.settings import KeycloakSettings, PostgresSettings, RedisSettings
-from toolkit.messaging.broker import (
+from tempo_toolkit.infrastructure.cache import RedisSettings
+from tempo_toolkit.infrastructure.database import PostgresSettings
+from tempo_toolkit.infrastructure.identity import KeycloakSettings
+from tempo_toolkit.infrastructure.messaging import (
     LIBRARY_DLE,
     LIBRARY_DLQ,
     make_rabbit_broker,

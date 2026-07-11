@@ -1,9 +1,8 @@
 
 from dishka import Provider, Scope, provide
-from toolkit.common.adapters.sqla_flusher import SQLAFlusher
-from toolkit.common.adapters.sqla_transaction import SQLATransaction
-from toolkit.common.ports.flusher import Flusher
-from toolkit.common.ports.transaction import Transaction
+
+from tempo_toolkit.application.persistence import Flusher, Transaction
+from tempo_toolkit.infrastructure.database import SQLAlchemyFlusher, SQLAlchemyTransaction
 
 from app.core.commands.fail_upload import FailUpload
 from app.core.commands.finish_upload import FinishUpload
@@ -16,8 +15,8 @@ class ConsumerProvider(Provider):
     scope = Scope.REQUEST
 
     # ports
-    transaction = provide(SQLATransaction, provides=Transaction)
-    flusher = provide(SQLAFlusher, provides=Flusher)
+    transaction = provide(SQLAlchemyTransaction, provides=Transaction)
+    flusher = provide(SQLAlchemyFlusher, provides=Flusher)
     upload_storage = provide(SQLAUploadStorage, provides=UploadStorage)
 
     # services

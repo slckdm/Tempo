@@ -57,8 +57,18 @@ def upgrade() -> None:
     sa.Column("updated_at", sa.DateTime(timezone=True), nullable=False),
     sa.PrimaryKeyConstraint("upload_id")
     )
-    op.create_index(op.f("ix_track_metadata_created_at"), "track_metadata", ["created_at"], unique=False)
-    op.create_index(op.f("ix_track_metadata_processing_status"), "track_metadata", ["processing_status"], unique=False)
+    op.create_index(
+        op.f("ix_track_metadata_created_at"),
+        "track_metadata",
+        ["created_at"],
+        unique=False,
+    )
+    op.create_index(
+        op.f("ix_track_metadata_processing_status"),
+        "track_metadata",
+        ["processing_status"],
+        unique=False,
+    )
     # ### end Alembic commands ###
 
 

@@ -2,9 +2,8 @@
 
 from datetime import datetime
 
-from toolkit.types.enum import UploadStatus
-from toolkit.types.urn import UploadURNType
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
+from tempo_toolkit.contracts.uploads import UploadStatus, UploadURN
 
 from app.core.common.types import UploadID
 
@@ -31,9 +30,9 @@ class Upload:
         self.created_at = created_at
 
     def __repr__(self) -> str:
-        """Object representation."""
+        """StoredObject representation."""
         return f"{self.__class__.__name__}(id={self.id}, status={self.status})"
 
     @property
-    def urn(self) -> UploadURNType:
-        return UploadURNType(id=self.id)
+    def urn(self) -> UploadURN:
+        return UploadURN(id=self.id)

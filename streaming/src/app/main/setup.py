@@ -1,6 +1,6 @@
 import logging
 
-from toolkit.logging import DATEFMT, FMT, LoggingLevel
+from tempo_toolkit.infrastructure.logging import DATEFMT, FMT, LoggingLevel
 
 logger = logging.getLogger(__name__)
 

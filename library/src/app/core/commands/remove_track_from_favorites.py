@@ -1,8 +1,7 @@
 import logging
 
-from toolkit.common.ports.flusher import Flusher
-from toolkit.common.ports.transaction import Transaction
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.application.persistence import Flusher, Transaction
+from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.commands.ports.favorite_storage import FavoriteStorage
 
@@ -20,7 +19,7 @@ class RemoveTrackFromFavorites:
         self._transaction = transaction
         self._flusher = flusher
 
-    async def __call__(self, track_id: UploadURNType) -> None:
+    async def __call__(self, track_id: UploadURN) -> None:
         logger.info(f"Removing track {track_id} from favorites")
 
         await self._favorite_storage.remove_all(track_id)

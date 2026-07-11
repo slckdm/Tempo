@@ -1,4 +1,4 @@
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
 
 from app.core.common.factories.id_factory import generate_playlist_id
 from app.core.models.playlist import Playlist

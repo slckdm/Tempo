@@ -1,9 +1,8 @@
-from uuid import UUID
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from toolkit.service.response import JSendSuccessfulResponse
+from tempo_toolkit.infrastructure.web import JSendSuccessfulResponse
 
 from app.core.common.types import PlaylistID
 from app.core.queries.get_playlist import GetPlaylist

@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from toolkit.types.enum import UploadStatus
+from tempo_toolkit.contracts.uploads import UploadStatus
 
 from app.core.queries.models.list_metadata import ListMetadataQM
 from app.core.queries.models.metadata import MetadataQM

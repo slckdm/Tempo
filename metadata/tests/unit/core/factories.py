@@ -4,21 +4,21 @@ from uuid import UUID, uuid4
 
 from faker import Faker
 
-from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
-from toolkit.common.ports.identity_provider import IdentityProvider
-from toolkit.common.ports.utc_timer import UTCTimer
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.entities import User
-from toolkit.entities.object import Object
-from toolkit.messaging.contracts import UploadCompletedEvent, UploadDeletedEvent
-from toolkit.outbox.service import OutboxService
-from toolkit.types.enum import UploadStatus
-from toolkit.types.urn import UploadURNType
-from toolkit.types_ import UserID
+from tempo_toolkit.application.auth import (
+    AuthorizedUserFinder,
+    CurrentUserService,
+    IdentityProvider,
+    User,
+)
+from tempo_toolkit.application.outbox import OutboxMessage, OutboxService
+from tempo_toolkit.application.storage import StoredObject
+from tempo_toolkit.application.time import UTCTimer
+from tempo_toolkit.contracts.events import UploadCompletedEvent, UploadDeletedEvent
+from tempo_toolkit.contracts.identifiers import UserID
+from tempo_toolkit.contracts.uploads import UploadStatus, UploadURN
 
 from app.core.common.entities.metadata import Cover, Metadata
 from app.core.common.services.metadata_service import MetadataService
-from app.core.models.outbox_message import OutboxMessage
 from app.core.models.track_metadata import TrackMetadata
 from app.core.queries.models.list_metadata import ListMetadataQM
 from app.core.queries.models.metadata import MetadataQM
@@ -90,7 +90,7 @@ def create_metadata(
 
 
 def create_upload_completed_event(
-    upload_id: UploadURNType | None = None,
+    upload_id: UploadURN | None = None,
     s3_key: str | None = None,
     filename: str | None = None,
     content_type: str | None = None,
@@ -100,7 +100,7 @@ def create_upload_completed_event(
     status: UploadStatus = UploadStatus.PROCESSING,
 ) -> UploadCompletedEvent:
     return UploadCompletedEvent(
-        upload_id=upload_id or UploadURNType(uuid4()),
+        upload_id=upload_id or UploadURN(uuid4()),
         s3_key=s3_key or str(uuid4()),
         filename=filename or faker.file_name(extension="mp3"),
         content_type=content_type or "audio/mpeg",
@@ -112,11 +112,11 @@ def create_upload_completed_event(
 
 
 def create_upload_deleted_event(
-    upload_id: UploadURNType | None = None,
+    upload_id: UploadURN | None = None,
     s3_key: str | None = None,
 ) -> UploadDeletedEvent:
     return UploadDeletedEvent(
-        upload_id=upload_id or UploadURNType(uuid4()),
+        upload_id=upload_id or UploadURN(uuid4()),
         s3_key=s3_key or str(uuid4()),
     )
 
@@ -158,9 +158,9 @@ def create_track_metadata(
 def create_object(
     body: bytes | None = None,
     content_type: str = "audio/mpeg",
-) -> Object:
+) -> StoredObject:
     data = body if body is not None else faker.binary(length=32)
-    return Object(
+    return StoredObject(
         Body=io.BytesIO(data),
         ContentLength=len(data),
         ContentType=content_type,

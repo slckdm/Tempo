@@ -2,9 +2,8 @@ from uuid import uuid4
 
 import pytest
 
-from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
-from toolkit.common.ports.identity_provider import IdentityProvider
-from toolkit.service.exceptions import NotFound
+from tempo_toolkit.application.auth import AuthorizedUserFinder, IdentityProvider
+from tempo_toolkit.application.errors import NotFound
 
 from app.core.queries.get_track_metadata import GetTrackMetadata
 from app.core.queries.ports.metadata_reader import MetadataReader

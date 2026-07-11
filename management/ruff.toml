@@ -37,3 +37,7 @@ section-order = [
     "first-party",
     "local-folder",
 ]
+
+[lint.isort.sections]
+frameworks = ["fastapi"]
+libs = ["tempo_toolkit"]

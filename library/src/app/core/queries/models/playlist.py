@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
 
 
 class PlaylistQM(BaseModel):

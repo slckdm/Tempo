@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter
 
-from toolkit.service import response
+from tempo_toolkit.infrastructure.web import jsend as response
 
 from .add_favorite import add_favorite
 from .get_favorites import get_favorites

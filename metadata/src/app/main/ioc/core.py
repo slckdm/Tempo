@@ -1,18 +1,20 @@
 from dishka import Provider, Scope, provide
 
-from toolkit.common.adapters.keycloak_auth_user_finder import KeycloakAuthorizedUserFinder
-from toolkit.common.adapters.keycloak_identity_provider import KeycloakIdentityProvider
-from toolkit.common.adapters.redis_cacher import RedisCacher
-from toolkit.common.adapters.sqla_flusher import SQLAFlusher
-from toolkit.common.adapters.sqla_transaction import SQLATransaction
-from toolkit.common.adapters.system_utc_timer import SystemUTCTimer
-from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
-from toolkit.common.ports.cacher import Cacher
-from toolkit.common.ports.flusher import Flusher
-from toolkit.common.ports.identity_provider import IdentityProvider
-from toolkit.common.ports.transaction import Transaction
-from toolkit.common.ports.utc_timer import UTCTimer
-from toolkit.common.services.current_user_service import CurrentUserService
+from tempo_toolkit.application.auth import (
+    AuthorizedUserFinder,
+    CurrentUserService,
+    IdentityProvider,
+)
+from tempo_toolkit.application.cache import Cache
+from tempo_toolkit.application.persistence import Flusher, Transaction
+from tempo_toolkit.application.time import UTCTimer
+from tempo_toolkit.infrastructure.cache import RedisCache
+from tempo_toolkit.infrastructure.database import SQLAlchemyFlusher, SQLAlchemyTransaction
+from tempo_toolkit.infrastructure.identity import (
+    KeycloakAuthorizedUserFinder,
+    KeycloakIdentityProvider,
+)
+from tempo_toolkit.infrastructure.time import SystemUTCTimer
 
 from app.core.commands.ports.metadata_storage import MetadataStorage
 from app.core.common.services.metadata_service import MetadataService
@@ -34,9 +36,9 @@ class CoreProvider(Provider):
     current_user_service = provide(CurrentUserService)
 
     # ports
-    flusher = provide(SQLAFlusher, provides=Flusher)
-    transaction = provide(SQLATransaction, provides=Transaction)
-    cacher = provide(RedisCacher, provides=Cacher)
+    flusher = provide(SQLAlchemyFlusher, provides=Flusher)
+    transaction = provide(SQLAlchemyTransaction, provides=Transaction)
+    cacher = provide(RedisCache, provides=Cache)
     utc_timer = provide(SystemUTCTimer, provides=UTCTimer)
     metadata_storage = provide(SQLAMetadataStorage, provides=MetadataStorage)
     metadata_service = provide(MetadataService)

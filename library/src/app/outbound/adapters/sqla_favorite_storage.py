@@ -3,8 +3,8 @@ from typing import Sequence
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from toolkit.types.urn import UploadURNType
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
+from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.commands.ports.favorite_storage import FavoriteStorage
 from app.core.common.types import FavoriteID
@@ -20,7 +20,7 @@ class SQLAFavoriteStorage(FavoriteStorage):
         return await self._session.get(Favorite, favorite_id)
 
     async def get_by_user_and_track_id(
-        self, user_id: UserID, track_id: UploadURNType
+        self, user_id: UserID, track_id: UploadURN
     ) -> Favorite | None:
         favorites = await self._session.scalar(
             select(Favorite).where(
@@ -35,7 +35,7 @@ class SQLAFavoriteStorage(FavoriteStorage):
     async def remove(self, favorite: Favorite) -> None:
         await self._session.delete(favorite)
 
-    async def remove_all(self, track_id: UploadURNType) -> None:
+    async def remove_all(self, track_id: UploadURN) -> None:
         await self._session.execute(delete(Favorite).where(table.c.track_id == str(track_id)))
 
     async def get_list(self, user_id: UserID) -> Sequence[Favorite]:

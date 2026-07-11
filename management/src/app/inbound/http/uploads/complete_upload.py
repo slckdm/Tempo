@@ -1,15 +1,16 @@
 """Module: complete upload endpoint."""
 
 from dishka.integrations.fastapi import FromDishka, inject
-from toolkit.service.response import JSendSuccessfulResponse
-from toolkit.types.urn import UploadURNType
+
+from tempo_toolkit.contracts.uploads import UploadURN
+from tempo_toolkit.infrastructure.web import JSendSuccessfulResponse
 
 from app.core.commands.complete_upload import CompleteUpload
 
 
 @inject
 async def complete_upload(
-    upload_id: UploadURNType, interactor: FromDishka[CompleteUpload]
+    upload_id: UploadURN, interactor: FromDishka[CompleteUpload]
 ) -> JSendSuccessfulResponse:
     """Complete upload."""
     await interactor(upload_id)

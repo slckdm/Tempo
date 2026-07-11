@@ -21,14 +21,15 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-toolkit = { workspace = true }
-
-[tool.uv.workspace]
-members = ["../toolkit"]
+tempo-toolkit-contracts = { path = "../toolkit/packages/contracts", editable = true }
+tempo-toolkit-application = { path = "../toolkit/packages/application", editable = true }
+tempo-toolkit-infrastructure = { path = "../toolkit/packages/infrastructure", editable = true }
 
 [dependency-groups]
 local = [
-    "toolkit",
+    "tempo-toolkit-contracts",
+    "tempo-toolkit-application",
+    "tempo-toolkit-infrastructure[web,keycloak,postgres,redis,rabbitmq]",
 ]
 
 [tool.pytest.ini_options]

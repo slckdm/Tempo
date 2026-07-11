@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter
 
-from toolkit.service import response
+from tempo_toolkit.infrastructure.web import jsend as response
 
 from .get_track_metadata import get_track_metadata
 from .get_tracks_metadata import get_tracks_metadata

@@ -5,16 +5,16 @@ from dishka_faststream import inject
 from faststream import AckPolicy
 from faststream.rabbit import RabbitMessage, RabbitRouter
 
-from toolkit.messaging.broker import (
+from tempo_toolkit.application.errors import NotFound, ObjectStorageError
+from tempo_toolkit.contracts.events import UploadCompletedEvent, UploadDeletedEvent
+from tempo_toolkit.contracts.routing import UPLOAD_COMPLETED_RK, UPLOAD_DELETED_RK
+from tempo_toolkit.infrastructure.messaging import (
     MANAGEMENT_EXCHANGE,
     METADATA_CONSUMER_QUEUE,
     METADATA_DLE,
     METADATA_DLQ,
     make_queue,
 )
-from toolkit.messaging.contracts import UploadCompletedEvent, UploadDeletedEvent
-from toolkit.messaging.routing import UPLOAD_COMPLETED_RK, UPLOAD_DELETED_RK
-from toolkit.service.exceptions import NotFound, ObjectStorageError
 
 from app.core.commands.delete_track_metadata import DeleteTrackMetadata
 from app.core.commands.fail_metadata import FailMetadata

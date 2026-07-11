@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from toolkit.common.services.current_user_service import CurrentUserService
+from tempo_toolkit.application.auth import CurrentUserService
 
 from app.core.queries.models.tracks import TracksQM
 from app.core.queries.ports.tracks_reader import TrackReader

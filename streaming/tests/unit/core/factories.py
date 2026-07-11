@@ -7,13 +7,14 @@ from fastapi.security import OAuth2
 
 from faker import Faker
 
-from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
-from toolkit.common.ports.identity_provider import IdentityProvider
-from toolkit.common.ports.object_storage import ObjectStorage
-from toolkit.common.services.authorization_service import AuthorizationService
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.entities.object import Object
-from toolkit.types.urn import UploadURNType
+from tempo_toolkit.application.auth import (
+    AuthorizedUserFinder,
+    CurrentUserService,
+    IdentityProvider,
+)
+from tempo_toolkit.application.storage import ObjectStorage, StoredObject
+from tempo_toolkit.contracts.uploads import UploadURN
+from tempo_toolkit.infrastructure.web import FastAPITokenProvider
 
 from app.core.queries.stream import Stream
 
@@ -26,8 +27,8 @@ def create_stream(
     return Stream(object_storage=object_storage, current_user_service=current_user_service)
 
 
-def create_upload_urn(id: UUID | None = None) -> UploadURNType:
-    return UploadURNType(id or uuid4())
+def create_upload_urn(id: UUID | None = None) -> UploadURN:
+    return UploadURN(id or uuid4())
 
 
 def create_object(
@@ -35,9 +36,9 @@ def create_object(
     content_type: str = "audio/mpeg",
     content_range: str | None = None,
     content_length: int | None = None,
-) -> Object:
+) -> StoredObject:
     data = body if body is not None else faker.binary(length=64)
-    return Object(
+    return StoredObject(
         Body=io.BytesIO(data),
         ContentLength=content_length if content_length is not None else len(data),
         ContentType=content_type,
@@ -47,8 +48,8 @@ def create_object(
 
 def create_authorization_service(
     request: Request, schemas: Sequence[OAuth2]
-) -> AuthorizationService:
-    return AuthorizationService(request=request, schemas=list(schemas))
+) -> FastAPITokenProvider:
+    return FastAPITokenProvider(request=request, schemas=list(schemas))
 
 
 def create_current_user_service(

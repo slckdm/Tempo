@@ -3,9 +3,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, computed_field
 
-from toolkit.types.enum import UploadStatus
-from toolkit.types.urn import UploadURNType
-from toolkit.types_ import UserID
+from tempo_toolkit.contracts.identifiers import UserID
+from tempo_toolkit.contracts.uploads import UploadStatus, UploadURN
 
 
 class MetadataQM(BaseModel):
@@ -26,5 +25,5 @@ class MetadataQM(BaseModel):
 
     @computed_field
     @property
-    def urn(self) -> UploadURNType:
-        return UploadURNType(self.id)
+    def urn(self) -> UploadURN:
+        return UploadURN(self.id)

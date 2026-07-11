@@ -33,7 +33,7 @@ docstring-quotes = "double"
 
 [lint.isort.sections]
 frameworks = ["fastapi"]
-libs = ["toolkit"]
+libs = ["tempo_toolkit"]
 [lint.isort]
 section-order = [
     "standard-library",

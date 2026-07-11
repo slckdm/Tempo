@@ -1,7 +1,7 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from toolkit.service.response import JSendSuccessfulResponse
+from tempo_toolkit.infrastructure.web import JSendSuccessfulResponse
 
 from app.core.commands.add_favorite import AddFavorite, AddFavoriteRequest, AddFavoriteResponse
 

@@ -5,15 +5,15 @@ from dishka import make_async_container
 from dishka_faststream import FastStreamProvider, setup_dishka
 from faststream import FastStream
 
-from toolkit.config.settings import KeycloakSettings, PostgresSettings, RedisSettings, S3Settings
-from toolkit.messaging.broker import (
+from tempo_toolkit.infrastructure.cache import RedisClientProvider, RedisSettings
+from tempo_toolkit.infrastructure.database import PostgresProvider, PostgresSettings
+from tempo_toolkit.infrastructure.identity import KeycloakSettings
+from tempo_toolkit.infrastructure.messaging import (
     METADATA_DLE,
     METADATA_DLQ,
     make_rabbit_broker,
 )
-from toolkit.providers.postgres_provider import PostgresProvider
-from toolkit.providers.redis_provider import RedisClientProvider
-from toolkit.providers.s3_provider import S3Provider
+from tempo_toolkit.infrastructure.object_storage import S3Provider, S3Settings
 
 from app.inbound.amqp.router import router
 from app.main.config.loader import (

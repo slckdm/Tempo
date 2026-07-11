@@ -1,5 +1,5 @@
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.service.exceptions import NotFound
+from tempo_toolkit.application.auth import CurrentUserService
+from tempo_toolkit.application.errors import NotFound
 
 from app.core.common.types import PlaylistID
 from app.core.queries.models.playlist import PlaylistQM

@@ -1,4 +1,4 @@
-from toolkit.common.services.current_user_service import CurrentUserService
+from tempo_toolkit.application.auth import CurrentUserService
 
 from app.core.common.services.metadata_service import MetadataService
 from app.core.queries.models.list_metadata import ListMetadataQM

@@ -1,16 +1,16 @@
 from typing import Sequence
 
-from fastapi.security import OAuth2, OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer
+from fastapi.security.base import SecurityBase
 
 from dishka import Provider, Scope, collect, provide
 
-from toolkit.common.services.authorization_service import AuthorizationService
-from toolkit.config.settings import KeycloakSettings
-from toolkit.outbox.table import OutboxTable
-from toolkit.providers.keycloak_client_provider import KeycloakClientProvider
-from toolkit.providers.postgres_provider import PostgresProvider
-from toolkit.providers.redis_provider import RedisClientProvider
-from toolkit.providers.s3_provider import S3Provider
+from tempo_toolkit.application.auth import TokenProvider
+from tempo_toolkit.infrastructure.cache import RedisClientProvider
+from tempo_toolkit.infrastructure.database import OutboxTable, PostgresProvider
+from tempo_toolkit.infrastructure.identity import KeycloakClientProvider, KeycloakSettings
+from tempo_toolkit.infrastructure.object_storage import S3Provider
+from tempo_toolkit.infrastructure.web import FastAPITokenProvider
 
 from app.outbound.sqlalchemy.mappings.outbox_message import outbox_messages_table
 
@@ -26,7 +26,7 @@ class OutboxProvider(Provider):
 class AuthProvider(Provider):
     scope = Scope.REQUEST
 
-    @provide(provides=OAuth2)
+    @provide(provides=SecurityBase)
     def provide_bearer_schema(self, config: KeycloakSettings) -> OAuth2PasswordBearer:
         return OAuth2PasswordBearer(
             tokenUrl=config.token_url,
@@ -34,8 +34,8 @@ class AuthProvider(Provider):
             scopes={"tempo:etc": "Access to etc endpoints"}
         )
 
-    auth_schemas = collect(OAuth2)
-    auth_service = provide(AuthorizationService)
+    auth_schemas = collect(SecurityBase)
+    token_provider = provide(FastAPITokenProvider, provides=TokenProvider)
 
 
 def get_outbound_providers() -> Sequence[Provider]:

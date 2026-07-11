@@ -16,6 +16,7 @@ class FlusherMock(Protocol):
 
 class TransactionMock(Protocol):
     commit: AsyncMock
+    rollback: AsyncMock
 
 
 class FavoriteStorageMock(Protocol):

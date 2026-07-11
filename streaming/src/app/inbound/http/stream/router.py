@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from fastapi import APIRouter
 
-from toolkit.service import response
+from tempo_toolkit.infrastructure.web import jsend as response
 
 from .stream_audio import stream_audio
 from .stream_cover import stream_cover

@@ -6,7 +6,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 from pydantic import BaseModel, Field
 
-from toolkit.service.response import JSendSuccessfulResponse
+from tempo_toolkit.infrastructure.web import JSendSuccessfulResponse
 
 from app.core.queries.get_tracks_metadata import FilterParams, GetTracksMetadata, PaginationParams
 from app.core.queries.models.list_metadata import ListMetadataQM

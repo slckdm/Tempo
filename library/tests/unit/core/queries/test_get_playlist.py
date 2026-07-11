@@ -1,8 +1,7 @@
 import pytest
 
-from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
-from toolkit.common.ports.identity_provider import IdentityProvider
-from toolkit.service.exceptions import NotFound
+from tempo_toolkit.application.auth import AuthorizedUserFinder, IdentityProvider
+from tempo_toolkit.application.errors import NotFound
 
 from app.core.queries.get_playlist import GetPlaylist
 from app.core.queries.ports.playlist_reader import PlaylistReader

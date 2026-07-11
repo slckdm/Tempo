@@ -1,13 +1,12 @@
 from pydantic import BaseModel, Field
-from toolkit.common.ports.flusher import Flusher
-from toolkit.common.ports.object_storage import ObjectStorage
-from toolkit.common.ports.transaction import Transaction
-from toolkit.common.services.current_user_service import CurrentUserService
-from toolkit.messaging.contracts import UploadCreatedEvent
-from toolkit.messaging.routing import UPLOAD_CREATED_RK
-from toolkit.outbox.ports.outbox_storage import OutboxStorage
-from toolkit.outbox.service import OutboxService
-from toolkit.types.urn import UploadURNType
+
+from tempo_toolkit.application.auth import CurrentUserService
+from tempo_toolkit.application.outbox import OutboxService, OutboxStorage
+from tempo_toolkit.application.persistence import Flusher, Transaction
+from tempo_toolkit.application.storage import ObjectStorage
+from tempo_toolkit.contracts.events import UploadCreatedEvent
+from tempo_toolkit.contracts.routing import UPLOAD_CREATED_RK
+from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.enums import AggregateType
@@ -20,7 +19,7 @@ MAX_UPLOAD_SIZE = 100 * 1024 * 1024
 class CreateUploadResponse(BaseModel):
     """Create upload response body DTO."""
 
-    upload: UploadURNType = Field(description="Upload identifier")
+    upload: UploadURN = Field(description="Upload identifier")
     presigned_url: str = Field(
         description="Presigned URL for uploading",
         json_schema_extra={"example": "http://some.url/here/bla-bla-bla"},

@@ -1,7 +1,6 @@
 import pytest
 
-from toolkit.common.ports.flusher import Flusher
-from toolkit.common.ports.transaction import Transaction
+from tempo_toolkit.application.persistence import Flusher, Transaction
 
 from app.core.commands.ports.favorite_storage import FavoriteStorage
 from app.core.commands.remove_track_from_favorites import RemoveTrackFromFavorites
