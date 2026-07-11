@@ -1,5 +1,7 @@
 """Keycloak application adapters."""
 
+from uuid import UUID
+
 from jwt.exceptions import PyJWTError
 
 from tempo_toolkit.application.auth import (
@@ -45,8 +47,6 @@ class KeycloakIdentityProvider(IdentityProvider):
             )
         except PyJWTError as invalid_token_exception:
             raise Unauthorized from invalid_token_exception
-        if isinstance(user_data, ServiceAccount):
-            raise Forbidden
         return UserID(user_data.id)
 
 
