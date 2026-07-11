@@ -112,7 +112,9 @@ async def test_delete_upload_conflict(
     flusher: Flusher,
     transaction: Transaction,
 ) -> None:
+    user = create_user()
     upload = create_upload(status=UploadStatus.PENDING)
+    authorized_user_finder.get_by_id.return_value = user
     upload_storage.get_by_id.return_value = upload
 
     delete_upload_command = make_delete_upload_command(
@@ -142,6 +144,8 @@ async def test_delete_upload_not_found(
     flusher: Flusher,
     transaction: Transaction,
 ) -> None:
+    user = create_user()
+    authorized_user_finder.get_by_id.return_value = user
     upload_storage.get_by_id.return_value = None
 
     delete_upload_command = make_delete_upload_command(

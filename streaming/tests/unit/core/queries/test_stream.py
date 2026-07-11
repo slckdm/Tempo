@@ -16,6 +16,7 @@ from tests.unit.core.factories import (
     create_object,
     create_stream,
     create_upload_urn,
+    create_user,
 )
 
 
@@ -34,6 +35,7 @@ async def test_stream_audio_success(
     authorized_user_finder: AuthorizedUserFinder,
 ) -> None:
     body = b"audio-bytes-payload"
+    authorized_user_finder.get_by_id.return_value = create_user()
     object_storage.get_object.return_value = create_object(body=body, content_type="audio/mpeg")
     urn = create_upload_urn()
     current_user_service = make_current_user_service(identity_provider, authorized_user_finder)
@@ -56,6 +58,7 @@ async def test_stream_cover_uses_cover_key(
     object_storage: ObjectStorage,
     authorized_user_finder: AuthorizedUserFinder,
 ) -> None:
+    authorized_user_finder.get_by_id.return_value = create_user()
     object_storage.get_object.return_value = create_object()
     urn = create_upload_urn()
     current_user_service = make_current_user_service(identity_provider, authorized_user_finder)
@@ -72,6 +75,7 @@ async def test_stream_forwards_range_header(
     authorized_user_finder: AuthorizedUserFinder,
     object_storage: ObjectStorage,
 ) -> None:
+    authorized_user_finder.get_by_id.return_value = create_user()
     object_storage.get_object.return_value = create_object(content_range="bytes 0-9/100")
     urn = create_upload_urn()
     current_user_service = make_current_user_service(identity_provider, authorized_user_finder)
@@ -89,6 +93,7 @@ async def test_stream_missing_object_raises_not_found(
     object_storage: ObjectStorage,
     authorized_user_finder: AuthorizedUserFinder,
 ) -> None:
+    authorized_user_finder.get_by_id.return_value = create_user()
     object_storage.get_object.side_effect = ObjectStorageError
     current_user_service = make_current_user_service(identity_provider, authorized_user_finder)
     stream = create_stream(object_storage, current_user_service)
