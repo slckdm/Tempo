@@ -1,11 +1,17 @@
 """Authenticated principal models."""
 
-from pydantic import BaseModel
+from dataclasses import dataclass
 
 from tempo_toolkit.contracts.identifiers import UserID
 
 
-class User(BaseModel):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class Account:
+    """Authenticated account base model."""
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class User(Account):
     """Authenticated user."""
 
     id: UserID
@@ -15,7 +21,8 @@ class User(BaseModel):
     last_name: str
 
 
-class ServiceAccount(BaseModel):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ServiceAccount(Account):
     """Authenticated service account."""
 
     client_id: str

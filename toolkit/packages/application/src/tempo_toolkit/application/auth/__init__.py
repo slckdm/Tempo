@@ -1,6 +1,6 @@
 """Authentication and current-user application services."""
 
-from .models import ServiceAccount, User
+from .models import Account, ServiceAccount, User
 from .ports import AuthorizedUserFinder, IdentityProvider, TokenProvider
 from .service import CurrentUserService
 from .types import Token
@@ -13,4 +13,5 @@ __all__ = [
     "Token",
     "TokenProvider",
     "User",
+    "Account",
 ]
