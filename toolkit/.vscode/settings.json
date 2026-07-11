@@ -1,6 +1,9 @@
 {
     "python.testing.pytestArgs": [
-        "tests"
+        "tests",
+        "packages/application/tests",
+        "packages/contracts/tests",
+        "packages/infrastructure/tests",
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true
