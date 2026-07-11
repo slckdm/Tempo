@@ -1,15 +1,20 @@
 from pydantic import BaseModel, Field
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.object_storage import ObjectStorage
+from toolkit.common.ports.transaction import Transaction
+from toolkit.common.services.current_user_service import CurrentUserService
 from toolkit.messaging.contracts import UploadCreatedEvent
 from toolkit.messaging.routing import UPLOAD_CREATED_RK
+from toolkit.outbox.ports.outbox_storage import OutboxStorage
+from toolkit.outbox.service import OutboxService
 from toolkit.types.urn import UploadURNType
 
-from app.core.commands.ports.flusher import Flusher
-from app.core.commands.ports.object_storage import ObjectStorage
-from app.core.commands.ports.outbox_storage import OutboxStorage
-from app.core.commands.ports.transaction import Transaction
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.enums import AggregateType
-from app.core.common.services import CurrentUserService, OutboxService, UploadService
+from app.core.common.services.upload_service import UploadService
+from app.core.models.upload import Upload
+
+MAX_UPLOAD_SIZE = 100 * 1024 * 1024
 
 
 class CreateUploadResponse(BaseModel):
@@ -27,7 +32,7 @@ class CreateUploadRequestBody(BaseModel):
 
     filename: str
     content_type: str = Field(alias="contentType")
-    size: int
+    size: int = Field(gt=0, le=MAX_UPLOAD_SIZE, description="File size in bytes")
 
 
 class CreateUpload:
@@ -58,10 +63,17 @@ class CreateUpload:
         user = await self._current_user_service.get_current_user(["tempo:etc"])
         upload = await self._upload_service.create_upload(body.filename, body.size, user)
         await self._upload_storage.add(upload)
-        await self._flusher.flush([upload])
         url = await self._object_storage.make_object_upload_url(
-            str(upload.urn), content_type=body.content_type
+            str(upload.urn), content_type=body.content_type, content_length=body.size
         )
+        await self.__create_event(upload)
+
+        await self._flusher.flush()
+        await self._transaction.commit()
+
+        return CreateUploadResponse(upload=upload.urn, presigned_url=url)
+
+    async def __create_event(self, upload: Upload) -> None:
         message = await self._outbox_service.create_message(
             aggregate_type=AggregateType.UPLOAD,
             aggregate_id=str(upload.id),
@@ -78,7 +90,3 @@ class CreateUpload:
             ),
         )
         await self._outbox_storage.add(message)
-
-        await self._transaction.commit()
-
-        return CreateUploadResponse(upload=upload.urn, presigned_url=url)

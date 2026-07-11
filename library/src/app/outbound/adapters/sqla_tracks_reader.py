@@ -6,11 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from toolkit.types_ import UserID
 
-from app.core.models.playlist import Playlist as playlist_table
-from app.core.models.playlist_track import PlaylistTrack as table
 from app.core.queries.models.tracks import TracksQM
 from app.core.queries.ports.tracks_reader import TrackReader
 from app.outbound.exceptions import TrackReaderError
+from app.outbound.sqlalchemy.mappings.playlist import playlists_table as playlist_table
+from app.outbound.sqlalchemy.mappings.playlist_track import playlists_tracks_table as table
 
 
 class SQLATrackReader(TrackReader):
@@ -18,13 +18,14 @@ class SQLATrackReader(TrackReader):
         self._session = session
 
     async def get_list(self, user_id: UserID, playlist_id: UUID) -> TracksQM:
-        query = select(table.track_id).where(
-            table.playlist.has(
-                (playlist_table.id == playlist_id)
-                & (playlist_table.user_id == user_id)
+        query = (
+            select(table.c.track_id)
+            .where(
+                (playlist_table.c.id == playlist_id) & (playlist_table.c.user_id == user_id)
             )
+            .order_by(table.c.id)
+            .join(playlist_table, playlist_table.c.id==table.c.playlist_id)
         )
-
         try:
             result = await self._session.execute(query)
             rows = result.all()

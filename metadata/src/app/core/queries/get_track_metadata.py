@@ -1,8 +1,8 @@
 from uuid import UUID
 
+from toolkit.common.services.current_user_service import CurrentUserService
 from toolkit.service.exceptions import NotFound
 
-from app.core.common.services.current_user_service import CurrentUserService
 from app.core.queries.models.metadata import MetadataQM
 from app.core.queries.ports.metadata_reader import MetadataReader
 

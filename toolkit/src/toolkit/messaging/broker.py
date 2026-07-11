@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 from faststream.rabbit import ExchangeType, QueueType, RabbitBroker, RabbitExchange, RabbitQueue
 from faststream.security import SASLPlaintext
 
-from .settings import RabbitMQSettings
+from toolkit.config.settings import RabbitMQSettings
 
 if TYPE_CHECKING:
     from .routing import RoutingKey

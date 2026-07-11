@@ -1,16 +1,14 @@
-from uuid import UUID
-
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from toolkit.types_ import UserID
 
-from app.core.models.favorite import Favorite as table
 from app.core.queries.models.favorite import FavoriteQM
 from app.core.queries.models.favorites import FavoritesQM
 from app.core.queries.ports.favorite_reader import FavoriteReader
 from app.outbound.exceptions import FavoriteReaderError
+from app.outbound.sqlalchemy.mappings.favorite import favorite_table as table
 
 
 class SQLAFavoriteReader(FavoriteReader):
@@ -19,10 +17,10 @@ class SQLAFavoriteReader(FavoriteReader):
 
     async def get_list(self, user_id: UserID) -> FavoritesQM:
         query = select(
-            table.id,
-            table.user_id,
-            table.track_id,
-        ).where(table.user_id == user_id)
+            table.c.id,
+            table.c.user_id,
+            table.c.track_id,
+        ).where(table.c.user_id == user_id)
 
         try:
             result = await self._session.execute(query)

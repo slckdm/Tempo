@@ -6,11 +6,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from toolkit.types.enum import UploadStatus
 
-from app.core.models.track_metadata import TrackMetadata as table
 from app.core.queries.models.list_metadata import ListMetadataQM
 from app.core.queries.models.metadata import MetadataQM
 from app.core.queries.ports.metadata_reader import FilterParams, MetadataReader, PaginationParams
 from app.outbound.exceptions import MetadataReaderError
+from app.outbound.sqlalchemy.mappings.track_metadata import track_metadata_table as table
 
 
 class SQLAMetadataReader(MetadataReader):
@@ -22,37 +22,38 @@ class SQLAMetadataReader(MetadataReader):
         self, filters: FilterParams, pagination: PaginationParams
     ) -> ListMetadataQM:
 
-        where_clause = [table.processing_status == UploadStatus.COMPLETED]
+        where_clause = [table.c.processing_status == UploadStatus.COMPLETED]
         if filters.title:
-            where_clause.append(table.title.ilike(f"%{filters.title}%"))
+            where_clause.append(table.c.title.ilike(f"%{filters.title}%"))
         if filters.artist:
-            where_clause.append(table.artist.ilike(f"%{filters.artist}%"))
+            where_clause.append(table.c.artist.ilike(f"%{filters.artist}%"))
         if filters.album:
-            where_clause.append(table.album.ilike(f"%{filters.album}%"))
+            where_clause.append(table.c.album.ilike(f"%{filters.album}%"))
         if filters.genre:
-            where_clause.append(table.genre.ilike(f"%{filters.genre}%"))
+            where_clause.append(table.c.genre.ilike(f"%{filters.genre}%"))
 
         query = (
             select(
-                table.upload_id,
-                table.title,
-                table.artist,
-                table.album,
-                table.genre,
-                table.year,
-                table.duration,
-                table.cover_key,
-                table.size,
-                table.created_at,
-                table.created_by,
-                table.processing_status,
-                table.filename,
-                table.content_type,
+                table.c.upload_id,
+                table.c.title,
+                table.c.artist,
+                table.c.album,
+                table.c.genre,
+                table.c.year,
+                table.c.duration,
+                table.c.cover_key,
+                table.c.size,
+                table.c.created_at,
+                table.c.created_by,
+                table.c.processing_status,
+                table.c.filename,
+                table.c.content_type,
                 func.count().over().label("total"),
             )
             .where(*where_clause)
             .offset(pagination.offset)
             .limit(pagination.limit)
+            .order_by(table.c.created_at)
         )
         try:
             result = await self._session.execute(query)
@@ -96,21 +97,21 @@ class SQLAMetadataReader(MetadataReader):
 
     async def get_by_id(self, id: UUID) -> MetadataQM | None:
         statement = select(
-            table.upload_id,
-            table.title,
-            table.artist,
-            table.album,
-            table.genre,
-            table.year,
-            table.duration,
-            table.cover_key,
-            table.size,
-            table.created_at,
-            table.created_by,
-            table.processing_status,
-            table.filename,
-            table.content_type,
-        ).where(table.upload_id == id)
+            table.c.upload_id,
+            table.c.title,
+            table.c.artist,
+            table.c.album,
+            table.c.genre,
+            table.c.year,
+            table.c.duration,
+            table.c.cover_key,
+            table.c.size,
+            table.c.created_at,
+            table.c.created_by,
+            table.c.processing_status,
+            table.c.filename,
+            table.c.content_type,
+        ).where(table.c.upload_id == id)
         try:
             row = (await self._session.execute(statement)).one_or_none()
         except SQLAlchemyError as sqlalchemy_err:

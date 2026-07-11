@@ -37,12 +37,15 @@ class S3Client:
         bucket: str,
         key: str,
         content_type: None | str = None,
+        content_length: None | int = None,
         expiration: int = 3600,
     ) -> str:
         """Generate presigned url for creating a new object."""
         params = {"Bucket": bucket, "Key": key}
         if content_type is not None:
             params["ContentType"] = content_type
+        if content_length is not None:
+            params["ContentLength"] = content_length
         return await asyncio.to_thread(
             self._client.generate_presigned_url,
             "put_object",

@@ -27,6 +27,7 @@ services:
 
   metadata-publisher:
     container_name: tempo.metadata.publisher
+    restart: on-failure
     build:
       context: .
       target: publisher

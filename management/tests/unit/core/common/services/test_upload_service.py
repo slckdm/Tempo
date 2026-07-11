@@ -3,7 +3,7 @@ from faker import Faker
 from toolkit.types.enum import UploadStatus
 
 from app.core.common.exceptions import StatusUpdateFlowError
-from app.core.models import Upload
+from app.core.models.upload import Upload
 from tests.unit.core.factories import create_upload, create_upload_service, create_user
 
 

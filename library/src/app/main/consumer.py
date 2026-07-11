@@ -5,6 +5,7 @@ from dishka import make_async_container
 from dishka_faststream import FastStreamProvider, setup_dishka
 from faststream import FastStream
 
+from toolkit.config.settings import KeycloakSettings, PostgresSettings, RedisSettings
 from toolkit.messaging.broker import (
     LIBRARY_DLE,
     LIBRARY_DLQ,
@@ -19,16 +20,16 @@ from app.main.config.loader import (
     load_rabbitmq_settings,
     load_redis_settings,
 )
-from app.main.config.settings import KeycloakSettings, PostgresSettings, RedisSettings
 from app.main.ioc.consumer import ConsumerProvider
 from app.main.ioc.outbound import KeycloakClientProvider, PostgresProvider, RedisClientProvider
 from app.main.setup import setup_logging
+from app.outbound.sqlalchemy.mappings.all import map_tables
 
 
 async def create_app() -> None:
     logging_settings = load_logging_settings()
     setup_logging(level=logging_settings.LEVEL)
-
+    map_tables()
     rmq_settings = load_rabbitmq_settings()
 
     broker = make_rabbit_broker(rmq_settings)

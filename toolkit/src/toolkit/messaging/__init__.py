@@ -5,10 +5,8 @@ from .routing import (
     UPLOAD_COMPLETED_RK,
     RoutingKey,
 )
-from .settings import RabbitMQSettings
 
 __all__ = [
-    "RabbitMQSettings",
     "contracts",
     "METADATA_FAILED_RK",
     "METADATA_READY_RK",

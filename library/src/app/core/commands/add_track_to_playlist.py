@@ -1,11 +1,11 @@
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.transaction import Transaction
+from toolkit.common.services.current_user_service import CurrentUserService
 from toolkit.service.exceptions import NotFound
 from toolkit.types.urn import UploadURNType
 
-from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.playlist_storage import PlaylistStorage
 from app.core.commands.ports.playlist_track_storage import PlaylistTrackStorage
-from app.core.commands.ports.transaction import Transaction
-from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.playlist_service import PlaylistService
 from app.core.common.services.playlist_track_service import PlaylistTrackService
 from app.core.common.types import PlaylistID
@@ -39,7 +39,7 @@ class AddTrackToPlaylist:
         if not playlist:
             raise NotFound
 
-        track = self._playlist_track_service.create_track(str(track_id))
+        track = self._playlist_track_service.create_track(playlist.id, str(track_id))
         self._playlist_service.add_track_to_playlist(playlist, track)
 
         await self._playlist_track_storage.add(track, playlist)

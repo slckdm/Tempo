@@ -11,8 +11,8 @@ COPY alembic.ini /app/
 
 
 RUN uv lock && uv sync --frozen --group local_pypi
+# RUN alembic upgrade head
 
-# RUN alembic upgrade head -c
 
 FROM base AS backend
 

@@ -14,7 +14,7 @@ from toolkit.messaging.broker import (
 )
 from toolkit.messaging.contracts import UploadCompletedEvent, UploadDeletedEvent
 from toolkit.messaging.routing import UPLOAD_COMPLETED_RK, UPLOAD_DELETED_RK
-from toolkit.service.exceptions import NotFound
+from toolkit.service.exceptions import NotFound, ObjectStorageError
 
 from app.core.commands.delete_track_metadata import DeleteTrackMetadata
 from app.core.commands.fail_metadata import FailMetadata
@@ -43,7 +43,7 @@ async def upload_completed_handler(
         await interactor(payload)
     except MetadataAlreadyProcessed:
         return
-    except (NotFound, TagParseError, MetadataParserError) as perm_exc:
+    except (NotFound, TagParseError, MetadataParserError, ObjectStorageError) as perm_exc:
         await fail_handler(payload, perm_exc)
 
 

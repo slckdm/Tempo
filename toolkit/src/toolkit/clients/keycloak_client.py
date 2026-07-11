@@ -47,5 +47,7 @@ class KeycloakClient(APIClient):
         """Get user data by user identifier."""
         token = await self.authorize()
         url = f"{self.base_url}/admin/realms/{self._configuration.realm}/users/{id}"
-        payload = await self.request(HTTPMethod.GET, url, headers={"Authorization": f"Bearer {token}"})
+        payload = await self.request(
+            HTTPMethod.GET, url, headers={"Authorization": f"Bearer {token}"}
+        )
         return payload

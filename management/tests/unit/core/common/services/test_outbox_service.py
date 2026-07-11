@@ -3,11 +3,11 @@ from datetime import datetime
 import pytest
 from faker import Faker
 from freezegun import freeze_time
+from toolkit.common.ports.utc_timer import UTCTimer
 from toolkit.messaging.contracts import MessageContract
 from toolkit.messaging.routing import RoutingKey
 
 from app.core.common.enums.aggregate_type import AggregateType
-from app.core.common.ports.utc_timer import UTCTimer
 from tests.unit.core.factories import create_outbox_service
 
 

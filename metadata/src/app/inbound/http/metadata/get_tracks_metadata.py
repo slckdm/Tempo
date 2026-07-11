@@ -13,8 +13,8 @@ from app.core.queries.models.list_metadata import ListMetadataQM
 
 
 class ListMetadataRequestSchema(BaseModel):
-    offset: int = Field(0, le=100)
-    limit: int = Field(100, ge=0)
+    offset: int = Field(0, ge=0)
+    limit: int = Field(100, ge=0, le=100)
     title: str | None = None
     artist: str | None = None
     album: str | None = None

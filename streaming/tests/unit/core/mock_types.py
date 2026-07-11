@@ -13,3 +13,5 @@ class AuthorizedUserFinderMock:
 class ObjectStorageMock(Protocol):
     get_object: AsyncMock
     put_object: AsyncMock
+    make_object_upload_url: AsyncMock
+    delete_object: AsyncMock

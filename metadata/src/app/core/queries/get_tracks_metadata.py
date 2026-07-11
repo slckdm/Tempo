@@ -1,4 +1,5 @@
-from app.core.common.services.current_user_service import CurrentUserService
+from toolkit.common.services.current_user_service import CurrentUserService
+
 from app.core.common.services.metadata_service import MetadataService
 from app.core.queries.models.list_metadata import ListMetadataQM
 from app.core.queries.ports.metadata_reader import FilterParams, MetadataReader

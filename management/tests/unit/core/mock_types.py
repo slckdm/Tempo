@@ -24,6 +24,7 @@ class FlusherMock(Protocol):
 
 class TransactionMock(Protocol):
     commit: AsyncMock
+    rollback: AsyncMock
 
 
 class UploadStorageMock(Protocol):

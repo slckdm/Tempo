@@ -36,3 +36,23 @@ class UnsupportedMediaType(TempoBaseError):
 
 class Conflict(TempoBaseError):
     ...
+
+
+class ResourceAlreadyExists(TempoBaseError):
+    ...
+
+
+class ObjectStorageError(TempoBaseError):
+    ...
+
+
+class OutboxStorageError(TempoBaseError):
+    ...
+
+
+class TransactionError(TempoBaseError):
+    ...
+
+
+class FlusherError(TempoBaseError):
+    ...

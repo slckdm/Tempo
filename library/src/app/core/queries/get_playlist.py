@@ -1,11 +1,9 @@
-from uuid import UUID
-
+from toolkit.common.services.current_user_service import CurrentUserService
 from toolkit.service.exceptions import NotFound
 
-from app.core.common.services.current_user_service import CurrentUserService
+from app.core.common.types import PlaylistID
 from app.core.queries.models.playlist import PlaylistQM
 from app.core.queries.ports.playlist_reader import PlaylistReader
-from app.core.common.types import PlaylistID
 
 
 class GetPlaylist:

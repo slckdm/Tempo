@@ -7,9 +7,11 @@ ENV PATH="/app/.venv/bin:${PATH}"
 
 WORKDIR /app
 COPY ./pyproject.toml.local-docker /app/pyproject.toml
+COPY alembic.ini /app/
 COPY ./src /app
 
 RUN uv lock && uv sync --frozen --group local_pypi
+# RUN alembic upgrade head
 
 
 FROM base AS backend

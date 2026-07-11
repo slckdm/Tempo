@@ -2,17 +2,22 @@ from uuid import uuid4
 
 from faker import Faker
 
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.services.current_user_service import CurrentUserService
 from toolkit.entities import User
 from toolkit.types.urn import UploadURNType
 from toolkit.types_ import UserID
 
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.common.services.current_user_service import CurrentUserService
+from app.core.common.factories.id_factory import (
+    generate_favorite_id,
+    generate_playlist_id,
+    generate_track_id,
+)
 from app.core.common.services.favorite_service import FavoriteService
 from app.core.common.services.playlist_service import PlaylistService
 from app.core.common.services.playlist_track_service import PlaylistTrackService
-from app.core.common.types import PlaylistID, TrackID
+from app.core.common.types import FavoriteID, PlaylistID, TrackID
 from app.core.models.favorite import Favorite
 from app.core.models.playlist import Playlist
 from app.core.models.playlist_track import PlaylistTrack
@@ -68,26 +73,18 @@ def create_user(
     )
 
 
-def create_playlist_id(value: PlaylistID | None = None) -> PlaylistID:
-    return value or PlaylistID(uuid4())
-
-
-def create_track_id(value: TrackID | None = None) -> TrackID:
-    return value or TrackID(uuid4())
-
-
 def create_upload_urn(value=None) -> UploadURNType:
     return UploadURNType(value or uuid4())
 
 
 def create_favorite(
-    id=None,
+    id: FavoriteID | None = None,
     user_id: UserID | None = None,
     track_id: UploadURNType | None = None,
 ) -> Favorite:
     track_urn = track_id or create_upload_urn()
     return Favorite(
-        id=id or uuid4(),
+        id=id or generate_favorite_id(),
         user_id=user_id or create_user_id(),
         track_id=str(track_urn),
     )
@@ -99,7 +96,7 @@ def create_playlist(
     name: str | None = None,
 ) -> Playlist:
     return Playlist(
-        id=id or create_playlist_id(),
+        id=id or generate_playlist_id(),
         user_id=user_id or create_user_id(),
         name=name or faker.sentence(nb_words=3),
     )
@@ -112,8 +109,8 @@ def create_playlist_track(
 ) -> PlaylistTrack:
     track_urn = track_id or create_upload_urn()
     return PlaylistTrack(
-        id=id or create_track_id(),
-        playlist_id=playlist_id or create_playlist_id(),
+        id=id or generate_track_id(),
+        playlist_id=playlist_id or generate_playlist_id(),
         track_id=str(track_urn),
     )
 
@@ -141,7 +138,7 @@ def create_playlist_qm(
     tracks_count: int = 0,
 ) -> PlaylistQM:
     return PlaylistQM(
-        id=id or create_playlist_id(),
+        id=id or generate_playlist_id(),
         user_id=user_id or create_user_id(),
         name=name or faker.sentence(nb_words=3),
         tracks_count=tracks_count,

@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Protocol
 from uuid import UUID
 
-from app.core.models import Upload
+from app.core.models.upload import Upload
 
 
 class UploadStorage(Protocol):

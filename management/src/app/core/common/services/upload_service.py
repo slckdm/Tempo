@@ -6,6 +6,7 @@ from toolkit.service.exceptions import UnsupportedMediaType
 from toolkit.types.enum import UploadStatus
 
 from app.core.common.exceptions import StatusUpdateFlowError
+from app.core.common.factories.id_factory import generate_upload_id
 from app.core.models.upload import Upload
 
 
@@ -13,13 +14,16 @@ class UploadService:
 
     def __init__(self): ...
 
-    async def create_upload(self, filename: str, size: int, user: User) -> Upload:
+    async def create_upload(
+        self, filename: str, size: int, user: User
+    ) -> Upload:
         mimetype, _ = guess_type(filename)
 
         if not mimetype or ("audio/" not in mimetype):
             raise UnsupportedMediaType
 
         upload = Upload(
+            id=generate_upload_id(),
             filename=filename,
             content_type=mimetype,
             size=size,

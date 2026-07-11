@@ -3,18 +3,22 @@ from uuid import UUID
 
 import pytest
 from faker import Faker
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.object_storage import ObjectStorage
+from toolkit.common.ports.transaction import Transaction
+from toolkit.common.ports.utc_timer import UTCTimer
+from toolkit.common.services.current_user_service import CurrentUserService
+from toolkit.outbox.ports.outbox_storage import OutboxStorage
+from toolkit.outbox.service import OutboxService
 
-from app.core.commands.create_upload import CreateUpload, CreateUploadRequestBody
-from app.core.commands.ports.flusher import Flusher
-from app.core.commands.ports.object_storage import ObjectStorage
-from app.core.commands.ports.outbox_storage import OutboxStorage
-from app.core.commands.ports.transaction import Transaction
+from app.core.commands.create_upload import (
+    MAX_UPLOAD_SIZE,
+    CreateUpload,
+    CreateUploadRequestBody,
+)
 from app.core.commands.ports.upload_storage import UploadStorage
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.common.ports.utc_timer import UTCTimer
-from app.core.common.services.current_user_service import CurrentUserService
-from app.core.common.services.outbox_service import OutboxService
 from app.core.common.services.upload_service import UploadService
 from app.core.models.upload import Upload
 from tests.unit.core.factories import (
@@ -49,9 +53,12 @@ def make_create_upload_command(
 
 def __generate_fake_id(uuid: UUID) -> Callable:
     """Generate a fake ID for the upload."""
+
     async def wrap(upload: Upload) -> None:
         upload.id = uuid
+
     return wrap
+
 
 @pytest.mark.asyncio
 async def test_create_upload_success(
@@ -86,7 +93,7 @@ async def test_create_upload_success(
         {
             "filename": faker.file_name("audio"),
             "contentType": faker.mime_type("audio"),
-            "size": faker.random_number(),
+            "size": faker.random_int(min=1, max=MAX_UPLOAD_SIZE),
         }
     )
     response = await create_upload_command(request_body)
@@ -94,3 +101,18 @@ async def test_create_upload_success(
         "upload": f"urn:mng.upload:{upload_uuid}",
         "presigned_url": "test_url",
     }
+    object_storage.make_object_upload_url.assert_awaited_once_with(
+        f"urn:mng.upload:{upload_uuid}",
+        content_type=request_body.content_type,
+        content_length=request_body.size,
+    )
+
+
+@pytest.mark.parametrize("size", [0, -1, MAX_UPLOAD_SIZE + 1])
+def test_create_upload_request_rejects_invalid_size(size: int) -> None:
+    with pytest.raises(ValueError):
+        CreateUploadRequestBody(
+            filename="test.mp3",
+            contentType="audio/mpeg",
+            size=size,
+        )

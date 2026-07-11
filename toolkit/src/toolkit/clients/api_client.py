@@ -1,6 +1,6 @@
 """Module: API client."""
 
-from http import HTTPMethod
+from http import HTTPMethod, HTTPStatus
 from typing import Optional, Type, TypeVar
 
 import aiohttp
@@ -11,10 +11,18 @@ from .auth_strategies import AbstractAuthorizationStrategy
 DTO = TypeVar("DTO", bound=BaseModel)
 
 
+class APIClientError:
+    """Error on API client request."""
+
+    def __init__(self, status_code: HTTPStatus, data: dict, *args, **kwargs) -> None:
+        self.status_code = status_code
+        self.data = data
+        super().__init__(*args, **kwargs)
+
+
 class APIClient:
     """API Client.
 
-    # TODO: exceptions handling
     # TODO: exceptions logging
     """
 
@@ -49,7 +57,10 @@ class APIClient:
             async with _session.request(
                 method, endpoint, params=query, json=payload, data=data
             ) as response:
-                return await response.json()
+                response_data = await response.json()
+                if response.status >= 400:
+                    raise APIClientError(response.status, response_data)
+                return response_data
 
     async def request(
         self,

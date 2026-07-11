@@ -27,6 +27,7 @@ services:
 
   management-publisher:
     container_name: tempo.management.publisher
+    restart: on-failure
     build:
       context: .
       target: publisher

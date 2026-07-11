@@ -3,9 +3,10 @@ from unittest.mock import create_autospec
 
 import pytest
 
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.queries.ports.object_storage import ObjectStorage
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.object_storage import ObjectStorage
+
 from tests.unit.core.mock_types import (
     AuthorizedUserFinderMock,
     IdentityProviderMock,
@@ -21,6 +22,7 @@ def identity_provider() -> IdentityProvider:
 @pytest.fixture
 def object_storage() -> ObjectStorage:
     return cast(ObjectStorageMock, create_autospec(ObjectStorage, instance=True))
+
 
 @pytest.fixture
 def authorized_user_finder() -> "AuthorizedUserFinder":

@@ -1,9 +1,9 @@
 from uuid import UUID
 
-from app.core.common.services.current_user_service import CurrentUserService
+from toolkit.common.services.current_user_service import CurrentUserService
+
 from app.core.queries.models.tracks import TracksQM
 from app.core.queries.ports.tracks_reader import TrackReader
-from app.core.queries.schemas.pagination import PaginationParams
 
 
 class GetPlaylistTracks:

@@ -1,8 +1,9 @@
 import pytest
 
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.common.ports.utc_timer import UTCTimer
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.utc_timer import UTCTimer
+
 from app.core.queries.get_tracks_metadata import GetTracksMetadata
 from app.core.queries.ports.metadata_reader import MetadataReader
 from tests.unit.core.factories import (

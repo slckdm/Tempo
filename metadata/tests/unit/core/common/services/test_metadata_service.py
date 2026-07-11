@@ -1,8 +1,8 @@
 import pytest
 
+from toolkit.common.ports.utc_timer import UTCTimer
 from toolkit.types.enum import UploadStatus
 
-from app.core.common.ports.utc_timer import UTCTimer
 from app.core.models import TrackMetadata
 from tests.unit.core.factories import (
     create_metadata,

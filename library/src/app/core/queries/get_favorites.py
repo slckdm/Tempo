@@ -1,4 +1,5 @@
-from app.core.common.services.current_user_service import CurrentUserService
+from toolkit.common.services.current_user_service import CurrentUserService
+
 from app.core.queries.models.favorites import FavoritesQM
 from app.core.queries.ports.favorite_reader import FavoriteReader
 

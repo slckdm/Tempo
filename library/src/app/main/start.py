@@ -8,9 +8,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 
-from toolkit.service.exceptions import Forbidden, NotFound, Unauthorized
+from toolkit.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
+from toolkit.config.settings import (
+    AppSettings,
+    KeycloakSettings,
+    PostgresSettings,
+    RedisSettings,
+    SQLAlchemySettings,
+)
+from toolkit.service.exceptions import Forbidden, NotFound, ResourceAlreadyExists, Unauthorized
 
-from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
 from app.inbound.http.v1_router import make_v1_router
 from app.main.config.loader import (
     load_app_settings,
@@ -20,16 +27,10 @@ from app.main.config.loader import (
     load_redis_settings,
     load_sqlalchemy_settings,
 )
-from app.main.config.settings import (
-    AppSettings,
-    KeycloakSettings,
-    PostgresSettings,
-    RedisSettings,
-    SQLAlchemySettings,
-)
 from app.main.ioc.core import CoreProvider
 from app.main.ioc.outbound import get_outbound_providers
 from app.main.setup import setup_logging
+from app.outbound.sqlalchemy.mappings.all import map_tables
 
 
 def create_service() -> FastAPI:
@@ -39,6 +40,7 @@ def create_service() -> FastAPI:
 
     setup_logging(level=logging_settings.LEVEL)
 
+    map_tables()
     app_settings = load_app_settings()
     postgres_settings = load_postgres_settings()
     keycloak_settings = load_keycloak_settings()
@@ -56,6 +58,7 @@ def create_service() -> FastAPI:
             Unauthorized: JsendFailHandler(HTTPStatus.UNAUTHORIZED),
             Forbidden: JsendFailHandler(HTTPStatus.FORBIDDEN),
             NotFound: JsendFailHandler(HTTPStatus.NOT_FOUND),
+            ResourceAlreadyExists: JsendFailHandler(HTTPStatus.CONFLICT),
         },
         routes=[*make_v1_router().routes],
     )

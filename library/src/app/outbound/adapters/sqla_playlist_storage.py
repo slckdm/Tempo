@@ -8,16 +8,16 @@ from toolkit.types_ import UserID
 
 from app.core.commands.ports.playlist_storage import PlaylistStorage
 from app.core.models.playlist import Playlist
+from app.outbound.sqlalchemy.mappings.playlist import playlists_table as table
 
 
 class SQLAPlaylistStorage(PlaylistStorage):
-
     def __init__(self, session: AsyncSession) -> None:
         self._session = session
 
     async def get(self, user_id: UserID, playlist_id: UUID) -> Playlist | None:
         return await self._session.scalar(
-            select(Playlist).where(Playlist.id == playlist_id, Playlist.user_id == user_id)
+            select(Playlist).where(table.c.id == playlist_id, table.c.user_id == user_id)
         )
 
     async def add(self, playlist: Playlist) -> None:
@@ -27,5 +27,5 @@ class SQLAPlaylistStorage(PlaylistStorage):
         await self._session.delete(playlist)
 
     async def get_list(self, user_id: UserID) -> Sequence[Playlist]:
-        result = await self._session.scalars(select(Playlist).where(Playlist.user_id == user_id))
+        result = await self._session.scalars(select(Playlist).where(table.c.user_id == user_id))
         return result.all()

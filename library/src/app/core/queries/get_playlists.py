@@ -1,4 +1,5 @@
-from app.core.common.services.current_user_service import CurrentUserService
+from toolkit.common.services.current_user_service import CurrentUserService
+
 from app.core.queries.models.playlists import PlaylistsQM
 from app.core.queries.ports.playlist_reader import PlaylistReader
 from app.core.queries.schemas.pagination import PaginationParams

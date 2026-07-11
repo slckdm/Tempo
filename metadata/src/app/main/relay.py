@@ -2,12 +2,15 @@ import asyncio
 import logging
 
 from dishka import make_async_container
-from faststream.rabbit import RabbitBroker
+from faststream.rabbit import RabbitBroker, RabbitExchange
 
+from toolkit.config.settings import KeycloakSettings, PostgresSettings, S3Settings
 from toolkit.messaging.broker import (
     METADATA_EXCHANGE,
     make_rabbit_broker,
 )
+from toolkit.providers.postgres_provider import PostgresProvider
+from toolkit.providers.s3_provider import S3Provider
 
 from app.core.commands.publish_outbox_messages import PublishOutboxMessages
 from app.main.config.loader import (
@@ -17,15 +20,16 @@ from app.main.config.loader import (
     load_rabbitmq_settings,
     load_s3_settings,
 )
-from app.main.config.settings import KeycloakSettings, PostgresSettings, S3Settings
-from app.main.ioc.outbound import KeycloakClientProvider, PostgresProvider, S3Provider
+from app.main.ioc.outbound import KeycloakClientProvider, OutboxProvider
 from app.main.ioc.relay import RelayProvider
 from app.main.setup import setup_logging
+from app.outbound.sqlalchemy.mappings.all import map_tables
 
 
 async def start_relay() -> None:
     logging_settings = load_logging_settings()
     setup_logging(level=logging_settings.LEVEL)
+    map_tables()
 
     rmq_settings = load_rabbitmq_settings()
 
@@ -38,11 +42,13 @@ async def start_relay() -> None:
         KeycloakClientProvider(),
         PostgresProvider(),
         S3Provider(),
+        OutboxProvider(),
         context={
             PostgresSettings: load_postgres_settings(),
             RabbitBroker: broker,
             KeycloakSettings: load_keycloak_settings(),
             S3Settings: load_s3_settings(),
+            RabbitExchange: METADATA_EXCHANGE
         },
     )
 

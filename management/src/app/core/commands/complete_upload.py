@@ -1,16 +1,18 @@
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.object_storage import ObjectStorage
+from toolkit.common.ports.transaction import Transaction
+from toolkit.common.services.current_user_service import CurrentUserService
 from toolkit.messaging.contracts import UploadCompletedEvent
 from toolkit.messaging.routing import UPLOAD_COMPLETED_RK
+from toolkit.outbox.ports.outbox_storage import OutboxStorage
+from toolkit.outbox.service import OutboxService
 from toolkit.service.exceptions import Forbidden, NotFound
 from toolkit.types.enum import UploadStatus
 from toolkit.types.urn import UploadURNType
 
-from app.core.commands.ports.flusher import Flusher
-from app.core.commands.ports.object_storage import ObjectStorage
-from app.core.commands.ports.outbox_storage import OutboxStorage
-from app.core.commands.ports.transaction import Transaction
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.enums.aggregate_type import AggregateType
-from app.core.common.services import CurrentUserService, OutboxService, UploadService
+from app.core.common.services.upload_service import UploadService
 
 
 class CompleteUpload:
@@ -34,9 +36,7 @@ class CompleteUpload:
         self._transaction = transaction
         self._flusher = flusher
 
-    async def __call__(
-        self, upload_id: UploadURNType
-    ) -> None:
+    async def __call__(self, upload_id: UploadURNType) -> None:
         user = await self._current_user_service.get_current_user(["tempo:etc"])
         upload = await self._upload_storage.get_by_id(upload_id.id, for_update=True)
 
@@ -45,8 +45,9 @@ class CompleteUpload:
         if upload.created_by != user.id:
             raise Forbidden()
 
+        object = await self._object_storage.get_object(str(upload.urn))
+        object.body.close()
 
-        await self._object_storage.get_object(str(upload.urn))
         await self._upload_service.transit_status(upload, UploadStatus.PROCESSING)
         message = await self._outbox_service.create_message(
             aggregate_type=AggregateType.UPLOAD,
@@ -60,7 +61,7 @@ class CompleteUpload:
                 size=upload.size,
                 created_by=upload.created_by,
                 created_at=upload.created_at,
-                status=upload.status
+                status=upload.status,
             ),
         )
         await self._outbox_storage.add(message)

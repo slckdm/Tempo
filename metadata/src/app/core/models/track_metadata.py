@@ -1,44 +1,63 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import types as orm
-from sqlalchemy.orm import Mapped, mapped_column
-
 from toolkit.types.enum import UploadStatus
 from toolkit.types.urn import UploadURNType
 
-from .base import Base
 
-
-class TrackMetadata(Base):
-    __tablename__ = "track_metadata"
-
-    upload_id: Mapped[UUID] = mapped_column(orm.UUID, primary_key=True)
-    title: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    artist: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    album: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    albumartist: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    genre: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    year: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    track_number: Mapped[int | None] = mapped_column(orm.Integer, nullable=True)
-    disc: Mapped[int | None] = mapped_column(orm.Integer, nullable=True)
-    duration: Mapped[float | None] = mapped_column(orm.Float, nullable=True)
-    bitrate: Mapped[float | None] = mapped_column(orm.Float, nullable=True)
-    samplerate: Mapped[int | None] = mapped_column(orm.Integer, nullable=True)
-    channels: Mapped[int | None] = mapped_column(orm.Integer, nullable=True)
-    comment: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    cover_key: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    processing_status: Mapped[UploadStatus] = mapped_column(
-        orm.Enum(UploadStatus), index=True
-    )
-    error: Mapped[str | None] = mapped_column(orm.String, nullable=True)
-    filename: Mapped[str] = mapped_column(orm.String)
-    content_type: Mapped[str] = mapped_column(orm.String)
-    size: Mapped[int] = mapped_column(orm.Integer)
-    created_by: Mapped[UUID] = mapped_column(orm.UUID)
-    created_at: Mapped[datetime] = mapped_column(orm.DateTime(timezone=True), index=True)
-    origin_upload_status: Mapped[UploadStatus] = mapped_column(orm.Enum(UploadStatus))
-    updated_at: Mapped[datetime] = mapped_column(orm.DateTime(timezone=True))
+class TrackMetadata:
+    def __init__(
+        self,
+        *,
+        upload_id: UUID,
+        title: str | None = None,
+        artist: str | None = None,
+        album: str | None = None,
+        albumartist: str | None = None,
+        genre: str | None = None,
+        year: str | None = None,
+        track_number: int | None = None,
+        disc: int | None = None,
+        duration: float | None = None,
+        bitrate: float | None = None,
+        samplerate: int | None = None,
+        channels: int | None = None,
+        comment: str | None = None,
+        cover_key: str | None = None,
+        processing_status: UploadStatus,
+        error: str | None = None,
+        filename: str,
+        content_type: str,
+        size: int,
+        created_by: UUID,
+        created_at: datetime,
+        origin_upload_status: UploadStatus,
+        updated_at: datetime,
+    ) -> None:
+        self.upload_id = upload_id
+        self.title = title
+        self.artist = artist
+        self.album = album
+        self.albumartist = albumartist
+        self.genre = genre
+        self.year = year
+        self.track_number = track_number
+        self.disc = disc
+        self.duration = duration
+        self.bitrate = bitrate
+        self.samplerate = samplerate
+        self.channels = channels
+        self.comment = comment
+        self.cover_key = cover_key
+        self.processing_status = processing_status
+        self.error = error
+        self.filename = filename
+        self.content_type = content_type
+        self.size = size
+        self.created_by = created_by
+        self.created_at = created_at
+        self.origin_upload_status = origin_upload_status
+        self.updated_at = updated_at
 
     @property
     def urn(self) -> UploadURNType:

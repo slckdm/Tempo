@@ -1,7 +1,7 @@
-from enum import StrEnum
+from toolkit.outbox.types import AggregateType as _AggregateType
 
 
-class AggregateType(StrEnum):
+class AggregateType(_AggregateType):
 
     UPLOAD = "upload"
     METADATA = "metadata"

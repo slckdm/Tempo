@@ -1,15 +1,15 @@
 import pytest
 
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.transaction import Transaction
+from toolkit.common.services.current_user_service import CurrentUserService
 from toolkit.service.exceptions import NotFound
 
-from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.playlist_storage import PlaylistStorage
 from app.core.commands.ports.playlist_track_storage import PlaylistTrackStorage
-from app.core.commands.ports.transaction import Transaction
 from app.core.commands.remove_track_from_playlist import RemoveTrackFromPlaylist
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.playlist_service import PlaylistService
 from app.core.common.services.playlist_track_service import PlaylistTrackService
 from tests.unit.core.factories import (

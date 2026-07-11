@@ -1,15 +1,15 @@
 import pytest
 
-from toolkit.types.urn import UploadURNType
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.transaction import Transaction
+from toolkit.common.services.current_user_service import CurrentUserService
 
 from app.core.commands.add_favorite import AddFavorite, AddFavoriteRequest
 from app.core.commands.ports.favorite_storage import FavoriteStorage
-from app.core.commands.ports.flusher import Flusher
-from app.core.commands.ports.transaction import Transaction
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.favorite_service import FavoriteService
+from toolkit.service.exceptions import ResourceAlreadyExists
 from tests.unit.core.factories import (
     create_current_user_service,
     create_favorite,
@@ -100,9 +100,9 @@ async def test_add_favorite_existing_is_noop(
         transaction=transaction,
     )
 
-    response = await command(AddFavoriteRequest(track_id=track_id))
+    with pytest.raises(ResourceAlreadyExists):
+        await command(AddFavoriteRequest(track_id=track_id))
 
-    assert response.track_id == track_id
     favorite_storage.add.assert_not_called()
     flusher.flush.assert_not_called()
     transaction.commit.assert_not_called()

@@ -1,22 +1,20 @@
 import asyncio
 import io
 
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.object_storage import ObjectStorage
+from toolkit.common.ports.transaction import Transaction
 from toolkit.messaging.contracts import MetadataReadyEvent, UploadCompletedEvent
 from toolkit.messaging.routing import METADATA_READY_RK
-from toolkit.s3.s3_client import S3Client
+from toolkit.outbox.model import OutboxMessage
+from toolkit.outbox.ports.outbox_storage import OutboxStorage
+from toolkit.outbox.service import OutboxService
 
-from app.core.commands.ports.flusher import Flusher
 from app.core.commands.ports.metadata_parser import MetadataParser
 from app.core.commands.ports.metadata_storage import MetadataStorage
-from app.core.commands.ports.object_storage import ObjectStorage
-from app.core.commands.ports.outbox_storage import OutboxStorage
-from app.core.commands.ports.transaction import Transaction
 from app.core.common.enums import AggregateType
 from app.core.common.exceptions import MetadataAlreadyProcessed
-from app.core.common.ports.utc_timer import UTCTimer
 from app.core.common.services.metadata_service import MetadataService
-from app.core.common.services.outbox_service import OutboxService
-from app.core.models.outbox_message import OutboxMessage
 from app.core.models.track_metadata import TrackMetadata
 
 DEFAULT_COVER_MIMETYPE = "image/png"
@@ -51,9 +49,9 @@ class ProcessTrackMetadata:
             raise MetadataAlreadyProcessed
 
         object_data = await self._object_storage.get_object(payload.s3_key)
-        raw = await self._metadata_parser.read(
-            io.BytesIO(await asyncio.to_thread(object_data.body.read))
-        )
+        content = await asyncio.to_thread(object_data.body.read)
+        object_data.body.close()
+        raw = await self._metadata_parser.read(io.BytesIO(content))
         metadata = await self._metadata_service.create(raw, payload)
 
         if raw.cover:

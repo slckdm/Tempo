@@ -7,14 +7,14 @@ from fastapi.security import OAuth2
 
 from faker import Faker
 
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.object_storage import ObjectStorage
+from toolkit.common.services.authorization_service import AuthorizationService
+from toolkit.common.services.current_user_service import CurrentUserService
 from toolkit.entities.object import Object
 from toolkit.types.urn import UploadURNType
 
-from app.core.common.auth.service import AuthorizationService
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.common.services.current_user_service import CurrentUserService
-from app.core.queries.ports.object_storage import ObjectStorage
 from app.core.queries.stream import Stream
 
 faker = Faker()

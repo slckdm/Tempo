@@ -1,7 +1,8 @@
 import pytest
 
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.identity_provider import IdentityProvider
+
 from app.core.queries.get_playlists import GetPlaylists
 from app.core.queries.ports.playlist_reader import PlaylistReader
 from tests.unit.core.factories import (

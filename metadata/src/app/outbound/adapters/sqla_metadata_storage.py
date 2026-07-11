@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.commands.ports.metadata_storage import MetadataStorage
-from app.core.models import TrackMetadata
+from app.core.models.track_metadata import TrackMetadata
 
 
 class SQLAMetadataStorage(MetadataStorage):

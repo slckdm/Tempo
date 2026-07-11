@@ -3,13 +3,13 @@ from typing import Final
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from toolkit.messaging.settings import RabbitMQSettings
-
-from .settings import (
+from toolkit.config.loader import load_settings
+from toolkit.config.settings import (
     AppSettings,
     KeycloakSettings,
     LoggingSettings,
     PostgresSettings,
+    RabbitMQSettings,
     RedisSettings,
     SQLAlchemySettings,
 )
@@ -20,10 +20,6 @@ _ENV_FILE: Final[Path] = BASE_DIR.joinpath(".env")
 _DEFAULT_CONFIG_DICT: Final[SettingsConfigDict] = SettingsConfigDict(
     env_file=_ENV_FILE, extra="ignore"
 )
-
-
-def _load_settings[E: BaseSettings](env_cls: type[E]) -> E:
-    return env_cls()
 
 
 class PostgresEnvConfig(BaseSettings, PostgresSettings):
@@ -55,28 +51,28 @@ class RabbitMQEnvConfig(BaseSettings, RabbitMQSettings):
 
 
 def load_app_settings() -> AppSettings:
-    return _load_settings(AppEnvConfig)
+    return load_settings(AppEnvConfig)
 
 
 def load_postgres_settings() -> PostgresSettings:
-    return _load_settings(PostgresEnvConfig)
+    return load_settings(PostgresEnvConfig)
 
 
 def load_keycloak_settings() -> KeycloakSettings:
-    return _load_settings(KeycloakEnvConfig)
+    return load_settings(KeycloakEnvConfig)
 
 
 def load_sqlalchemy_settings() -> SQLAlchemySettings:
-    return _load_settings(SQLAlchemyEnvConfig)
+    return load_settings(SQLAlchemyEnvConfig)
 
 
 def load_logging_settings() -> LoggingSettings:
-    return _load_settings(LoggingEnvConfig)
+    return load_settings(LoggingEnvConfig)
 
 
 def load_redis_settings() -> RedisSettings:
-    return _load_settings(RedisEnvConfig)
+    return load_settings(RedisEnvConfig)
 
 
 def load_rabbitmq_settings() -> RabbitMQSettings:
-    return _load_settings(RabbitMQEnvConfig)
+    return load_settings(RabbitMQEnvConfig)

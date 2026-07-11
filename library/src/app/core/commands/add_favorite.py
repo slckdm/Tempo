@@ -1,11 +1,12 @@
 from pydantic import BaseModel
 
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.transaction import Transaction
+from toolkit.common.services.current_user_service import CurrentUserService
+from toolkit.service.exceptions import ResourceAlreadyExists
 from toolkit.types.urn import UploadURNType
 
 from app.core.commands.ports.favorite_storage import FavoriteStorage
-from app.core.commands.ports.flusher import Flusher
-from app.core.commands.ports.transaction import Transaction
-from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.favorite_service import FavoriteService
 
 
@@ -43,7 +44,7 @@ class AddFavorite:
         )
 
         if existing_favorite:
-            return AddFavoriteResponse(track_id=request.track_id)
+            raise ResourceAlreadyExists
 
         favorite = self._favorite_service.create_favorite(user.id, request.track_id)
         await self._favorite_storage.add(favorite)

@@ -1,23 +1,26 @@
 from dishka import Provider, Scope, provide
 
-from app.core.commands.ports.flusher import Flusher
+from toolkit.common.adapters.keycloak_auth_user_finder import KeycloakAuthorizedUserFinder
+from toolkit.common.adapters.keycloak_identity_provider import KeycloakIdentityProvider
+from toolkit.common.adapters.redis_cacher import RedisCacher
+from toolkit.common.adapters.sqla_flusher import SQLAFlusher
+from toolkit.common.adapters.sqla_transaction import SQLATransaction
+from toolkit.common.adapters.system_utc_timer import SystemUTCTimer
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.cacher import Cacher
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.transaction import Transaction
+from toolkit.common.ports.utc_timer import UTCTimer
+from toolkit.common.services.current_user_service import CurrentUserService
+
 from app.core.commands.ports.metadata_storage import MetadataStorage
-from app.core.commands.ports.transaction import Transaction
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.common.ports.utc_timer import UTCTimer
-from app.core.common.services.current_user_service import CurrentUserService
 from app.core.common.services.metadata_service import MetadataService
 from app.core.queries.get_track_metadata import GetTrackMetadata
 from app.core.queries.get_tracks_metadata import GetTracksMetadata
 from app.core.queries.ports.metadata_reader import MetadataReader
-from app.outbound.adapters.keycloak_auth_user_finder import KeycloakAuthorizedUserFinder
-from app.outbound.adapters.keycloak_identity_provider import KeycloakIdentityProvider
-from app.outbound.adapters.sqla_flusher import SQLAFlusher
 from app.outbound.adapters.sqla_metadata_reader import SQLAMetadataReader
 from app.outbound.adapters.sqla_metadata_storage import SQLAMetadataStorage
-from app.outbound.adapters.sqla_transaction import SQLATransaction
-from app.outbound.adapters.system_utc_timer import SystemUTCTimer
 
 
 class CoreProvider(Provider):
@@ -33,6 +36,7 @@ class CoreProvider(Provider):
     # ports
     flusher = provide(SQLAFlusher, provides=Flusher)
     transaction = provide(SQLATransaction, provides=Transaction)
+    cacher = provide(RedisCacher, provides=Cacher)
     utc_timer = provide(SystemUTCTimer, provides=UTCTimer)
     metadata_storage = provide(SQLAMetadataStorage, provides=MetadataStorage)
     metadata_service = provide(MetadataService)

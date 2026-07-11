@@ -2,13 +2,10 @@ import asyncio
 import logging
 
 from dishka import make_async_container
-from faststream.rabbit import RabbitBroker
-from toolkit.messaging.broker import (
-    MANAGEMENT_DLE,
-    MANAGEMENT_DLQ,
-    MANAGEMENT_EXCHANGE,
-    make_rabbit_broker,
-)
+from faststream.rabbit import RabbitBroker, RabbitExchange
+from toolkit.config.settings import PostgresSettings, RedisSettings
+from toolkit.messaging.broker import MANAGEMENT_EXCHANGE, make_rabbit_broker
+from toolkit.providers.postgres_provider import PostgresProvider
 
 from app.core.commands.publish_outbox_messages import PublishOutboxMessages
 from app.main.config.loader import (
@@ -17,10 +14,10 @@ from app.main.config.loader import (
     load_rabbitmq_settings,
     load_redis_settings,
 )
-from app.main.config.settings import PostgresSettings, RedisSettings
-from app.main.ioc.outbound import PostgresProvider
+from app.main.ioc.outbound import OutboxProvider
 from app.main.ioc.relay import RelayProvider
 from app.main.setup import setup_logging
+from app.outbound.sqlalchemy.mappings.all import map_tables
 
 
 async def start_relay() -> None:
@@ -28,18 +25,21 @@ async def start_relay() -> None:
     setup_logging(level=logging_settings.LEVEL)
 
     rmq_settings = load_rabbitmq_settings()
+    map_tables()
 
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
     await broker.declare_exchange(MANAGEMENT_EXCHANGE)
 
     container = make_async_container(
+        OutboxProvider(),
         RelayProvider(),
         PostgresProvider(),
         context={
             PostgresSettings: load_postgres_settings(),
             RabbitBroker: broker,
             RedisSettings: load_redis_settings(),
+            RabbitExchange: MANAGEMENT_EXCHANGE
         },
     )
 

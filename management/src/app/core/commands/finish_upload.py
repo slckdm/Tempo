@@ -1,10 +1,10 @@
 
+from toolkit.common.ports.flusher import Flusher
+from toolkit.common.ports.transaction import Transaction
 from toolkit.messaging.contracts import MetadataReadyEvent
 from toolkit.service.exceptions import NotFound
 from toolkit.types.enum import UploadStatus
 
-from app.core.commands.ports.flusher import Flusher
-from app.core.commands.ports.transaction import Transaction
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.services.upload_service import UploadService
 
@@ -30,5 +30,6 @@ class FinishUpload:
             raise NotFound(data={"upload": str(payload.upload_id)})
 
         await self._upload_service.transit_status(upload, UploadStatus.COMPLETED)
+
         await self._flusher.flush()
         await self._transaction.commit()

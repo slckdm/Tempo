@@ -2,20 +2,23 @@ import io
 
 import pytest
 
-from toolkit.service.exceptions import NotFound
+from toolkit.common.ports.auth_user_finder import AuthorizedUserFinder
+from toolkit.common.ports.identity_provider import IdentityProvider
+from toolkit.common.ports.object_storage import ObjectStorage
+from toolkit.common.services.current_user_service import CurrentUserService
+from toolkit.service.exceptions import NotFound, ObjectStorageError
 
-from app.core.common.ports.auth_user_finder import AuthorizedUserFinder
-from app.core.common.ports.identity_provider import IdentityProvider
-from app.core.common.services.current_user_service import CurrentUserService
-from app.core.queries.ports.object_storage import ObjectStorage
 from app.core.queries.stream import _iter_chunks
-from app.outbound.exceptions import StorageError
-from tests.unit.core.factories import create_object, create_stream, create_upload_urn, create_current_user_service
+from tests.unit.core.factories import (
+    create_current_user_service,
+    create_object,
+    create_stream,
+    create_upload_urn,
+)
 
 
 def make_current_user_service(
-    identity_provider: IdentityProvider,
-    authorized_user_finder: AuthorizedUserFinder | None
+    identity_provider: IdentityProvider, authorized_user_finder: AuthorizedUserFinder | None
 ) -> CurrentUserService:
     return create_current_user_service(
         identity_provider=identity_provider, authorized_user_finder=authorized_user_finder
@@ -84,7 +87,7 @@ async def test_stream_missing_object_raises_not_found(
     object_storage: ObjectStorage,
     authorized_user_finder: AuthorizedUserFinder,
 ) -> None:
-    object_storage.get_object.side_effect = StorageError
+    object_storage.get_object.side_effect = ObjectStorageError
     current_user_service = make_current_user_service(identity_provider, authorized_user_finder)
     stream = create_stream(object_storage, current_user_service)
 

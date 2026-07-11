@@ -1,14 +1,6 @@
 from toolkit.service.exceptions import TempoBaseError
 
 
-class TransactionError(TempoBaseError):
-    ...
-
-
-class FlusherError(TempoBaseError):
-    ...
-
-
 class FavoriteReaderError(TempoBaseError):
     ...
 

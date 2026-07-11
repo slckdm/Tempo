@@ -6,6 +6,15 @@ from dishka import make_async_container
 from dishka.integrations.fastapi import FastapiProvider, setup_dishka
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from toolkit.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
+from toolkit.config.settings import (
+    AppSettings,
+    KeycloakSettings,
+    PostgresSettings,
+    RedisSettings,
+    S3Settings,
+    SQLAlchemySettings,
+)
 from toolkit.service.exceptions import (
     Conflict,
     Forbidden,
@@ -15,7 +24,6 @@ from toolkit.service.exceptions import (
 )
 
 from app.core.common.exceptions import StatusUpdateFlowError
-from app.core.common.jsend_error_handler import JsendErrorHandler, JsendFailHandler
 from app.inbound.http.uploads.router import make_uploads_router
 from app.main.config.loader import (
     load_app_settings,
@@ -26,17 +34,10 @@ from app.main.config.loader import (
     load_s3_settings,
     load_sqlalchemy_settings,
 )
-from app.main.config.settings import (
-    AppSettings,
-    KeycloakSettings,
-    PostgresSettings,
-    RedisSettings,
-    S3Settings,
-    SQLAlchemySettings,
-)
 from app.main.ioc.core import CoreProvider
 from app.main.ioc.outbound import get_outbound_providers
 from app.main.setup import setup_logging
+from app.outbound.sqlalchemy.mappings.all import map_tables
 
 
 def create_service() -> FastAPI:
@@ -44,6 +45,7 @@ def create_service() -> FastAPI:
     # initialize service
     logging_settings = load_logging_settings()
 
+    map_tables()
     setup_logging(level=logging_settings.LEVEL)
 
     app_settings = load_app_settings()
