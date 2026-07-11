@@ -1,8 +1,11 @@
 """JWT decoding and principal parsing."""
 
+from uuid import UUID
+
 from jwt import decode
 
 from tempo_toolkit.application.auth import ServiceAccount, User
+from tempo_toolkit.contracts.identifiers import UserID
 
 
 def decode_token(token: str, public_key: str, audience: list[str]) -> dict:
@@ -26,7 +29,7 @@ def normalize_public_key(public_key: str | None) -> str:
 def get_user_data_from_token(payload: dict) -> User:
     """Parse user claims."""
     return User(
-        id=payload["sub"],
+        id=UserID(UUID(payload["sub"])),
         first_name=payload["given_name"],
         last_name=payload["family_name"],
         username=payload["preferred_username"],
