@@ -1,14 +1,10 @@
 from tempo_toolkit.application.auth import CurrentUserService
 from tempo_toolkit.application.errors import Forbidden, NotFound
-from tempo_toolkit.application.outbox import OutboxService, OutboxStorage
 from tempo_toolkit.application.persistence import Flusher, Transaction
 from tempo_toolkit.application.storage import ObjectStorage
-from tempo_toolkit.contracts.events import UploadCompletedEvent
-from tempo_toolkit.contracts.routing import UPLOAD_COMPLETED_RK
-from tempo_toolkit.contracts.uploads import UploadStatus, UploadURN
+from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.commands.ports.upload_storage import UploadStorage
-from app.core.common.enums.aggregate_type import AggregateType
 from app.core.common.services.upload_service import UploadService
 
 
@@ -18,8 +14,6 @@ class CompleteUpload:
         current_user_service: CurrentUserService,
         upload_service: UploadService,
         upload_storage: UploadStorage,
-        outbox_service: OutboxService,
-        outbox_storage: OutboxStorage,
         object_storage: ObjectStorage,
         transaction: Transaction,
         flusher: Flusher,
@@ -27,8 +21,6 @@ class CompleteUpload:
         self._current_user_service = current_user_service
         self._upload_service = upload_service
         self._upload_storage = upload_storage
-        self._outbox_service = outbox_service
-        self._outbox_storage = outbox_storage
         self._object_storage = object_storage
         self._transaction = transaction
         self._flusher = flusher
@@ -45,23 +37,8 @@ class CompleteUpload:
         object = await self._object_storage.get_object(str(upload.urn))
         object.body.close()
 
-        await self._upload_service.transit_status(upload, UploadStatus.PROCESSING)
-        message = await self._outbox_service.create_message(
-            aggregate_type=AggregateType.UPLOAD,
-            aggregate_id=str(upload.id),
-            event_type=UPLOAD_COMPLETED_RK,
-            payload=UploadCompletedEvent(
-                upload_id=upload.urn,
-                s3_key=str(upload.urn),
-                filename=upload.filename,
-                content_type=upload.content_type,
-                size=upload.size,
-                created_by=upload.created_by,
-                created_at=upload.created_at,
-                status=upload.status,
-            ),
-        )
-        await self._outbox_storage.add(message)
+        await self._upload_service.complete_upload(upload)
+        await self._upload_service.make_upload_completed_event(upload)
 
         await self._flusher.flush()
         await self._transaction.commit()

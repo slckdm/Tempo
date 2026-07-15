@@ -4,14 +4,10 @@ from tempo_toolkit.application.auth import CurrentUserService
 from tempo_toolkit.application.outbox import OutboxService, OutboxStorage
 from tempo_toolkit.application.persistence import Flusher, Transaction
 from tempo_toolkit.application.storage import ObjectStorage
-from tempo_toolkit.contracts.events import UploadCreatedEvent
-from tempo_toolkit.contracts.routing import UPLOAD_CREATED_RK
 from tempo_toolkit.contracts.uploads import UploadURN
 
 from app.core.commands.ports.upload_storage import UploadStorage
-from app.core.common.enums import AggregateType
 from app.core.common.services.upload_service import UploadService
-from app.core.models.upload import Upload
 
 MAX_UPLOAD_SIZE = 100 * 1024 * 1024
 
@@ -62,30 +58,12 @@ class CreateUpload:
         user = await self._current_user_service.get_current_user(["tempo:etc"])
         upload = await self._upload_service.create_upload(body.filename, body.size, user)
         await self._upload_storage.add(upload)
+        await self._upload_service.make_upload_created_event(upload)
         url = await self._object_storage.make_object_upload_url(
             str(upload.urn), content_type=body.content_type, content_length=body.size
         )
-        await self.__create_event(upload)
 
         await self._flusher.flush()
         await self._transaction.commit()
 
         return CreateUploadResponse(upload=upload.urn, presigned_url=url)
-
-    async def __create_event(self, upload: Upload) -> None:
-        message = await self._outbox_service.create_message(
-            aggregate_type=AggregateType.UPLOAD,
-            aggregate_id=str(upload.id),
-            event_type=UPLOAD_CREATED_RK,
-            payload=UploadCreatedEvent(
-                upload_id=upload.urn,
-                s3_key=str(upload.urn),
-                filename=upload.filename,
-                content_type=upload.content_type,
-                size=upload.size,
-                created_by=upload.created_by,
-                created_at=upload.created_at,
-                status=upload.status,
-            ),
-        )
-        await self._outbox_storage.add(message)
