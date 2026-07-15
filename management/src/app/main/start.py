@@ -18,16 +18,18 @@ from tempo_toolkit.application.errors import (
 from tempo_toolkit.infrastructure.cache import RedisSettings
 from tempo_toolkit.infrastructure.database import PostgresSettings, SQLAlchemySettings
 from tempo_toolkit.infrastructure.identity import KeycloakSettings
+from tempo_toolkit.infrastructure.messaging import RabbitMQSettings
 from tempo_toolkit.infrastructure.object_storage import S3Settings
 from tempo_toolkit.infrastructure.web import AppSettings, JSendErrorHandler, JSendFailHandler
 
 from app.core.common.exceptions import StatusUpdateFlowError
-from app.inbound.http.uploads.router import make_uploads_router
+from app.inbound.http.v1_router import make_v1_router
 from app.main.config.loader import (
     load_app_settings,
     load_keycloak_settings,
     load_logging_settings,
     load_postgres_settings,
+    load_rabbitmq_settings,
     load_redis_settings,
     load_s3_settings,
     load_sqlalchemy_settings,
@@ -52,6 +54,7 @@ def create_service() -> FastAPI:
     s3_settings = load_s3_settings()
     sqlalchemy_settings = load_sqlalchemy_settings()
     redis_settings = load_redis_settings()
+    rabbit_settings = load_rabbitmq_settings()
 
     app = FastAPI(
         debug=app_settings.DEBUG,
@@ -59,9 +62,7 @@ def create_service() -> FastAPI:
         exception_handlers={
             HTTPStatus.UNAUTHORIZED: JSendFailHandler(HTTPStatus.UNAUTHORIZED),
             HTTPStatus.FORBIDDEN: JSendFailHandler(HTTPStatus.FORBIDDEN),
-            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: JSendFailHandler(
-                HTTPStatus.UNSUPPORTED_MEDIA_TYPE
-            ),
+            HTTPStatus.UNSUPPORTED_MEDIA_TYPE: JSendFailHandler(HTTPStatus.UNSUPPORTED_MEDIA_TYPE),
             HTTPStatus.UNPROCESSABLE_CONTENT: JSendFailHandler(HTTPStatus.UNPROCESSABLE_CONTENT),
             HTTPStatus.NOT_FOUND: JSendFailHandler(HTTPStatus.NOT_FOUND),
             HTTPStatus.INTERNAL_SERVER_ERROR: JSendErrorHandler(HTTPStatus.INTERNAL_SERVER_ERROR),
@@ -73,7 +74,7 @@ def create_service() -> FastAPI:
             Forbidden: JSendFailHandler(HTTPStatus.FORBIDDEN),
             UnsupportedMediaType: JSendFailHandler(HTTPStatus.UNSUPPORTED_MEDIA_TYPE),
         },
-        routes=[*make_uploads_router().routes],
+        routes=[*make_v1_router().routes],
     )
     app.add_middleware(
         CORSMiddleware,
@@ -94,6 +95,7 @@ def create_service() -> FastAPI:
             S3Settings: s3_settings,
             AppSettings: app_settings,
             RedisSettings: redis_settings,
+            RabbitMQSettings: rabbit_settings,
         },
     )
 
