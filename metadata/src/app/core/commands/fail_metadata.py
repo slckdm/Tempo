@@ -2,7 +2,7 @@
 from tempo_toolkit.application.outbox import OutboxService, OutboxStorage
 from tempo_toolkit.application.persistence import Flusher, Transaction
 from tempo_toolkit.contracts.events import MetadataFailedEvent, UploadCompletedEvent
-from tempo_toolkit.contracts.routing import METADATA_FAILED_RK
+from tempo_toolkit.contracts.routing import METADATA_FAILED_EVENT_RK
 
 from app.core.commands.ports.metadata_storage import MetadataStorage
 from app.core.common.entities.metadata import Metadata
@@ -37,7 +37,7 @@ class FailMetadata:
         message = await self._outbox_service.create_message(
             aggregate_type=AggregateType.UPLOAD,
             aggregate_id=str(payload.upload_id.id),
-            event_type=METADATA_FAILED_RK,
+            event_type=METADATA_FAILED_EVENT_RK,
             payload=MetadataFailedEvent(upload_id=payload.upload_id, reason=str(exception))
         )
 

@@ -5,7 +5,7 @@ from tempo_toolkit.application.outbox import OutboxMessage, OutboxService, Outbo
 from tempo_toolkit.application.persistence import Flusher, Transaction
 from tempo_toolkit.application.storage import ObjectStorage
 from tempo_toolkit.contracts.events import MetadataReadyEvent, UploadCompletedEvent
-from tempo_toolkit.contracts.routing import METADATA_READY_RK
+from tempo_toolkit.contracts.routing import METADATA_READY_EVENT_RK
 
 from app.core.commands.ports.metadata_parser import MetadataParser
 from app.core.commands.ports.metadata_storage import MetadataStorage
@@ -69,6 +69,6 @@ class ProcessTrackMetadata:
         return await self._outbox_service.create_message(
             aggregate_type=AggregateType.METADATA,
             aggregate_id=str(metadata.upload_id),
-            event_type=METADATA_READY_RK,
+            event_type=METADATA_READY_EVENT_RK,
             payload=MetadataReadyEvent(upload_id=payload.upload_id, cover_key=metadata.cover_key),
         )
