@@ -63,7 +63,7 @@ class KeycloakAuthorizedUserFinder(AuthorizedUserFinder):
         if not user:
             return None
         return User(
-            id=user["id"],
+            id=UserID(UUID(user["id"])),
             username=user["username"],
             email=user["email"],
             first_name=user["firstName"],
