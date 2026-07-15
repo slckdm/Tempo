@@ -1,64 +1,8 @@
-import logging
+from faststream.rabbit import RabbitRouter
 
-from dishka import FromDishka
-from dishka_faststream import inject
-from faststream import AckPolicy
-from faststream.rabbit import RabbitMessage, RabbitRouter
-
-from tempo_toolkit.application.errors import NotFound, ObjectStorageError
-from tempo_toolkit.contracts.events import UploadCompletedEvent, UploadDeletedEvent
-from tempo_toolkit.contracts.routing import UPLOAD_COMPLETED_RK, UPLOAD_DELETED_RK
-from tempo_toolkit.infrastructure.messaging import (
-    MANAGEMENT_EXCHANGE,
-    METADATA_CONSUMER_QUEUE,
-    METADATA_DLE,
-    METADATA_DLQ,
-    make_queue,
-)
-
-from app.core.commands.delete_track_metadata import DeleteTrackMetadata
-from app.core.commands.fail_metadata import FailMetadata
-from app.core.commands.process_track_metadata import ProcessTrackMetadata
-from app.core.common.exceptions import MetadataAlreadyProcessed, TagParseError
-from app.outbound.exceptions import MetadataParserError
+from .events.router import router as events_router
+from .metadata.router import router as metadata_router
 
 router = RabbitRouter()
 
-upload_completed_queue = make_queue(
-    f"{METADATA_CONSUMER_QUEUE.name}.upload_completed_handler", UPLOAD_COMPLETED_RK, METADATA_DLE
-)
-upload_deleted_queue = make_queue(
-    f"{METADATA_CONSUMER_QUEUE.name}.upload_deleted_handler", UPLOAD_DELETED_RK, METADATA_DLE
-)
-
-
-@router.subscriber(upload_completed_queue, MANAGEMENT_EXCHANGE, ack_policy=AckPolicy.NACK_ON_ERROR)
-@inject
-async def upload_completed_handler(
-    payload: UploadCompletedEvent,
-    interactor: FromDishka[ProcessTrackMetadata],
-    fail_handler: FromDishka[FailMetadata],
-) -> None:
-    try:
-        await interactor(payload)
-    except MetadataAlreadyProcessed:
-        return
-    except (NotFound, TagParseError, MetadataParserError, ObjectStorageError) as perm_exc:
-        await fail_handler(payload, perm_exc)
-
-
-@router.subscriber(upload_deleted_queue, MANAGEMENT_EXCHANGE, ack_policy=AckPolicy.NACK_ON_ERROR)
-@inject
-async def upload_deleted_handler(
-    payload: UploadDeletedEvent, interactor: FromDishka[DeleteTrackMetadata]
-) -> None:
-    try:
-        await interactor(payload)
-    except NotFound:
-        return
-
-
-@router.subscriber(METADATA_DLQ, METADATA_DLE)
-async def on_dead_letter(msg: RabbitMessage) -> None:
-    print("dead-lettered: %r" % msg.body)
-    logging.warning("dead-lettered: %r", msg.body)
+router.include_routers(events_router, metadata_router)
