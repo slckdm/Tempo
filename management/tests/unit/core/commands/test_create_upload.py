@@ -78,12 +78,14 @@ async def test_create_upload_success(
     authorized_user_finder.get_by_id.return_value = user
     object_storage.make_object_upload_url.return_value = "test_url"
     upload_storage.add = __generate_fake_id(upload_uuid)
+
+    outbox_service = create_outbox_service(utc_timer)
     create_upload_command = make_create_upload_command(
         current_user_service=create_current_user_service(
             identity_provider, authorized_user_finder
         ),
-        upload_service=create_upload_service(),
-        outbox_service=create_outbox_service(utc_timer),
+        upload_service=create_upload_service(outbox_service, outbox_storage),
+        outbox_service=outbox_service,
         upload_storage=upload_storage,
         outbox_storage=outbox_storage,
         object_storage=object_storage,

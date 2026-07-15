@@ -10,10 +10,12 @@ from tempo_toolkit.application.storage import ObjectStorage
 from tempo_toolkit.application.time import UTCTimer
 
 from app.core.commands.ports.upload_storage import UploadStorage
+from app.core.common.ports.metadata_proxy import MetadataProxy
 from tests.unit.core.mock_types import (
     AuthorizedUserFinderMock,
     FlusherMock,
     IdentityProviderMock,
+    MetadataProxyMock,
     ObjectStorageMock,
     OutboxStorageMock,
     TransactionMock,
@@ -60,3 +62,8 @@ def outbox_storage() -> OutboxStorage:
 @pytest.fixture
 def object_storage() -> ObjectStorage:
     return cast(ObjectStorageMock, create_autospec(ObjectStorage, instance=True))
+
+
+@pytest.fixture
+def metadata_proxy() -> MetadataProxy:
+    return cast(MetadataProxyMock, create_autospec(MetadataProxy, instance=True))

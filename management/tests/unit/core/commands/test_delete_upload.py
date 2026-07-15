@@ -15,29 +15,29 @@ from tempo_toolkit.contracts.uploads import UploadStatus, UploadURN
 
 from app.core.commands.delete_upload import DeleteUpload
 from app.core.commands.ports.upload_storage import UploadStorage
+from app.core.common.services.upload_service import UploadService
 from tests.unit.core.factories import (
     create_current_user_service,
     create_outbox_service,
     create_upload,
     create_user,
+    create_upload_service,
 )
 
 
 def make_delete_upload_command(
     upload_storage: UploadStorage,
-    outbox_service: OutboxService,
-    outbox_storage: OutboxStorage,
     object_storage: ObjectStorage,
+    upload_service: UploadService,
     flusher: Flusher,
     current_user_service: CurrentUserService,
     transaction: Transaction,
 ) -> DeleteUpload:
     return DeleteUpload(
         current_user_service=current_user_service,
+        upload_service=upload_service,
         upload_storage=upload_storage,
-        outbox_storage=outbox_storage,
         object_storage=object_storage,
-        outbox_service=outbox_service,
         flusher=flusher,
         transaction=transaction,
     )
@@ -56,6 +56,8 @@ async def test_delete_upload_success(
 ) -> None:
     user = create_user()
     upload = create_upload(status=UploadStatus.COMPLETED, created_by=user.id)
+    outbox_service = create_outbox_service(utc_timer)
+
     upload_storage.get_by_id.return_value = upload
     authorized_user_finder.get_by_id.return_value = user
 
@@ -63,10 +65,9 @@ async def test_delete_upload_success(
         current_user_service=create_current_user_service(
             identity_provider, authorized_user_finder
         ),
-        outbox_service=create_outbox_service(utc_timer),
         upload_storage=upload_storage,
-        outbox_storage=outbox_storage,
         object_storage=object_storage,
+        upload_service=create_upload_service(outbox_service, outbox_storage),
         flusher=flusher,
         transaction=transaction,
     )
@@ -85,15 +86,17 @@ async def test_delete_upload_forbidden(
     transaction: Transaction,
 ) -> None:
     upload = create_upload(status=UploadStatus.COMPLETED)
+    outbox_service = create_outbox_service(utc_timer)
+
     upload_storage.get_by_id.return_value = upload
+
     delete_upload_command = make_delete_upload_command(
         current_user_service=create_current_user_service(
             identity_provider, authorized_user_finder
         ),
-        outbox_service=create_outbox_service(utc_timer),
         upload_storage=upload_storage,
-        outbox_storage=outbox_storage,
         object_storage=object_storage,
+        upload_service=create_upload_service(outbox_service, outbox_storage),
         flusher=flusher,
         transaction=transaction,
     )
@@ -114,6 +117,9 @@ async def test_delete_upload_conflict(
 ) -> None:
     user = create_user()
     upload = create_upload(status=UploadStatus.PENDING)
+    outbox_service = create_outbox_service(utc_timer)
+    upload_service = create_upload_service(outbox_service, outbox_storage)
+
     authorized_user_finder.get_by_id.return_value = user
     upload_storage.get_by_id.return_value = upload
 
@@ -121,9 +127,8 @@ async def test_delete_upload_conflict(
         current_user_service=create_current_user_service(
             identity_provider, authorized_user_finder
         ),
-        outbox_service=create_outbox_service(utc_timer),
+        upload_service=upload_service,
         upload_storage=upload_storage,
-        outbox_storage=outbox_storage,
         object_storage=object_storage,
         flusher=flusher,
         transaction=transaction,
@@ -145,6 +150,9 @@ async def test_delete_upload_not_found(
     transaction: Transaction,
 ) -> None:
     user = create_user()
+    outbox_service = create_outbox_service(utc_timer)
+    upload_service = create_upload_service(outbox_service, outbox_storage)
+
     authorized_user_finder.get_by_id.return_value = user
     upload_storage.get_by_id.return_value = None
 
@@ -152,9 +160,8 @@ async def test_delete_upload_not_found(
         current_user_service=create_current_user_service(
             identity_provider, authorized_user_finder
         ),
-        outbox_service=create_outbox_service(utc_timer),
+        upload_service=upload_service,
         upload_storage=upload_storage,
-        outbox_storage=outbox_storage,
         object_storage=object_storage,
         flusher=flusher,
         transaction=transaction,

@@ -44,3 +44,8 @@ class ObjectStorageMock(Protocol):
     get_object: AsyncMock
     put_object: AsyncMock
     delete_object: AsyncMock
+
+
+class MetadataProxyMock(Protocol):
+    process_metadata: AsyncMock
+    delete_metadata: AsyncMock
