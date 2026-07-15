@@ -12,6 +12,7 @@ from tempo_toolkit.infrastructure.messaging import (
     MANAGEMENT_DLQ,
     make_rabbit_broker,
 )
+from tempo_toolkit.infrastructure.messaging.settings import RabbitMQSettings
 from tempo_toolkit.infrastructure.object_storage import S3Provider, S3Settings
 
 from app.inbound.amqp.router import router
@@ -23,6 +24,7 @@ from app.main.config.loader import (
     load_s3_settings,
 )
 from app.main.ioc.consumer import ConsumerProvider
+from app.main.ioc.outbound import BrokerProvider, OutboxProvider
 from app.main.setup import setup_logging
 from app.outbound.sqlalchemy.mappings.all import map_tables
 
@@ -42,6 +44,8 @@ async def create_app() -> None:
     app = FastStream(broker)
 
     container = make_async_container(
+        OutboxProvider(),
+        BrokerProvider(),
         ConsumerProvider(),
         FastStreamProvider(),
         PostgresProvider(),
@@ -51,6 +55,7 @@ async def create_app() -> None:
             PostgresSettings: load_postgres_settings(),
             S3Settings: load_s3_settings(),
             RedisSettings: load_redis_settings(),
+            RabbitMQSettings: rmq_settings,
         },
     )
 

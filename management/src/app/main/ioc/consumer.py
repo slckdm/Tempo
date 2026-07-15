@@ -1,8 +1,14 @@
-
 from dishka import Provider, Scope, provide
 
+from tempo_toolkit.application.outbox import OutboxService, OutboxStorage
 from tempo_toolkit.application.persistence import Flusher, Transaction
-from tempo_toolkit.infrastructure.database import SQLAlchemyFlusher, SQLAlchemyTransaction
+from tempo_toolkit.application.time import UTCTimer
+from tempo_toolkit.infrastructure.database import (
+    SQLAlchemyFlusher,
+    SQLAlchemyOutboxStorage,
+    SQLAlchemyTransaction,
+)
+from tempo_toolkit.infrastructure.time import SystemUTCTimer
 
 from app.core.commands.fail_upload import FailUpload
 from app.core.commands.finish_upload import FinishUpload
@@ -18,9 +24,12 @@ class ConsumerProvider(Provider):
     transaction = provide(SQLAlchemyTransaction, provides=Transaction)
     flusher = provide(SQLAlchemyFlusher, provides=Flusher)
     upload_storage = provide(SQLAUploadStorage, provides=UploadStorage)
+    outbox_storage = provide(SQLAlchemyOutboxStorage, provides=OutboxStorage)
+    utc_timer = provide(SystemUTCTimer, provides=UTCTimer)
 
     # services
     upload_service = provide(UploadService)
+    outbox_service = provide(OutboxService)
 
     # commands
     finish_upload = provide(FinishUpload)
