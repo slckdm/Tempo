@@ -10,7 +10,9 @@ class UploadStatus(StrEnum):
     """Upload processing status."""
 
     PENDING = "PENDING"
+    PROCESSING_PENDING = "PROCESSING_PENDING"
     PROCESSING = "PROCESSING"
+    COMPLETED_PENDING = "COMPLETED_PENDING"
     COMPLETED = "COMPLETED"
     FAILED = "FAILED"
 
