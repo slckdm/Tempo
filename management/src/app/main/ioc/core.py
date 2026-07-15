@@ -26,6 +26,7 @@ from tempo_toolkit.infrastructure.time import SystemUTCTimer
 from app.core.commands.complete_upload import CompleteUpload
 from app.core.commands.create_upload import CreateUpload
 from app.core.commands.delete_upload import DeleteUpload
+from app.core.commands.healthcheck import Healthcheck
 from app.core.commands.ports.upload_storage import UploadStorage
 from app.core.common.services.upload_service import UploadService
 from app.outbound.adapters.sqla_upload_storage import SQLAUploadStorage

@@ -4,11 +4,14 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi.security.base import SecurityBase
 
 from dishka import Provider, Scope, collect, provide
+from faststream.rabbit import RabbitBroker
 
 from tempo_toolkit.application.auth import TokenProvider
 from tempo_toolkit.infrastructure.cache import RedisClientProvider
 from tempo_toolkit.infrastructure.database import OutboxTable, PostgresProvider
 from tempo_toolkit.infrastructure.identity import KeycloakClientProvider, KeycloakSettings
+from tempo_toolkit.infrastructure.messaging.rabbitmq import make_rabbit_broker
+from tempo_toolkit.infrastructure.messaging.settings import RabbitMQSettings
 from tempo_toolkit.infrastructure.object_storage import S3Provider
 from tempo_toolkit.infrastructure.web import FastAPITokenProvider
 
@@ -34,6 +37,16 @@ class AuthProvider(Provider):
     token_provider = provide(FastAPITokenProvider, provides=TokenProvider)
 
 
+class BrokerProvider(Provider):
+    scope = Scope.APP
+
+    @provide(provides=RabbitBroker)
+    async def proide_publisher(self, config: RabbitMQSettings) -> RabbitBroker:
+        broker = make_rabbit_broker(config)
+        await broker.connect()
+        return broker
+
+
 def get_outbound_providers() -> Sequence[Provider]:
     return (
         KeycloakClientProvider(),
@@ -42,4 +55,5 @@ def get_outbound_providers() -> Sequence[Provider]:
         PostgresProvider(),
         S3Provider(),
         OutboxProvider(),
+        BrokerProvider(),
     )
