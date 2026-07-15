@@ -14,7 +14,7 @@ from tempo_toolkit.infrastructure.messaging import (
     make_rabbit_broker,
 )
 
-from app.inbound.amqp.router import router
+from app.inbound.amqp.v1_router import make_v1_router
 from app.main.config.loader import (
     load_keycloak_settings,
     load_logging_settings,
@@ -36,7 +36,7 @@ async def create_app() -> None:
 
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
-    broker.include_router(router)
+    broker.include_router(make_v1_router())
     await broker.declare_exchange(LIBRARY_DLE)
     await broker.declare_queue(LIBRARY_DLQ)
 
