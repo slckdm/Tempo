@@ -56,3 +56,4 @@ class CoreProvider(Provider):
     create_upload = provide(CreateUpload)
     complete_upload = provide(CompleteUpload)
     delete_upload = provide(DeleteUpload)
+    healthcheck = provide(Healthcheck)
