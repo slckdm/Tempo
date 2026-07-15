@@ -3,7 +3,11 @@
 from faststream.rabbit import ExchangeType, QueueType, RabbitBroker, RabbitExchange, RabbitQueue
 from faststream.security import SASLPlaintext
 
-from tempo_toolkit.contracts.routing import RoutingKey
+from tempo_toolkit.contracts.routing import (
+    METADATA_DELETE_METADATA_RK,
+    METADATA_PROCESS_METADATA_RK,
+    RoutingKey,
+)
 
 from .settings import RabbitMQSettings
 
@@ -22,17 +26,21 @@ def make_rabbit_broker(settings: RabbitMQSettings) -> RabbitBroker:
 def make_queue(
     name: str,
     routing_key: RoutingKey,
-    dlx: RabbitExchange,
+    dlx: RabbitExchange | None = None,
     queue_type: QueueType = QueueType.QUORUM,
     durable: bool = True,
 ) -> RabbitQueue:
     """Create a durable queue with dead-letter delivery."""
+    args = {"x-delivery-limit": 3}
+    if dlx:
+        args["x-dead-letter-exchange"] = dlx.name
+
     return RabbitQueue(
         name,
         queue_type=queue_type,
         durable=durable,
         routing_key=str(routing_key),
-        arguments={"x-delivery-limit": 3, "x-dead-letter-exchange": dlx.name},
+        arguments=args,
     )
 
 
@@ -54,3 +62,10 @@ LIBRARY_DLQ = RabbitQueue(f"{_LIBRARY_NAMESPACE}.dlq", durable=True)
 MANAGEMENT_CONSUMER_QUEUE = RabbitQueue(f"{_MANAGEMENT_NAMESPACE}.queue", durable=True)
 METADATA_CONSUMER_QUEUE = RabbitQueue(f"{_METADATA_NAMESPACE}.queue", durable=True)
 LIBRARY_CONSUMER_QUEUE = RabbitQueue(f"{_LIBRARY_NAMESPACE}.queue", durable=True)
+
+PROCESS_METADATA_QUEUE = make_queue(
+    f"{_METADATA_NAMESPACE}.process_metadata.queue", METADATA_PROCESS_METADATA_RK
+)
+DELETE_METADATA_QUEUE = make_queue(
+    f"{_METADATA_NAMESPACE}.delete_metadata.queue", METADATA_DELETE_METADATA_RK
+)

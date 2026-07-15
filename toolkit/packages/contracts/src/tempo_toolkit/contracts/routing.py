@@ -21,3 +21,7 @@ UPLOAD_DELETED_RK = RoutingKey("tempo.mng.upload.deleted")
 METADATA_READY_RK = RoutingKey("tempo.md.metadata.ready")
 METADATA_FAILED_RK = RoutingKey("tempo.md.metadata.failed")
 METADATA_DELETED_RK = RoutingKey("tempo.md.metadata.deleted")
+# Commands RK
+# - Metadata
+METADATA_PROCESS_METADATA_RK = RoutingKey("tempo.md.metadata.process_metadata")
+METADATA_DELETE_METADATA_RK = RoutingKey("tempo.md.metadata.delete_metadata")

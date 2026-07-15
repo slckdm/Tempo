@@ -2,6 +2,7 @@
 
 from .outbox import FastStreamOutboxMessagePublisher
 from .rabbitmq import (
+    DELETE_METADATA_QUEUE,
     LIBRARY_CONSUMER_QUEUE,
     LIBRARY_DLE,
     LIBRARY_DLQ,
@@ -14,6 +15,7 @@ from .rabbitmq import (
     METADATA_DLE,
     METADATA_DLQ,
     METADATA_EXCHANGE,
+    PROCESS_METADATA_QUEUE,
     make_queue,
     make_rabbit_broker,
 )
@@ -36,4 +38,6 @@ __all__ = [
     "RabbitMQSettings",
     "make_queue",
     "make_rabbit_broker",
+    "PROCESS_METADATA_QUEUE",
+    "DELETE_METADATA_QUEUE",
 ]
