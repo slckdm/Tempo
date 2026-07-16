@@ -58,7 +58,7 @@ services:
       KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloakpass}
       # Dev-friendly hostname/HTTP settings.
       KC_HTTP_ENABLED: "true"
-      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME: "http://localhost:8080"
       KC_HEALTH_ENABLED: "true"
     ports:
       - 8080:8080 # Web console + OIDC endpoints
