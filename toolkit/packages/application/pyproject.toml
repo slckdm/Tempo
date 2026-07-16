@@ -1,11 +1,11 @@
 [project]
 name = "tempo-toolkit-application"
-version = "0.2.0"
+version = "0.2.1"
 description = "Framework-independent application building blocks for Tempo"
 requires-python = ">=3.14"
 dependencies = [
     "pydantic>=2.13.4,<3.0.0",
-    "tempo-toolkit-contracts==0.2.0",
+    "tempo-toolkit-contracts==0.2.1",
 ]
 
 [tool.uv.sources]
@@ -17,4 +17,3 @@ build-backend = "uv_build"
 
 [tool.uv.build-backend]
 module-name = "tempo_toolkit.application"
-
