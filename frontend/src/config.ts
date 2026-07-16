@@ -13,7 +13,7 @@ export const config = {
   s3Base: "/api/s3",
 
   keycloak: {
-    realm: import.meta.env.VITE_KEYCLOAK_REALM ?? "muslick",
+    realm: import.meta.env.VITE_KEYCLOAK_REALM ?? "tempo",
     clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? "management-service-client",
     clientSecret:
       import.meta.env.VITE_KEYCLOAK_CLIENT_SECRET ?? "zkkbWU1ff4QRLqGTx1idCVmCcLnqyzYJ",

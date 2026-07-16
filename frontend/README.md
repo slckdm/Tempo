@@ -86,11 +86,11 @@ runs with no setup. To override, copy `.env.example` to `.env`:
 - `VITE_KEYCLOAK_GOOGLE_IDP_ALIAS` — Keycloak's Google identity-provider alias
   (defaults to `google`).
 
-Google must be configured as an identity provider in the `muslick` realm. Put
+Google must be configured as an identity provider in the `tempo` realm. Put
 the Google client id and secret in Keycloak, set the provider alias to `google`,
 and add the frontend origin to the Keycloak client's valid redirect URIs and web
 origins. The Google OAuth callback URI is Keycloak's broker endpoint:
-`http://localhost:8080/realms/muslick/broker/google/endpoint`.
+`http://localhost:8080/realms/tempo/broker/google/endpoint`.
 
 The Google client secret is server-side configuration. Do not expose it through
 a `VITE_*` variable or copy it into the frontend bundle.
