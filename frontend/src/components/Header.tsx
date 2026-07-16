@@ -26,7 +26,7 @@ export function Header() {
           {user?.email && <div className="user-mail">{user.email}</div>}
         </div>
         <span className="avatar" title={user?.name}>
-          <UserAvatar name={seed} size={38} />
+          <UserAvatar name={seed} imageUrl={user?.avatarUrl} size={38} />
         </span>
         <button className="icon-btn" onClick={logout} title="Sign out" aria-label="Sign out">
           <LogoutIcon size={18} />

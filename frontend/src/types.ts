@@ -54,6 +54,7 @@ export interface AuthUser {
   username: string;
   name: string;
   email?: string;
+  avatarUrl?: string;
 }
 
 /** Raw Keycloak token-endpoint response (subset we use). */

@@ -182,18 +182,31 @@ async function requestToken(body: Record<string, string>): Promise<TokenResponse
   return (await res.json()) as TokenResponse;
 }
 
-export function userFromToken(token: string): AuthUser | null {
+function stringClaim(
+  claim: string,
+  payload: Record<string, unknown>,
+  identity: Record<string, unknown> | null,
+): string | undefined {
+  const value = payload[claim] ?? identity?.[claim];
+  return typeof value === "string" && value ? value : undefined;
+}
+
+export function userFromToken(token: string, identityToken?: string): AuthUser | null {
   const payload = decodeJwt(token);
-  if (!payload || typeof payload.preferred_username !== "string") return null;
-  if (typeof payload.sub !== "string") return null;
-  const first = typeof payload.given_name === "string" ? payload.given_name : "";
-  const last = typeof payload.family_name === "string" ? payload.family_name : "";
-  const name = [first, last].filter(Boolean).join(" ") || payload.preferred_username;
+  if (!payload) return null;
+  const identity = identityToken ? decodeJwt(identityToken) : null;
+  const username = stringClaim("preferred_username", payload, identity);
+  const id = stringClaim("sub", payload, identity);
+  if (!username || !id) return null;
+  const firstName = stringClaim("given_name", payload, identity);
+  const lastName = stringClaim("family_name", payload, identity);
+  const name = [firstName, lastName].filter(Boolean).join(" ") || username;
   return {
-    id: payload.sub,
-    username: payload.preferred_username,
+    id,
+    username,
     name,
-    email: typeof payload.email === "string" ? payload.email : undefined,
+    email: stringClaim("email", payload, identity),
+    avatarUrl: stringClaim("picture", payload, identity),
   };
 }
 
@@ -205,7 +218,7 @@ export async function login(username: string, password: string): Promise<AuthUse
     scope: config.keycloak.loginScope,
   });
   persist({ tokens, obtainedAt: Date.now() });
-  const user = userFromToken(tokens.access_token);
+  const user = userFromToken(tokens.access_token, tokens.id_token);
   if (!user) throw new AuthError("Could not read user data from the token");
   return user;
 }
@@ -325,7 +338,7 @@ async function processOAuthCallback(): Promise<AuthUser | null> {
       throw new AuthError("Google sign-in identity could not be verified");
     }
 
-    const user = userFromToken(tokens.access_token);
+    const user = userFromToken(tokens.access_token, tokens.id_token);
     if (!user) throw new AuthError("Could not read user data from the token");
     persist({ tokens, obtainedAt: Date.now() });
     return user;
@@ -351,7 +364,10 @@ async function doRefresh(): Promise<boolean> {
       grant_type: "refresh_token",
       refresh_token: session.tokens.refresh_token,
     });
-    persist({ tokens, obtainedAt: Date.now() });
+    persist({
+      tokens: { ...tokens, id_token: tokens.id_token ?? session.tokens.id_token },
+      obtainedAt: Date.now(),
+    });
     return true;
   } catch {
     persist(null);
@@ -387,7 +403,7 @@ export function currentUser(): AuthUser | null {
     persist(null);
     return null;
   }
-  return userFromToken(session.tokens.access_token);
+  return userFromToken(session.tokens.access_token, session.tokens.id_token);
 }
 
 export function logout() {
