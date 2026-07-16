@@ -14,6 +14,7 @@ services:
 
   library-consumer:
     container_name: tempo.library.consumer
+    restart: on-failure
     build:
       context: .
       target: consumer

@@ -15,6 +15,7 @@ services:
 
   metadata-consumer:
     container_name: tempo.metadata.consumer
+    restart: on-failure
     build:
       context: .
       target: consumer
