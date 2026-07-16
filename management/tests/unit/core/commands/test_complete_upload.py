@@ -33,7 +33,6 @@ def make_complete_upload_command(
     object_storage: ObjectStorage,
     flusher: Flusher,
     transaction: Transaction,
-    metadata_proxy: MetadataProxy,
 ) -> CompleteUpload:
     return CompleteUpload(
         current_user_service=current_user_service,
@@ -42,7 +41,6 @@ def make_complete_upload_command(
         object_storage=object_storage,
         flusher=flusher,
         transaction=transaction,
-        metadata_proxy=metadata_proxy,
     )
 
 
@@ -56,7 +54,6 @@ async def test_complete_upload_success(
     object_storage: ObjectStorage,
     flusher: Flusher,
     transaction: Transaction,
-    metadata_proxy: MetadataProxy,
 ) -> None:
     user = create_user()
     upload = create_upload(status=UploadStatus.PENDING, created_by=user.id)
@@ -79,7 +76,6 @@ async def test_complete_upload_success(
         object_storage=object_storage,
         flusher=flusher,
         transaction=transaction,
-        metadata_proxy=metadata_proxy,
     )
     await complete_upload_command(upload.urn)
 

@@ -11,7 +11,7 @@ from tempo_toolkit.application.errors import Unauthorized
 from tempo_toolkit.application.outbox import AggregateType, OutboxService
 from tempo_toolkit.contracts.events import MetadataReadyEvent
 from tempo_toolkit.contracts.identifiers import UserID
-from tempo_toolkit.contracts.routing import METADATA_READY_RK
+from tempo_toolkit.contracts.routing import METADATA_READY_EVENT_RK
 from tempo_toolkit.contracts.uploads import UploadURN
 
 
@@ -66,7 +66,7 @@ async def test_outbox_service_serializes_event() -> None:
     message = await OutboxService(FixedTimer()).create_message(
         StubAggregateType.UPLOAD,
         str(upload_id),
-        METADATA_READY_RK,
+        METADATA_READY_EVENT_RK,
         MetadataReadyEvent(upload_id=upload_id),
     )
 

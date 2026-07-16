@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 from tempo_toolkit.contracts.events import UploadCompletedEvent
 from tempo_toolkit.contracts.identifiers import UserID
-from tempo_toolkit.contracts.routing import UPLOAD_COMPLETED_RK
+from tempo_toolkit.contracts.routing import UPLOAD_COMPLETED_EVENT_RK
 from tempo_toolkit.contracts.uploads import UploadStatus, UploadURN
 
 
@@ -49,4 +49,4 @@ def test_upload_event_wire_shape() -> None:
 
 def test_routing_key_is_unchanged() -> None:
     """Routing keys retain their broker wire value."""
-    assert str(UPLOAD_COMPLETED_RK) == "rk.tempo.mng.upload.completed"
+    assert str(UPLOAD_COMPLETED_EVENT_RK) == "rk.tempo.mng.upload.completed"
