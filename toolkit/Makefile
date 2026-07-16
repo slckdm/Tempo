@@ -15,7 +15,6 @@ build: check-versions
 	uv build --package tempo-toolkit-infrastructure --out-dir dist
 
 publish: build
-	uv publish --publish-url http://localhost:1010/ dist/tempo_toolkit_contracts-0.2.0*
-	uv publish --publish-url http://localhost:1010/ dist/tempo_toolkit_application-0.2.0*
-	uv publish --publish-url http://localhost:1010/ dist/tempo_toolkit_infrastructure-0.2.0*
-
+	uv publish --publish-url http://localhost:1010/ dist/tempo_toolkit_contracts-0.2.1*
+	uv publish --publish-url http://localhost:1010/ dist/tempo_toolkit_application-0.2.1*
+	uv publish --publish-url http://localhost:1010/ dist/tempo_toolkit_infrastructure-0.2.1*
