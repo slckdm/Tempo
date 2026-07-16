@@ -5,22 +5,36 @@ import { useAuth } from "../context/AuthContext";
 import { AlertIcon, SpinnerIcon } from "./Icons";
 
 export function LoginScreen() {
-  const { login } = useAuth();
+  const { authenticationError, authenticating, login, loginWithGoogle } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
+  const [passwordBusy, setPasswordBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const displayedError = error ?? authenticationError;
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
-    if (busy) return;
+    if (passwordBusy || googleBusy || authenticating) return;
     setError(null);
-    setBusy(true);
+    setPasswordBusy(true);
     try {
       await login(username.trim(), password);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Couldn't sign in");
-      setBusy(false);
+      setPasswordBusy(false);
+    }
+  }
+
+  async function onGoogleLogin() {
+    if (passwordBusy || googleBusy || authenticating) return;
+    setError(null);
+    setGoogleBusy(true);
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't sign in with Google");
+      setGoogleBusy(false);
     }
   }
 
@@ -35,12 +49,26 @@ export function LoginScreen() {
         </div>
         <p className="login-sub">Sign in to upload and listen to your music.</p>
 
-        {error && (
+        {displayedError && (
           <div className="login-error">
             <AlertIcon size={16} />
-            <span>{error}</span>
+            <span>{displayedError}</span>
           </div>
         )}
+
+        <button
+          className="btn-google"
+          type="button"
+          disabled={passwordBusy || googleBusy || authenticating}
+          onClick={onGoogleLogin}
+        >
+          {googleBusy || authenticating ? <SpinnerIcon size={18} /> : <GoogleIcon />}
+          {authenticating ? "Finishing Google sign-in…" : "Continue with Google"}
+        </button>
+
+        <div className="login-divider">
+          <span>or</span>
+        </div>
 
         <div className="field">
           <label htmlFor="username">Username</label>
@@ -67,8 +95,12 @@ export function LoginScreen() {
           />
         </div>
 
-        <button className="btn-primary" type="submit" disabled={busy || !username || !password}>
-          {busy ? (
+        <button
+          className="btn-primary"
+          type="submit"
+          disabled={passwordBusy || googleBusy || authenticating || !username || !password}
+        >
+          {passwordBusy ? (
             <>
               <SpinnerIcon size={18} /> Signing in…
             </>
@@ -77,12 +109,32 @@ export function LoginScreen() {
           )}
         </button>
 
-        <p className="login-foot">
-          Uses a Keycloak user account in realm <code>muslick</code>. Requires a real
-          user (not a service account) with first name, last name, and e-mail set.
-        </p>
+        <p className="login-foot">Google and password sign-in are handled by Keycloak.</p>
       </form>
     </div>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M17.64 9.205c0-.638-.057-1.252-.164-1.841H9v3.482h4.844a4.14 4.14 0 0 1-1.797 2.716v2.259h2.909c1.702-1.567 2.684-3.875 2.684-6.616Z"
+      />
+      <path
+        fill="#34A853"
+        d="M9 18c2.43 0 4.468-.806 5.956-2.179l-2.909-2.259c-.806.54-1.835.859-3.047.859-2.344 0-4.328-1.585-5.037-3.715H.956v2.332A9 9 0 0 0 9 18Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M3.963 10.706A5.41 5.41 0 0 1 3.682 9c0-.592.102-1.168.281-1.706V4.962H.956A9 9 0 0 0 0 9c0 1.452.347 2.827.956 4.038l3.007-2.332Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M9 3.579c1.321 0 2.507.454 3.441 1.346l2.581-2.581C13.464.892 11.426 0 9 0A9 9 0 0 0 .956 4.962l3.007 2.332C4.672 5.164 6.656 3.579 9 3.579Z"
+      />
+    </svg>
   );
 }
 

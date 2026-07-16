@@ -6,7 +6,8 @@ existing `management` (uploads), `metadata` (library read-model), and
 
 ## Features
 
-- **Login** via Keycloak (password grant). Real user accounts only — service
+- **Login** via Google (Keycloak identity brokering with Authorization Code +
+  PKCE) or a Keycloak username/password. Real user accounts only — service
   accounts are rejected by the backend.
 - **Upload** audio with drag & drop and live progress. Uses the backend's
   three-step flow: reserve upload → direct presigned PUT to MinIO → complete.
@@ -80,10 +81,24 @@ runs with no setup. To override, copy `.env.example` to `.env`:
 - `MANAGEMENT_URL`, `METADATA_URL`, `STREAMING_URL`, `KEYCLOAK_URL` — proxy targets.
 - `VITE_KEYCLOAK_REALM`, `VITE_KEYCLOAK_CLIENT_ID`, `VITE_KEYCLOAK_CLIENT_SECRET`
   — the Keycloak realm/client used for login.
+- `VITE_KEYCLOAK_PUBLIC_URL` — browser-reachable Keycloak URL used for the Google
+  redirect (defaults to `http://localhost:8080`).
+- `VITE_KEYCLOAK_GOOGLE_IDP_ALIAS` — Keycloak's Google identity-provider alias
+  (defaults to `google`).
 
-> The client secret lives in the frontend because the backend's Keycloak client
-> is confidential and the password grant requires it. That is acceptable for a
-> local pet project; a production setup would use a public client with PKCE.
+Google must be configured as an identity provider in the `muslick` realm. Put
+the Google client id and secret in Keycloak, set the provider alias to `google`,
+and add the frontend origin to the Keycloak client's valid redirect URIs and web
+origins. The Google OAuth callback URI is Keycloak's broker endpoint:
+`http://localhost:8080/realms/muslick/broker/google/endpoint`.
+
+The Google client secret is server-side configuration. Do not expose it through
+a `VITE_*` variable or copy it into the frontend bundle.
+
+> The existing Keycloak client secret still lives in the frontend because that
+> client is confidential and the password grant requires it. That is acceptable
+> only for this local pet project; a production SPA should use a public Keycloak
+> client with PKCE and no client secret.
 
 ## Project structure
 

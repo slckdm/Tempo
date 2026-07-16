@@ -17,6 +17,8 @@ export const config = {
     clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID ?? "management-service-client",
     clientSecret:
       import.meta.env.VITE_KEYCLOAK_CLIENT_SECRET ?? "zkkbWU1ff4QRLqGTx1idCVmCcLnqyzYJ",
+    publicUrl: import.meta.env.VITE_KEYCLOAK_PUBLIC_URL ?? "http://localhost:8080",
+    googleIdentityProviderAlias: import.meta.env.VITE_KEYCLOAK_GOOGLE_IDP_ALIAS ?? "google",
     // Keycloak client-scope NAMES (not the audience values their mappers emit).
     // Both are Optional scopes on the client; login requests both, and the
     // streaming cookie is down-scoped to `streamScope` so a stolen cookie only
@@ -28,5 +30,6 @@ export const config = {
 
 export const STORAGE_KEYS = {
   session: "tempo.session.v1",
+  oauthRequest: "tempo.oauth-request.v1",
   volume: "tempo.volume.v1",
 } as const;

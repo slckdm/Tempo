@@ -1,7 +1,6 @@
-// Authentication against Keycloak using the Resource Owner Password Credentials
-// grant. The Tempo backend's confidential client requires a client secret, so we
-// send it here (acceptable for a local pet project; see README). Tokens live in
-// a module-level store + localStorage so the non-React fetch layer can read them.
+// Authentication against Keycloak using Google-brokered Authorization Code +
+// PKCE or the existing password grant. Tokens live in a module-level store and
+// localStorage so the non-React fetch layer can read them.
 
 import { config, STORAGE_KEYS } from "../config";
 import type { AuthUser, TokenResponse } from "../types";
@@ -12,7 +11,17 @@ interface Session {
   obtainedAt: number;
 }
 
+interface OAuthRequest {
+  state: string;
+  nonce: string;
+  codeVerifier: string;
+  redirectUri: string;
+  createdAt: number;
+}
+
 const tokenUrl = `${config.authBase}/realms/${config.keycloak.realm}/protocol/openid-connect/token`;
+const authorizationUrl = `${config.keycloak.publicUrl}/realms/${config.keycloak.realm}/protocol/openid-connect/auth`;
+const OAUTH_REQUEST_MAX_AGE = 10 * 60 * 1000;
 
 /** Cookie the access token is mirrored into; must match the streaming backend. */
 const STREAM_TOKEN_COOKIE = "access_token";
@@ -20,6 +29,8 @@ const STREAM_TOKEN_COOKIE = "access_token";
 let session: Session | null = loadSession();
 /** Coalesces concurrent refreshes into a single in-flight request. */
 let refreshing: Promise<boolean> | null = null;
+/** Coalesces callback handling when React StrictMode mounts twice in development. */
+let oauthCallbackHandling: Promise<AuthUser | null> | null = null;
 
 // Stream-scoped access token mirrored into the streaming cookie for the <audio>
 // element. It carries only the streaming audience, so a stolen cookie grants
@@ -139,12 +150,18 @@ function decodeJwt(token: string): Record<string, unknown> | null {
 export class AuthError extends Error {}
 
 async function requestToken(body: Record<string, string>): Promise<TokenResponse> {
+  const clientCredentials: Record<string, string> = {
+    client_id: config.keycloak.clientId,
+  };
+  if (config.keycloak.clientSecret) {
+    clientCredentials.client_secret = config.keycloak.clientSecret;
+  }
+
   const res = await fetch(tokenUrl, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
-      client_id: config.keycloak.clientId,
-      client_secret: config.keycloak.clientSecret,
+      ...clientCredentials,
       ...body,
     }),
   });
@@ -191,6 +208,136 @@ export async function login(username: string, password: string): Promise<AuthUse
   const user = userFromToken(tokens.access_token);
   if (!user) throw new AuthError("Could not read user data from the token");
   return user;
+}
+
+function encodeBase64Url(bytes: Uint8Array): string {
+  let value = "";
+  for (const byte of bytes) value += String.fromCharCode(byte);
+  return btoa(value).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function randomBase64Url(): string {
+  return encodeBase64Url(crypto.getRandomValues(new Uint8Array(32)));
+}
+
+async function createCodeChallenge(codeVerifier: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(codeVerifier));
+  return encodeBase64Url(new Uint8Array(digest));
+}
+
+function oauthRedirectUri(): string {
+  return `${location.origin}${location.pathname}`;
+}
+
+function readOAuthRequest(): OAuthRequest | null {
+  try {
+    const raw = sessionStorage.getItem(STORAGE_KEYS.oauthRequest);
+    if (!raw) return null;
+    const request = JSON.parse(raw) as OAuthRequest;
+    if (
+      !request.state ||
+      !request.nonce ||
+      !request.codeVerifier ||
+      !request.redirectUri ||
+      typeof request.createdAt !== "number" ||
+      Date.now() - request.createdAt > OAUTH_REQUEST_MAX_AGE
+    ) {
+      return null;
+    }
+    return request;
+  } catch {
+    return null;
+  }
+}
+
+function clearOAuthCallbackUrl() {
+  const url = new URL(location.href);
+  for (const parameter of [
+    "code",
+    "state",
+    "session_state",
+    "iss",
+    "error",
+    "error_description",
+  ]) {
+    url.searchParams.delete(parameter);
+  }
+  history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+}
+
+export function hasOAuthCallback(): boolean {
+  const parameters = new URLSearchParams(location.search);
+  return parameters.has("code") || parameters.has("error");
+}
+
+export async function loginWithGoogle(): Promise<void> {
+  const codeVerifier = randomBase64Url();
+  const request: OAuthRequest = {
+    state: randomBase64Url(),
+    nonce: randomBase64Url(),
+    codeVerifier,
+    redirectUri: oauthRedirectUri(),
+    createdAt: Date.now(),
+  };
+  sessionStorage.setItem(STORAGE_KEYS.oauthRequest, JSON.stringify(request));
+
+  const parameters = new URLSearchParams({
+    client_id: config.keycloak.clientId,
+    redirect_uri: request.redirectUri,
+    response_type: "code",
+    response_mode: "query",
+    scope: config.keycloak.loginScope,
+    state: request.state,
+    nonce: request.nonce,
+    code_challenge: await createCodeChallenge(codeVerifier),
+    code_challenge_method: "S256",
+    kc_idp_hint: config.keycloak.googleIdentityProviderAlias,
+  });
+  location.assign(`${authorizationUrl}?${parameters}`);
+}
+
+async function processOAuthCallback(): Promise<AuthUser | null> {
+  if (!hasOAuthCallback()) return null;
+
+  const parameters = new URLSearchParams(location.search);
+  const request = readOAuthRequest();
+  try {
+    const error = parameters.get("error");
+    if (error) {
+      if (error === "access_denied") throw new AuthError("Google sign-in was cancelled");
+      throw new AuthError(parameters.get("error_description") ?? `Google sign-in failed: ${error}`);
+    }
+    if (!request || parameters.get("state") !== request.state) {
+      throw new AuthError("Google sign-in response could not be verified. Please try again.");
+    }
+
+    const code = parameters.get("code");
+    if (!code) throw new AuthError("Google sign-in did not return an authorization code");
+
+    const tokens = await requestToken({
+      grant_type: "authorization_code",
+      code,
+      redirect_uri: request.redirectUri,
+      code_verifier: request.codeVerifier,
+    });
+    const identity = tokens.id_token ? decodeJwt(tokens.id_token) : null;
+    if (!identity || identity.nonce !== request.nonce) {
+      throw new AuthError("Google sign-in identity could not be verified");
+    }
+
+    const user = userFromToken(tokens.access_token);
+    if (!user) throw new AuthError("Could not read user data from the token");
+    persist({ tokens, obtainedAt: Date.now() });
+    return user;
+  } finally {
+    sessionStorage.removeItem(STORAGE_KEYS.oauthRequest);
+    clearOAuthCallbackUrl();
+  }
+}
+
+export function completeOAuthLogin(): Promise<AuthUser | null> {
+  oauthCallbackHandling ??= processOAuthCallback();
+  return oauthCallbackHandling;
 }
 
 async function doRefresh(): Promise<boolean> {

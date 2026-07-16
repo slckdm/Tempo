@@ -1566,6 +1566,47 @@ button.player-track:hover {
   opacity: 0.65;
   cursor: default;
 }
+.btn-google {
+  width: 100%;
+  min-height: 46px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  border: 1px solid var(--border-strong);
+  background: #fff;
+  color: #262626;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: background 0.15s, transform 0.1s, opacity 0.15s;
+}
+.btn-google:hover {
+  background: #f3f3f3;
+}
+.btn-google:active {
+  transform: translateY(1px);
+}
+.btn-google:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+.login-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: var(--text-faint);
+  font-size: 12px;
+}
+.login-divider::before,
+.login-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
 .login-error {
   background: rgba(255, 92, 122, 0.1);
   border: 1px solid rgba(255, 92, 122, 0.3);

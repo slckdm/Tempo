@@ -9,6 +9,8 @@ services:
         VITE_KEYCLOAK_REALM: ${VITE_KEYCLOAK_REALM:-muslick}
         VITE_KEYCLOAK_CLIENT_ID: ${VITE_KEYCLOAK_CLIENT_ID:-management-service-client}
         VITE_KEYCLOAK_CLIENT_SECRET: ${VITE_KEYCLOAK_CLIENT_SECRET:-zkkbWU1ff4QRLqGTx1idCVmCcLnqyzYJ}
+        VITE_KEYCLOAK_PUBLIC_URL: ${VITE_KEYCLOAK_PUBLIC_URL:-http://localhost:8080}
+        VITE_KEYCLOAK_GOOGLE_IDP_ALIAS: ${VITE_KEYCLOAK_GOOGLE_IDP_ALIAS:-google}
     networks:
       - local-network
     ports:
