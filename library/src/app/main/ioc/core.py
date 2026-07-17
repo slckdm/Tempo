@@ -20,6 +20,7 @@ from app.core.commands.add_favorite import AddFavorite
 from app.core.commands.add_track_to_playlist import AddTrackToPlaylist
 from app.core.commands.create_playlist import CreatePlaylist
 from app.core.commands.delete_playlist import DeletePlaylist
+from app.core.commands.healthcheck import Healthcheck
 from app.core.commands.ports.favorite_storage import FavoriteStorage
 from app.core.commands.ports.playlist_storage import PlaylistStorage
 from app.core.commands.ports.playlist_track_storage import PlaylistTrackStorage
@@ -73,6 +74,7 @@ class CoreProvider(Provider):
     add_track_to_playlist = provide(AddTrackToPlaylist)
     create_playlist = provide(CreatePlaylist)
     delete_playlist = provide(DeletePlaylist)
+    healthcheck = provide(Healthcheck)
     remove_favorite = provide(RemoveFavorite)
     remove_track_from_playlist = provide(RemoveTrackFromPlaylist)
 

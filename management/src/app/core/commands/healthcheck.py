@@ -23,6 +23,5 @@ class Healthcheck:
     async def __check_db(self, session: AsyncSession) -> None:
         await session.scalar(select(1))
 
-
     async def __check_broker(self, broker: RabbitBroker) -> None:
         await broker.ping(10)

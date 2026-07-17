@@ -1,4 +1,4 @@
-"""Module: health check endpoint."""
+"""Healthcheck endpoint."""
 
 from dishka.integrations.fastapi import FromDishka, inject
 
@@ -9,8 +9,8 @@ from app.core.commands.healthcheck import Healthcheck
 
 @inject
 async def healthcheck(
-    interactor: FromDishka[Healthcheck]
+    interactor: FromDishka[Healthcheck],
 ) -> JSendSuccessfulResponse:
-    """Delete upload."""
+    """Return success when service dependencies are available."""
     await interactor()
     return JSendSuccessfulResponse()

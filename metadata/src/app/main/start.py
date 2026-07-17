@@ -15,6 +15,7 @@ from tempo_toolkit.infrastructure.identity import KeycloakSettings
 from tempo_toolkit.infrastructure.object_storage import S3Settings
 from tempo_toolkit.infrastructure.web import AppSettings, JSendErrorHandler, JSendFailHandler
 
+from app.inbound.http.healthcheck.router import make_healthcheck_router
 from app.inbound.http.metadata.router import make_tracks_metadata_router
 from app.main.config.loader import (
     load_app_settings,
@@ -61,7 +62,10 @@ def create_service() -> FastAPI:
             Forbidden: JSendFailHandler(HTTPStatus.FORBIDDEN),
             NotFound: JSendFailHandler(HTTPStatus.NOT_FOUND),
         },
-        routes=[*make_tracks_metadata_router().routes],
+        routes=[
+            *make_healthcheck_router().routes,
+            *make_tracks_metadata_router().routes,
+        ],
     )
     app.add_middleware(
         CORSMiddleware,

@@ -14,6 +14,7 @@ from tempo_toolkit.infrastructure.identity import (
 )
 from tempo_toolkit.infrastructure.object_storage import S3ObjectStorage
 
+from app.core.commands.healthcheck import Healthcheck
 from app.core.queries.stream import Stream
 
 
@@ -32,4 +33,5 @@ class CoreProvider(Provider):
     object_storage = provide(S3ObjectStorage, provides=ObjectStorage)
 
     # commands
+    healthcheck = provide(Healthcheck)
     stream = provide(Stream)

@@ -16,6 +16,7 @@ from tempo_toolkit.infrastructure.identity import (
 )
 from tempo_toolkit.infrastructure.time import SystemUTCTimer
 
+from app.core.commands.healthcheck import Healthcheck
 from app.core.commands.ports.metadata_storage import MetadataStorage
 from app.core.common.services.metadata_service import MetadataService
 from app.core.queries.get_track_metadata import GetTrackMetadata
@@ -45,5 +46,6 @@ class CoreProvider(Provider):
     metadata_reader = provide(SQLAMetadataReader, provides=MetadataReader)
 
     # commands
+    healthcheck = provide(Healthcheck)
     get_track_metadata = provide(GetTrackMetadata)
     get_tracks_metadata = provide(GetTracksMetadata)

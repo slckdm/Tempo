@@ -19,6 +19,7 @@ from tempo_toolkit.infrastructure.database import PostgresSettings, SQLAlchemySe
 from tempo_toolkit.infrastructure.identity import KeycloakSettings
 from tempo_toolkit.infrastructure.web import AppSettings, JSendErrorHandler, JSendFailHandler
 
+from app.inbound.http.healthcheck.router import make_healthcheck_router
 from app.inbound.http.v1_router import make_v1_router
 from app.main.config.loader import (
     load_app_settings,
@@ -61,7 +62,7 @@ def create_service() -> FastAPI:
             NotFound: JSendFailHandler(HTTPStatus.NOT_FOUND),
             ResourceAlreadyExists: JSendFailHandler(HTTPStatus.CONFLICT),
         },
-        routes=[*make_v1_router().routes],
+        routes=[*make_healthcheck_router().routes, *make_v1_router().routes],
     )
 
     app.add_middleware(

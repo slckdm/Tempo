@@ -12,6 +12,7 @@ from tempo_toolkit.infrastructure.identity import KeycloakSettings
 from tempo_toolkit.infrastructure.object_storage import S3Settings
 from tempo_toolkit.infrastructure.web import AppSettings, JSendErrorHandler, JSendFailHandler
 
+from app.inbound.http.healthcheck.router import make_healthcheck_router
 from app.inbound.http.stream.router import make_stream_router
 from app.main.config.loader import (
     load_app_settings,
@@ -38,7 +39,7 @@ def create_service() -> FastAPI:
     app = FastAPI(
         debug=app_settings.DEBUG,
         title=app_settings.NAME,
-        routes=[*make_stream_router().routes],
+        routes=[*make_healthcheck_router().routes, *make_stream_router().routes],
         exception_handlers={
             HTTPStatus.UNAUTHORIZED: JSendFailHandler(HTTPStatus.UNAUTHORIZED),
             HTTPStatus.FORBIDDEN: JSendFailHandler(HTTPStatus.FORBIDDEN),
