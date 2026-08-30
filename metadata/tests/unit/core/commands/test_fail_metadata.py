@@ -3,7 +3,7 @@ import pytest
 from tempo_toolkit.application.outbox import OutboxService, OutboxStorage
 from tempo_toolkit.application.persistence import Flusher, Transaction
 from tempo_toolkit.application.time import UTCTimer
-from tempo_toolkit.contracts.routing import METADATA_FAILED_RK
+from tempo_toolkit.contracts.routing import METADATA_FAILED_EVENT_RK
 from tempo_toolkit.contracts.uploads import UploadStatus
 
 from app.core.commands.fail_metadata import FailMetadata
@@ -61,6 +61,6 @@ async def test_fail_metadata_success(
     assert stored.processing_status == UploadStatus.FAILED
     assert stored.error == str(exception)
     message = outbox_storage.add.call_args.args[0]
-    assert message.event_type == str(METADATA_FAILED_RK)
+    assert message.event_type == str(METADATA_FAILED_EVENT_RK)
     flusher.flush.assert_called_once()
     transaction.commit.assert_called_once()
