@@ -24,6 +24,10 @@ UPLOAD_DELETED_EVENT_RK = RoutingKey("tempo.mng.upload.deleted")
 METADATA_READY_EVENT_RK = RoutingKey("tempo.md.metadata.ready")
 METADATA_FAILED_EVENT_RK = RoutingKey("tempo.md.metadata.failed")
 METADATA_DELETED_EVENT_RK = RoutingKey("tempo.md.metadata.deleted")
+# - Recommendations
+RECOMMENDATIONS_FEATURE_READY_EVENT_RK = RoutingKey("tempo.rc.features.ready")
+RECOMMENDATIONS_FEATURE_DELETED_EVENT_RK = RoutingKey("tempo.rc.features.deleted")
+RECOMMENDATIONS_FEATURE_FAILED_EVENT_RK = RoutingKey("tempo.rc.features.failed")
 # Commands RK
 # - Metadata
 METADATA_PROCESS_METADATA_RK = RoutingKey("tempo.md.metadata.process_metadata")

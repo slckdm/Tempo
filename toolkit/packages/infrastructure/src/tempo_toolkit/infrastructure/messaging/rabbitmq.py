@@ -47,21 +47,28 @@ def make_queue(
 _MANAGEMENT_NAMESPACE = "tempo.management"
 _METADATA_NAMESPACE = "tempo.metadata"
 _LIBRARY_NAMESPACE = "tempo.library"
+_RECOMMENDATIONS_NAMESPACE = "tempo.recommendations"
 
 MANAGEMENT_EXCHANGE = RabbitExchange(f"{_MANAGEMENT_NAMESPACE}.exchange", ExchangeType.TOPIC)
 METADATA_EXCHANGE = RabbitExchange(f"{_METADATA_NAMESPACE}.exchange", ExchangeType.TOPIC)
 LIBRARY_EXCHANGE = RabbitExchange(f"{_LIBRARY_NAMESPACE}.exchange", ExchangeType.TOPIC)
+RECOMMENDATIONS_EXCHANGE = RabbitExchange(
+    f"{_RECOMMENDATIONS_NAMESPACE}.exchange", ExchangeType.TOPIC
+)
 MANAGEMENT_DLE = RabbitExchange(f"{_MANAGEMENT_NAMESPACE}.dle", ExchangeType.FANOUT)
 METADATA_DLE = RabbitExchange(f"{_METADATA_NAMESPACE}.dle", ExchangeType.FANOUT)
 LIBRARY_DLE = RabbitExchange(f"{_LIBRARY_NAMESPACE}.dle", ExchangeType.FANOUT)
+RECOMMENDATIONS_DLE = RabbitExchange(f"{_RECOMMENDATIONS_NAMESPACE}.dle", ExchangeType.FANOUT)
 
 MANAGEMENT_DLQ = RabbitQueue(f"{_MANAGEMENT_NAMESPACE}.dlq", durable=True)
 METADATA_DLQ = RabbitQueue(f"{_METADATA_NAMESPACE}.dlq", durable=True)
 LIBRARY_DLQ = RabbitQueue(f"{_LIBRARY_NAMESPACE}.dlq", durable=True)
+RECOMMENDATIONS_DLQ = RabbitQueue(f"{_RECOMMENDATIONS_NAMESPACE}.dlq", durable=True)
 
 MANAGEMENT_CONSUMER_QUEUE = RabbitQueue(f"{_MANAGEMENT_NAMESPACE}.queue", durable=True)
 METADATA_CONSUMER_QUEUE = RabbitQueue(f"{_METADATA_NAMESPACE}.queue", durable=True)
 LIBRARY_CONSUMER_QUEUE = RabbitQueue(f"{_LIBRARY_NAMESPACE}.queue", durable=True)
+RECOMMENDATIONS_CONSUMER_QUEUE = RabbitQueue(f"{_RECOMMENDATIONS_NAMESPACE}.queue", durable=True)
 
 PROCESS_METADATA_QUEUE = make_queue(
     f"{_METADATA_NAMESPACE}.process_metadata.queue", METADATA_PROCESS_METADATA_RK
