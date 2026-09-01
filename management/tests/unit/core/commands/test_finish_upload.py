@@ -48,7 +48,16 @@ async def test_complete_upload_success(
         flusher=flusher,
         transaction=transaction,
     )
-    payload = MetadataReadyEvent(upload_id=upload.urn, cover_key="dsf")
+    payload = MetadataReadyEvent(
+        upload_id=upload.urn,
+        cover_key="Test Cover Key",
+        title="Test Title",
+        artist="Test Artist",
+        album="Test Album",
+        genre="Test Genre",
+        year="2023",
+        content_type="audio/mpeg",
+    )
 
     await command(payload)
 
