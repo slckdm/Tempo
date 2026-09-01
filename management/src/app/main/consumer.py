@@ -15,7 +15,7 @@ from tempo_toolkit.infrastructure.messaging import (
 from tempo_toolkit.infrastructure.messaging.settings import RabbitMQSettings
 from tempo_toolkit.infrastructure.object_storage import S3Provider, S3Settings
 
-from app.inbound.amqp.router import router
+from app.inbound.amqp.v1_router import make_v1_router
 from app.main.config.loader import (
     load_logging_settings,
     load_postgres_settings,
@@ -37,7 +37,7 @@ async def create_app() -> None:
     map_tables()
     broker = make_rabbit_broker(rmq_settings)
     await broker.connect()
-    broker.include_router(router)
+    broker.include_router(make_v1_router())
     await broker.declare_exchange(MANAGEMENT_DLE)
     await broker.declare_queue(MANAGEMENT_DLQ)
 
