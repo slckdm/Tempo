@@ -74,3 +74,9 @@ class MetadataFailedEvent(EventContract):
 
     upload_id: UploadURN
     reason: str
+
+
+class FeatureReadyEvent(EventContract):
+    """Feature-ready event."""
+
+    upload_id: UploadURN
