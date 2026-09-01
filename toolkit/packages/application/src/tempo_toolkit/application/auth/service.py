@@ -1,6 +1,6 @@
 """Current-user service."""
 
-from typing import Sequence
+from typing import Sequence, overload
 
 from tempo_toolkit.application.auth.models import Account, User
 from tempo_toolkit.application.errors import Forbidden, Unauthorized
@@ -18,9 +18,18 @@ class CurrentUserService:
         self._identity_provider = identity_provider
         self._authorized_user_finder = authorized_user_finder
 
+    @overload
+    async def get_current_user(self, audience: list[str]) -> User: ...
+
+    @overload
     async def get_current_user[AllowedAccount: Account](
         self, audience: list[str], account_type: Sequence[type[AllowedAccount]] = (User,)
     ) -> AllowedAccount:
+        ...
+
+    async def get_current_user(
+        self, audience: list[str], account_type: Sequence[type[Account]] = (User,)
+    ) -> Account:
         """Return the authorized current principal."""
         current_user_id = await self._identity_provider.get_current_user_id(audience)
         user = await self._authorized_user_finder.get_by_id(current_user_id)
