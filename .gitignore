@@ -220,3 +220,7 @@ __marimo__/
 
 # System stuff
 .DS_Store
+
+.htpasswd
+AGENTS.md
+.codex/
