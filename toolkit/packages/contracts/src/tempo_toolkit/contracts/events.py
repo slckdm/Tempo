@@ -55,6 +55,18 @@ class MetadataReadyEvent(EventContract):
 
     upload_id: UploadURN
     cover_key: str | None = None
+    title: str | None = None
+    artist: str | None = None
+    album: str | None = None
+    genre: str | None = None
+    year: str | None = None
+    content_type: str | None = None
+
+
+class MetadataDeletedEvent(EventContract):
+    """Metadata-deleted event."""
+
+    upload_id: UploadURN
 
 
 class MetadataFailedEvent(EventContract):
