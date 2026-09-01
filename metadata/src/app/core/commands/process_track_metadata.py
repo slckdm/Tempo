@@ -70,5 +70,14 @@ class ProcessTrackMetadata:
             aggregate_type=AggregateType.METADATA,
             aggregate_id=str(metadata.upload_id),
             event_type=METADATA_READY_EVENT_RK,
-            payload=MetadataReadyEvent(upload_id=payload.upload_id, cover_key=metadata.cover_key),
+            payload=MetadataReadyEvent(
+                upload_id=payload.upload_id,
+                cover_key=metadata.cover_key,
+                title=metadata.title,
+                artist=metadata.artist,
+                album=metadata.album,
+                genre=metadata.genre,
+                year=metadata.year,
+                content_type=metadata.content_type
+            ),
         )
