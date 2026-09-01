@@ -1056,7 +1056,7 @@ wheels = [
 
 [[package]]
 name = "tempo-toolkit-application"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "../toolkit/packages/application" }
 dependencies = [
     { name = "pydantic" },
@@ -1071,7 +1071,7 @@ requires-dist = [
 
 [[package]]
 name = "tempo-toolkit-contracts"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "../toolkit/packages/contracts" }
 dependencies = [
     { name = "pydantic" },
@@ -1082,7 +1082,7 @@ requires-dist = [{ name = "pydantic", specifier = ">=2.13.4,<3.0.0" }]
 
 [[package]]
 name = "tempo-toolkit-infrastructure"
-version = "0.2.0"
+version = "0.2.1"
 source = { editable = "../toolkit/packages/infrastructure" }
 dependencies = [
     { name = "dishka" },

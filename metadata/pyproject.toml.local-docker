@@ -22,9 +22,9 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-tempo-toolkit-contracts = { url = "http://localhost:1010/packages/tempo_toolkit_contracts-0.2.1-py3-none-any.whl" }
-tempo-toolkit-application = { url = "http://localhost:1010/packages/tempo_toolkit_application-0.2.1-py3-none-any.whl" }
-tempo-toolkit-infrastructure = { url = "http://localhost:1010/packages/tempo_toolkit_infrastructure-0.2.1-py3-none-any.whl" }
+tempo-toolkit-contracts = { url = "http://localhost:1010/packages/tempo_toolkit_contracts-0.2.21-py3-none-any.whl" }
+tempo-toolkit-application = { url = "http://localhost:1010/packages/tempo_toolkit_application-0.2.21-py3-none-any.whl" }
+tempo-toolkit-infrastructure = { url = "http://localhost:1010/packages/tempo_toolkit_infrastructure-0.2.21-py3-none-any.whl" }
 
 [dependency-groups]
 local_pypi = [
