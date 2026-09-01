@@ -1,0 +1,44 @@
+services:
+  recommendation-backend:
+    container_name: tempo.recommendation.backend
+    build:
+      context: .
+      target: backend
+      network: host
+    env_file:
+      - .dev/.env.docker.local
+
+    networks:
+      - local-network
+    ports:
+      - 8005:8080
+
+  recommendation-consumer:
+    container_name: tempo.recommendation.consumer
+    build:
+      context: .
+      target: consumer
+      network: host
+    env_file:
+      - .dev/.env.docker.local
+
+    networks:
+      - local-network
+
+  recommendation-publisher:
+    container_name: tempo.recommendation.publisher
+    restart: on-failure
+    build:
+      context: .
+      target: publisher
+      network: host
+    env_file:
+      - .dev/.env.docker.local
+
+    networks:
+      - local-network
+
+networks:
+  local-network:
+    name: local.network
+    external: true

@@ -1,0 +1,39 @@
+[project]
+name = "recommendation"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.19.1",
+    "datasets>=5.0.1",
+    "dishka-faststream>=0.7.0",
+    "faststream>=0.7.5",
+    "greenlet>=3.5.5",
+    "librosa>=1.0.0",
+    "pandas>=3.0.5",
+    "pytest>=9.1.0,<10.0.0",
+    "pytest-asyncio>=1.4.0,<2.0.0",
+    "qdrant-client>=1.19.0",
+    "scikit-learn>=1.9.0",
+    "torch>=2.13.0",
+    "transformers>=5.16.1",
+    "uvicorn>=0.52.4",
+]
+
+[tool.uv.sources]
+tempo-toolkit-contracts = { path = "../toolkit/packages/contracts", editable = true }
+tempo-toolkit-application = { path = "../toolkit/packages/application", editable = true }
+tempo-toolkit-infrastructure = { path = "../toolkit/packages/infrastructure", editable = true }
+
+[dependency-groups]
+local = [
+    "tempo-toolkit-contracts",
+    "tempo-toolkit-application",
+    "tempo-toolkit-infrastructure[web,keycloak,postgres,redis,s3,rabbitmq]",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+asyncio_mode = "auto"

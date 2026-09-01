@@ -6,10 +6,12 @@ COMPOSE_FILES := \
 	$(ROOT_DIRECTORY)/metadata/docker-compose.yaml \
 	$(ROOT_DIRECTORY)/streaming/docker-compose.yaml \
 	$(ROOT_DIRECTORY)/library/docker-compose.yaml \
+	$(ROOT_DIRECTORY)/recommendation/docker-compose.yaml \
 	$(ROOT_DIRECTORY)/frontend/docker-compose.yaml
 
 DOWN_COMPOSE_FILES := \
 	$(ROOT_DIRECTORY)/frontend/docker-compose.yaml \
+	$(ROOT_DIRECTORY)/recommendation/docker-compose.yaml \
 	$(ROOT_DIRECTORY)/library/docker-compose.yaml \
 	$(ROOT_DIRECTORY)/streaming/docker-compose.yaml \
 	$(ROOT_DIRECTORY)/metadata/docker-compose.yaml \

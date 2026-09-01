@@ -1,0 +1,14 @@
+{
+    "python.testing.pytestArgs": [
+        "tests"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.defaultInterpreterPath": "recommendation/.venv",
+    "python.analysis.extraPaths": ["src"],
+    "pylint.args": [
+        "--init-hook", "import sys; sys.path.insert(0, 'src')",
+        "--disable=all",
+        "--enable=E,F"
+    ],
+}

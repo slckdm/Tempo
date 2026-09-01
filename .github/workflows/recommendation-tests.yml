@@ -1,0 +1,33 @@
+name: Library CI
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: recommendation
+
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up Python 3.14
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - uses: astral-sh/setup-uv@20cfd1bf945f4377ade1205e4dbc17946fc9a30d # v10.0.1
+        with:
+          enable-cache: true
+      - name: Run tests
+        run: |
+          uv sync --all-extras --group local
+          uv run pytest

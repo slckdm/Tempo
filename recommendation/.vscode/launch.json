@@ -1,0 +1,32 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "FastAPI",
+            "consoleName": "Recommendations: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src",
+            "module": "app.main.start",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "Consumer",
+            "consoleName": "Recommendations: Consumer",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src",
+            "module": "app.main.consumer",
+            "console": "integratedTerminal",
+        },
+        {
+            "name": "Publisher",
+            "consoleName": "Recommendations: Publisher",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/src",
+            "module": "app.main.relay",
+            "console": "integratedTerminal",
+        },
+    ]
+}

@@ -1,0 +1,16 @@
+"""Module: health check endpoint."""
+
+from dishka.integrations.fastapi import FromDishka, inject
+
+from tempo_toolkit.infrastructure.web import JSendSuccessfulResponse
+
+from app.core.commands.healthcheck import Healthcheck
+
+
+@inject
+async def healthcheck(
+    interactor: FromDishka[Healthcheck]
+) -> JSendSuccessfulResponse:
+    """Delete upload."""
+    await interactor()
+    return JSendSuccessfulResponse()
