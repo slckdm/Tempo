@@ -1,14 +1,14 @@
 [project]
 name = "tempo-toolkit-infrastructure"
-version = "0.2.1"
+version = "0.2.21"
 description = "Infrastructure integrations for Tempo services"
 requires-python = ">=3.14"
 dependencies = [
     "dishka>=1.10.1,<2.0.0",
     "pydantic>=2.13.4,<3.0.0",
     "pydantic-settings>=2.14.2,<3.0.0",
-    "tempo-toolkit-application==0.2.1",
-    "tempo-toolkit-contracts==0.2.1",
+    "tempo-toolkit-application==0.2.21",
+    "tempo-toolkit-contracts==0.2.21",
 ]
 
 [project.optional-dependencies]
